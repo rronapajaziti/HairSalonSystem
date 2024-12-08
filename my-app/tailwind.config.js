@@ -2,7 +2,11 @@
 export default {
   content: ['./public/index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        satoshi: ['Satoshi', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 };
