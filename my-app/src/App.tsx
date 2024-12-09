@@ -16,6 +16,8 @@ import Services from './pages/Services';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
+import Staff from './pages/Staff';
+import Appointments from './pages/Appointments';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -80,11 +82,29 @@ function App() {
           }
         />
         <Route
+          path="/terminet"
+          element={
+            <>
+              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <Appointments />
+            </>
+          }
+        />
+        <Route
           path="/sherbimet"
           element={
             <>
               <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Services />
+            </>
+          }
+        />
+        <Route
+          path="/stafi"
+          element={
+            <>
+              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <Staff />
             </>
           }
         />
