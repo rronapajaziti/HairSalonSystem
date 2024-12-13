@@ -1,10 +1,11 @@
-/** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ['./public/index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class', // This will let us toggle dark mode using the `dark` class
   theme: {
     extend: {
-      fontFamily: {
-        satoshi: ['Satoshi', 'sans-serif'],
+      colors: {
+        boxdark: '#1A222C', // Dark background color
+        strokedark: '#2E3A47', // Dark border color
       },
     },
   },

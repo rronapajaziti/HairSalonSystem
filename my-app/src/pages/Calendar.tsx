@@ -96,9 +96,9 @@ const Calendar = () => {
 
   return (
     <div className="container mx-auto mt-10">
-      <div className="wrapper bg-white rounded shadow w-full">
+      <div className="wrapper bg-white rounded shadow w-full  dark:border-strokedark dark:bg-boxdark dark:text-white">
         <div className="header flex justify-between border-b p-2">
-          <span className="text-lg font-bold">
+          <span className="text-lg font-bold text-blue-900 dark:text-white">
             {year} {month < 10 ? `0${month}` : month}
           </span>
           <div className="buttons flex gap-4">
@@ -142,11 +142,14 @@ const Calendar = () => {
             </button>
           </div>
         </div>
-        <table className="w-full">
+        <table className="w-full  dark:border-strokedark dark:bg-boxdark dark:text-white">
           <thead>
             <tr>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <th key={day} className="p-2 border-r h-10">
+                <th
+                  key={day}
+                  className="p-2 border-r h-10 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark"
+                >
                   <span>{day}</span>
                 </th>
               ))}
