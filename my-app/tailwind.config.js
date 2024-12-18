@@ -7,6 +7,9 @@ module.exports = {
         boxdark: '#1A222C', // Dark background color
         strokedark: '#2E3A47', // Dark border color
       },
+      boxShadow: {
+        'white-custom': '0 4px 6px rgba(255, 255, 255, 0.5)',
+      },
     },
   },
   plugins: [],

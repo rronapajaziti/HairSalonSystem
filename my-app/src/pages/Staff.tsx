@@ -9,7 +9,6 @@ const Staff = () => {
     lastName: '',
     phoneNumber: '',
     email: '',
-    //beje qe vetem admin mundet me ndrru
     password: '',
     roleID: 3,
   });
@@ -49,7 +48,9 @@ const Staff = () => {
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white">Stafi</h1>
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
+          Stafi
+        </h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
@@ -184,13 +185,15 @@ const Staff = () => {
           <tbody>
             {staffList.map((staff, index) => (
               <tr key={index}>
-                <td className="py-4 px-4 dark:text-white">
+                <td className="py-4 px-4 dark:text-white text-black">
                   {staff.firstName} {staff.lastName}
                 </td>
-                <td className="py-4 px-4 dark:text-white">
+                <td className="py-4 px-4 dark:text-white text-black">
                   {staff.phoneNumber}
                 </td>
-                <td className="py-4 px-4 dark:text-white">{staff.email}</td>
+                <td className="py-4 px-4 dark:text-white text-black">
+                  {staff.email}
+                </td>
 
                 <td className="py-4 px-4 text-black dark:text-dark">
                   <button className="px-4 py-2 bg-blue-500 text-white rounded-md">

@@ -3,16 +3,56 @@
   "WorkspaceRootPath": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213194122_Role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241213194122_Role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218210314_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241218210314_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218204354_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241218204354_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203344_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241218203344_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203213_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241218203213_register.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218202644_Password.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241218202644_Password.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\hairsalon.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\hairsalon.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\mycontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -27,20 +67,8 @@
       "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\controllers\\appointmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -55,20 +83,16 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241213170104_controllers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213165527_start.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:HairSalon\\Migrations\\20241213165527_start.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\models\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\models\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\migrations\\20241213194122_role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\migrations\\20241213194122_role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|c:\\users\\hp\\onedrive\\desktop\\innovocode\\hairsalonsystem\\hairsalon\\hairsalon\\migrations\\20241213165527_start.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{00DDCF3C-FCF0-4348-80FD-C5A508C7539A}|HairSalon\\HairSalon.csproj|solutionrelative:hairsalon\\migrations\\20241213165527_start.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -78,7 +102,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
@@ -86,85 +110,98 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "20241213194122_Role.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213194122_Role.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213194122_Role.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213194122_Role.cs",
-              "RelativeToolTip": "HairSalon\\Migrations\\20241213194122_Role.cs",
+              "DocumentIndex": 1,
+              "Title": "20241218210314_register.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218210314_register.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241218210314_register.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218210314_register.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241218210314_register.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T19:41:23.189Z",
+              "WhenOpened": "2024-12-18T21:03:14.699Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "20241213193046_service.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213193046_service.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213193046_service.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213193046_service.cs",
-              "RelativeToolTip": "HairSalon\\Migrations\\20241213193046_service.cs",
+              "Title": "20241218204354_register.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218204354_register.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241218204354_register.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218204354_register.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241218204354_register.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T19:30:46.403Z",
+              "WhenOpened": "2024-12-18T20:43:54.679Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "20241213170104_controllers.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213170104_controllers.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213170104_controllers.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213170104_controllers.cs",
-              "RelativeToolTip": "HairSalon\\Migrations\\20241213170104_controllers.cs",
+              "DocumentIndex": 6,
+              "Title": "20241218203344_register.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203344_register.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241218203344_register.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203344_register.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241218203344_register.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T17:01:04.602Z",
+              "WhenOpened": "2024-12-18T20:33:44.961Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "RoleController.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\RoleController.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Controllers\\RoleController.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\RoleController.cs",
-              "RelativeToolTip": "HairSalon\\Controllers\\RoleController.cs",
-              "ViewState": "AQIAAEwAAAAAAAAAAAAuwGkAAAAAAAAA",
+              "DocumentIndex": 7,
+              "Title": "20241218203213_register.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203213_register.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241218203213_register.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218203213_register.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241218203213_register.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T17:00:31.546Z",
+              "WhenOpened": "2024-12-18T20:32:13.863Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "20241218202644_Password.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218202644_Password.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241218202644_Password.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241218202644_Password.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241218202644_Password.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-18T20:26:44.294Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HairSalon",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\HairSalon.csproj",
+              "RelativeDocumentMoniker": "HairSalon\\HairSalon.csproj",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\HairSalon.csproj",
+              "RelativeToolTip": "HairSalon\\HairSalon.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-12-18T20:19:12.569Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\UserController.cs",
               "RelativeToolTip": "HairSalon\\Controllers\\UserController.cs",
-              "ViewState": "AQIAAEwAAAAAAAAAAAAuwGkAAAAAAAAA",
+              "ViewState": "AQIAABkAAAAAAAAAAAA8wCkAAAAfAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-13T17:00:08.168Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "AppointmentController.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\AppointmentController.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Controllers\\AppointmentController.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\AppointmentController.cs",
-              "RelativeToolTip": "HairSalon\\Controllers\\AppointmentController.cs",
-              "ViewState": "AQIAAFMAAAAAAAAAAAAuwHAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T16:59:39.707Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "ServiceController.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\ServiceController.cs",
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\ServiceController.cs",
@@ -177,7 +214,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 18,
               "Title": "ClientController.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\ClientController.cs",
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\ClientController.cs",
@@ -190,20 +227,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\User.cs",
               "RelativeDocumentMoniker": "HairSalon\\Models\\User.cs",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\User.cs",
               "RelativeToolTip": "HairSalon\\Models\\User.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
+              "ViewState": "AQIAAA4AAAAAAAAAAAA9wCQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-13T16:50:10.686Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 15,
               "Title": "Service.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Service.cs",
               "RelativeDocumentMoniker": "HairSalon\\Models\\Service.cs",
@@ -216,7 +253,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 12,
               "Title": "Appointment.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Appointment.cs",
               "RelativeDocumentMoniker": "HairSalon\\Models\\Appointment.cs",
@@ -230,32 +267,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "MyContext.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\MyContext.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Models\\MyContext.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\MyContext.cs",
-              "RelativeToolTip": "HairSalon\\Models\\MyContext.cs",
-              "ViewState": "AQIAAAIAAAAAAAAAAAAQwBIAAAAAAAAA",
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Program.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Program.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Program.cs",
+              "RelativeToolTip": "HairSalon\\Program.cs",
+              "ViewState": "AQIAAAQAAAAAAAAAAAAuwDEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T16:32:18.342Z",
+              "WhenOpened": "2024-12-13T16:33:50.572Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Client.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Client.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Models\\Client.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Client.cs",
-              "RelativeToolTip": "HairSalon\\Models\\Client.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAABCAAAA",
+              "DocumentIndex": 17,
+              "Title": "AppointmentController.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\AppointmentController.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Controllers\\AppointmentController.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\AppointmentController.cs",
+              "RelativeToolTip": "HairSalon\\Controllers\\AppointmentController.cs",
+              "ViewState": "AQIAAFMAAAAAAAAAAAAuwHAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T16:43:08.703Z",
+              "WhenOpened": "2024-12-13T16:59:39.707Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 5,
               "Title": "Role.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Role.cs",
               "RelativeDocumentMoniker": "HairSalon\\Models\\Role.cs",
@@ -268,20 +305,94 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Program.cs",
-              "RelativeDocumentMoniker": "HairSalon\\Program.cs",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Program.cs",
-              "RelativeToolTip": "HairSalon\\Program.cs",
-              "ViewState": "AQIAAAwAAAAAAAAAAAAuwCkAAAAAAAAA",
+              "DocumentIndex": 16,
+              "Title": "RoleController.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\RoleController.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Controllers\\RoleController.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\RoleController.cs",
+              "RelativeToolTip": "HairSalon\\Controllers\\RoleController.cs",
+              "ViewState": "AQIAAEwAAAAAAAAAAAAuwGkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-13T16:33:50.572Z",
+              "WhenOpened": "2024-12-13T17:00:31.546Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 13,
+              "Title": "MyContext.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\MyContext.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Models\\MyContext.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\MyContext.cs",
+              "RelativeToolTip": "HairSalon\\Models\\MyContext.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAQwBIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-13T16:32:18.342Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\appsettings.json",
+              "RelativeDocumentMoniker": "HairSalon\\appsettings.json",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\appsettings.json",
+              "RelativeToolTip": "HairSalon\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-12-13T16:32:43.228Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "20241213170104_controllers.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213170104_controllers.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213170104_controllers.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213170104_controllers.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241213170104_controllers.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-13T17:01:04.602Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "20241213193046_service.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213193046_service.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213193046_service.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213193046_service.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241213193046_service.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-13T19:30:46.403Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "20241213194122_Role.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213194122_Role.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213194122_Role.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213194122_Role.cs",
+              "RelativeToolTip": "HairSalon\\Migrations\\20241213194122_Role.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-13T19:41:23.189Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Client.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Client.cs",
+              "RelativeDocumentMoniker": "HairSalon\\Models\\Client.cs",
+              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Models\\Client.cs",
+              "RelativeToolTip": "HairSalon\\Models\\Client.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAABCAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-13T16:43:08.703Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
               "Title": "20241213165527_start.cs",
               "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Migrations\\20241213165527_start.cs",
               "RelativeDocumentMoniker": "HairSalon\\Migrations\\20241213165527_start.cs",
@@ -290,19 +401,6 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-13T16:55:27.289Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\appsettings.json",
-              "RelativeDocumentMoniker": "HairSalon\\appsettings.json",
-              "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\appsettings.json",
-              "RelativeToolTip": "HairSalon\\appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-12-13T16:32:43.228Z",
               "EditorCaption": ""
             }
           ]

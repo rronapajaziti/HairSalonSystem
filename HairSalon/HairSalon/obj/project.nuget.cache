@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "aYENVm50KolJSlvt2CEFwnETJh2gaR0EmYWz35KQRrfDY7W3tsyNArSNSv8ogc2jUtfPp+Hs2BLwOGHcXsyBQQ==",
+  "dgSpecHash": "RfZm7dzAc8fqlu7m4xY6Er0xPuweBye6VrsbZ7hyhVpKvA4uJbHIW8qdNlh6JiTTuLw71lI1v26X7x403DOKvQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\HairSalon.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "C:\\Users\\hp\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.2.0\\microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.15\\microsoft.aspnetcore.authentication.jwtbearer.7.0.15.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authorization\\2.2.0\\microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authorization.policy\\2.2.0\\microsoft.aspnetcore.authorization.policy.2.2.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.cors\\2.2.0\\microsoft.aspnetcore.cors.2.2.0.nupkg.sha512",
