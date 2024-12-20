@@ -30,11 +30,13 @@ namespace HairSalon.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+            var existingUserWithEmail = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == user.Email);
+            if (existingUserWithEmail != null)
             {
                 return BadRequest(new { error = "Email already exists." });
             }
-
+            
             using (var hmac = new HMACSHA512())
             {
                 user.PasswordSalt = Convert.ToBase64String(hmac.Key);
@@ -49,6 +51,7 @@ namespace HairSalon.Controllers
 
             return Ok(new { message = "User registered successfully." });
         }
+
 
 
         [HttpPost("login")]

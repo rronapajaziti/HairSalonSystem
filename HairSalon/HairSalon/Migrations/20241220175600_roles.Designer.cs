@@ -4,6 +4,7 @@ using HairSalon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairSalon.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20241220175600_roles")]
+    partial class roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,44 +149,6 @@ namespace HairSalon.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("HairSalon.Models.ServiceStaff", b =>
-                {
-                    b.Property<int>("ServiceStaffID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceStaffID"));
-
-                    b.Property<decimal>("AmountEarned")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("AppointmentID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateProvided")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ServiceID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ServiceStaffID");
-
-                    b.HasIndex("AppointmentID");
-
-                    b.HasIndex("ServiceID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("ServiceStaff");
-                });
-
             modelBuilder.Entity("HairSalon.Models.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -256,33 +221,6 @@ namespace HairSalon.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HairSalon.Models.ServiceStaff", b =>
-                {
-                    b.HasOne("HairSalon.Models.Appointment", "Appointment")
-                        .WithMany("ServiceStaff")
-                        .HasForeignKey("AppointmentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HairSalon.Models.Service", "Service")
-                        .WithMany("ServiceStaff")
-                        .HasForeignKey("ServiceID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HairSalon.Models.User", "User")
-                        .WithMany("ServiceStaff")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Service");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("HairSalon.Models.User", b =>
                 {
                     b.HasOne("HairSalon.Models.Role", null)
@@ -290,11 +228,6 @@ namespace HairSalon.Migrations
                         .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HairSalon.Models.Appointment", b =>
-                {
-                    b.Navigation("ServiceStaff");
                 });
 
             modelBuilder.Entity("HairSalon.Models.Client", b =>
@@ -307,16 +240,9 @@ namespace HairSalon.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("HairSalon.Models.Service", b =>
-                {
-                    b.Navigation("ServiceStaff");
-                });
-
             modelBuilder.Entity("HairSalon.Models.User", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("ServiceStaff");
                 });
 #pragma warning restore 612, 618
         }

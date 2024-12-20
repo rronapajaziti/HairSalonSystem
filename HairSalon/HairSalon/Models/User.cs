@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HairSalon.Migrations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace HairSalon.Models
@@ -26,11 +28,18 @@ namespace HairSalon.Models
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
-        [JsonIgnore]
-        public Role Role { get; set; }
+        [ForeignKey("Roles")]
         public int RoleID { get; set; }
+
+        public User()
+        {
+            RoleID = 3; 
+        }
 
         [JsonIgnore]
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        [JsonIgnore]
+        public ICollection<ServiceStaff> ServiceStaff { get; set; } = new List<ServiceStaff>(); 
+
     }
 }

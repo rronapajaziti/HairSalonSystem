@@ -1,4 +1,6 @@
-﻿namespace HairSalon.Models
+﻿using System.Text.Json.Serialization;
+
+namespace HairSalon.Models
 {
     public class Service
     {
@@ -7,5 +9,8 @@
         public string Description { get; set; }
         public decimal Price { get; set; }
         public int Duration { get; set; }
+        [JsonIgnore]
+        public ICollection<ServiceStaff> ServiceStaff { get; set; } = new List<ServiceStaff>(); 
+
     }
 }

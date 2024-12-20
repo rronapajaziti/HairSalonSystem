@@ -17,6 +17,7 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import Staff from './pages/Staff';
 import Appointments from './pages/Appointments';
+import ServiceStaff from './pages/ServiceStaff';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -109,6 +110,15 @@ function App() {
             <>
               <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Services />
+            </>
+          }
+        />
+        <Route
+          path="/serviceStaff"
+          element={
+            <>
+              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ServiceStaff />
             </>
           }
         />
