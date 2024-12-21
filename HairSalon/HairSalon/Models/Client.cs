@@ -1,4 +1,6 @@
-﻿namespace HairSalon.Models
+﻿using System.Text.Json.Serialization;
+
+namespace HairSalon.Models
 {
     public class Client
     {
@@ -7,6 +9,8 @@
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string? Email { get; set; }
-        public ICollection<Appointment> Appointments { get; set; }
+        [JsonIgnore]
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
     }
 }

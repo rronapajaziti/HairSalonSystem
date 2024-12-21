@@ -13,16 +13,18 @@ namespace HairSalon.Models
         [ForeignKey("StaffID")]
         public int UserID { get; set; }
         [JsonIgnore]
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [ForeignKey("Service")]
         public int ServiceID { get; set; }
+        [JsonIgnore]
 
-        public Service Service { get; set; }
+        public Service? Service { get; set; }
 
         [ForeignKey("Appointment")]
         public int AppointmentID { get; set; }
-        public Appointment Appointment { get; set; }
+        [JsonIgnore]
+        public Appointment? Appointment { get; set; }
 
         [Required]
         [Range(0, 100)]

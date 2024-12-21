@@ -7,7 +7,6 @@ const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newServiceStaff, setNewServiceStaff] = useState({
-    serviceStaffID: null,
     userID: '',
     serviceID: '',
     appointmentID: '',
@@ -17,7 +16,6 @@ const ServiceStaff = () => {
   });
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
-    serviceStaffID: null,
     userID: '',
     serviceID: '',
     appointmentID: '',
@@ -36,11 +34,11 @@ const ServiceStaff = () => {
         setServiceStaffList(response.data);
       })
       .catch((error) => {
-        console.error('There was an error fetching service staff!', error);
+        console.error('Error fetching service staff data:', error);
       });
 
     axios.get('https://localhost:7158/api/User').then((response) => {
-      setUsers(response.data.filter((user: any) => user.roleID === 3)); // Staff only
+      setUsers(response.data.filter((user: any) => user.roleID === 3)); // Only staff
     });
 
     axios.get('https://localhost:7158/api/Service').then((response) => {
@@ -74,7 +72,7 @@ const ServiceStaff = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...newServiceStaff };
+    const payload = editingRowId ? editFormData : newServiceStaff;
 
     if (editingRowId) {
       axios
@@ -88,10 +86,7 @@ const ServiceStaff = () => {
           resetForm();
         })
         .catch((error) => {
-          console.error(
-            'There was an error updating the service staff!',
-            error,
-          );
+          console.error('Error updating service staff:', error);
         });
     } else {
       axios
@@ -101,10 +96,7 @@ const ServiceStaff = () => {
           resetForm();
         })
         .catch((error) => {
-          console.error(
-            'There was an error creating the service staff!',
-            error,
-          );
+          console.error('Error creating service staff:', error);
         });
     }
   };
@@ -127,13 +119,12 @@ const ServiceStaff = () => {
         );
       })
       .catch((error) => {
-        console.error('There was an error deleting the service staff!', error);
+        console.error('Error deleting service staff:', error);
       });
   };
 
   const resetForm = () => {
     setNewServiceStaff({
-      serviceStaffID: null,
       userID: '',
       serviceID: '',
       appointmentID: '',
@@ -146,17 +137,12 @@ const ServiceStaff = () => {
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
-          Service Staff Management
-        </h1>
+        <h1 className="text-xl font-semibold text-blue-900">Service Staff</h1>
         <button
-          onClick={() => {
-            if (showForm) resetForm();
-            else setShowForm(true);
-          }}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+          onClick={() => setShowForm(!showForm)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md"
         >
           {showForm ? 'Close Form' : 'Add Service Staff'}
         </button>
@@ -166,9 +152,7 @@ const ServiceStaff = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Staff Member
-              </label>
+              <label className="block text-sm font-medium">Staff Member</label>
               <select
                 name="userID"
                 value={newServiceStaff.userID}
@@ -185,9 +169,7 @@ const ServiceStaff = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Service
-              </label>
+              <label className="block text-sm font-medium">Service</label>
               <select
                 name="serviceID"
                 value={newServiceStaff.serviceID}
@@ -204,9 +186,7 @@ const ServiceStaff = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Appointment
-              </label>
+              <label className="block text-sm font-medium">Appointment</label>
               <select
                 name="appointmentID"
                 value={newServiceStaff.appointmentID}
@@ -220,15 +200,13 @@ const ServiceStaff = () => {
                     key={appointment.appointmentID}
                     value={appointment.appointmentID}
                   >
-                    {appointment.date}
+                    {appointment.appointmentDate}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Percentage
-              </label>
+              <label className="block text-sm font-medium">Percentage</label>
               <input
                 type="number"
                 name="percentage"
@@ -241,7 +219,7 @@ const ServiceStaff = () => {
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4"
+            className="px-4 py-2 bg-green-500 text-white rounded-md"
           >
             {editingRowId ? 'Update' : 'Add'}
           </button>
@@ -254,52 +232,35 @@ const ServiceStaff = () => {
             <tr className="bg-gray-200">
               <th className="py-2 px-4">Staff</th>
               <th className="py-2 px-4">Service</th>
-              <th className="py-2 px-4">Appointment</th>
+              <th className="py-2 px-4">Appointment Date</th>
               <th className="py-2 px-4">Percentage</th>
+              <th className="py-2 px-4">Amount Earned</th>
               <th className="py-2 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {serviceStaffList.map((item) => (
-              <React.Fragment key={item.serviceStaffID}>
-                <tr>
-                  <td className="py-2 px-4">
-                    {item.user.firstName} {item.user.lastName}
-                  </td>
-                  <td className="py-2 px-4">{item.service.serviceName}</td>
-                  <td className="py-2 px-4">{item.appointment.date}</td>
-                  <td className="py-2 px-4">{item.percentage}%</td>
-                  <td className="py-2 px-4">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="mr-2 px-2 py-1 bg-blue-500 text-white rounded"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.serviceStaffID)}
-                      className="px-2 py-1 bg-red-500 text-white rounded"
-                    >
-                      <MdOutlineDelete />
-                    </button>
-                  </td>
-                </tr>
-                {editingRowId === item.serviceStaffID && (
-                  <tr>
-                    <td colSpan={5}>
-                      <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Edit form fields */}
-                        <button
-                          type="submit"
-                          className="px-4 py-2 bg-green-500 text-white rounded-md"
-                        >
-                          Save
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
+              <tr key={item.serviceStaffID}>
+                <td className="py-2 px-4">{item.userName}</td>
+                <td className="py-2 px-4">{item.serviceName}</td>
+                <td className="py-2 px-4">{item.appointmentDate}</td>
+                <td className="py-2 px-4">{item.percentage}%</td>
+                <td className="py-2 px-4">${item.amountEarned.toFixed(2)}</td>
+                <td className="py-2 px-4">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="px-2 py-1 bg-blue-500 text-white rounded mr-2"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.serviceStaffID)}
+                    className="px-2 py-1 bg-red-500 text-white rounded"
+                  >
+                    <MdOutlineDelete />
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>

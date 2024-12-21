@@ -49,8 +49,31 @@ namespace HairSalon.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(appointment);
+                // Check if the client exists
+                if (appointment.Client != null)
+                {
+                    var existingClient = await _context.Clients
+                        .FirstOrDefaultAsync(c => c.FirstName == appointment.Client.FirstName &&
+                                                  c.LastName == appointment.Client.LastName &&
+                                                  c.PhoneNumber == appointment.Client.PhoneNumber &&
+                                                  c.Email == appointment.Client.Email);
+                    if (existingClient != null)
+                    {
+                        appointment.ClientID = existingClient.ClientID;
+                        appointment.Client = null; // Clear the nested object to avoid conflicts
+                    }
+                    else
+                    {
+                        _context.Clients.Add(appointment.Client);
+                        await _context.SaveChangesAsync();
+                        appointment.ClientID = appointment.Client.ClientID;
+                        appointment.Client = null; // Clear the nested object to avoid conflicts
+                    }
+                }
+
+                _context.Appointments.Add(appointment);
                 await _context.SaveChangesAsync();
+
                 return CreatedAtAction(nameof(GetAppointment), new { id = appointment.AppointmentID }, appointment);
             }
 
@@ -67,6 +90,28 @@ namespace HairSalon.Controllers
 
             if (ModelState.IsValid)
             {
+                // Check if the client exists
+                if (appointment.Client != null)
+                {
+                    var existingClient = await _context.Clients
+                        .FirstOrDefaultAsync(c => c.FirstName == appointment.Client.FirstName &&
+                                                  c.LastName == appointment.Client.LastName &&
+                                                  c.PhoneNumber == appointment.Client.PhoneNumber &&
+                                                  c.Email == appointment.Client.Email);
+                    if (existingClient != null)
+                    {
+                        appointment.ClientID = existingClient.ClientID;
+                        appointment.Client = null; // Clear the nested object to avoid conflicts
+                    }
+                    else
+                    {
+                        _context.Clients.Add(appointment.Client);
+                        await _context.SaveChangesAsync();
+                        appointment.ClientID = appointment.Client.ClientID;
+                        appointment.Client = null; // Clear the nested object to avoid conflicts
+                    }
+                }
+
                 try
                 {
                     _context.Update(appointment);
