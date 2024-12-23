@@ -22,6 +22,7 @@ namespace HairSalon.Controllers
             _configuration = configuration;
         }
 
+        // Register a new user
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
@@ -30,18 +31,20 @@ namespace HairSalon.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Check if email already exists
             var existingUserWithEmail = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUserWithEmail != null)
             {
                 return BadRequest(new { error = "Email already exists." });
             }
-            
+
+            // Hash and salt the password
             using (var hmac = new HMACSHA512())
             {
                 user.PasswordSalt = Convert.ToBase64String(hmac.Key);
                 user.PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(user.PasswordHash)));
-                user.RoleID = 3;
+                user.RoleID = 3; // Default role for new users
             }
 
             user.Appointments = user.Appointments ?? new List<Appointment>();
@@ -52,8 +55,7 @@ namespace HairSalon.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
-
-
+        // User login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -65,9 +67,23 @@ namespace HairSalon.Controllers
             }
 
             var token = GenerateJwtToken(user);
-            return Ok(new { Token = token });
+
+            return Ok(new
+            {
+                Token = token,
+                User = new
+                {
+                    user.UserID,
+                    user.FirstName,
+                    user.LastName,
+                    user.PhoneNumber,
+                    user.Email,
+                    user.RoleID
+                }
+            });
         }
 
+        // Get all users
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
@@ -80,13 +96,19 @@ namespace HairSalon.Controllers
                     u.PhoneNumber,
                     u.Email,
                     u.RoleID,
-                    Appointments = u.Appointments.Select(a => a.AppointmentID).ToList() // Only Appointment IDs
+                    Appointments = u.Appointments.Select(a => new
+                    {
+                        a.AppointmentID,
+                        a.AppointmentDate,
+                        a.Status
+                    }).ToList()
                 })
                 .ToListAsync();
 
             return Ok(users);
         }
 
+        // Get a single user by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -100,7 +122,12 @@ namespace HairSalon.Controllers
                     u.PhoneNumber,
                     u.Email,
                     u.RoleID,
-                    Appointments = u.Appointments.Select(a => a.AppointmentID).ToList() // Only Appointment IDs
+                    Appointments = u.Appointments.Select(a => new
+                    {
+                        a.AppointmentID,
+                        a.AppointmentDate,
+                        a.Status
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -112,6 +139,7 @@ namespace HairSalon.Controllers
             return Ok(user);
         }
 
+        // Update user information
         [HttpPut("{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] User updatedUser)
         {
@@ -138,6 +166,7 @@ namespace HairSalon.Controllers
             return NoContent();
         }
 
+        // Delete a user
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -153,6 +182,7 @@ namespace HairSalon.Controllers
             return NoContent();
         }
 
+        // Generate JWT Token
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
@@ -176,6 +206,7 @@ namespace HairSalon.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        // Verify password with hash and salt
         private bool VerifyPassword(string password, string storedHash, string storedSalt)
         {
             using (var hmac = new HMACSHA512(Convert.FromBase64String(storedSalt)))
@@ -186,6 +217,7 @@ namespace HairSalon.Controllers
         }
     }
 
+    // Login Request DTO
     public class LoginRequest
     {
         public string Email { get; set; }
