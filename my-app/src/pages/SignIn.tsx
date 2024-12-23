@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/ExtraStyle.css'; // Import your CSS if needed
+import '../css/ExtraStyle.css';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +10,7 @@ const SignIn = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear any previous error messages
+    setErrorMessage('');
   
     try {
       const response = await fetch('https://localhost:7158/api/User/login', {
@@ -28,7 +28,7 @@ const SignIn = () => {
   
       const data = await response.json();
   
-      console.log('Login response:', data); // Log the entire response to debug
+      console.log('Login response:', data); 
   
       if (!data.user || !data.user.userID) {
         throw new Error('User data is missing in the response.');
@@ -36,11 +36,11 @@ const SignIn = () => {
   
       // Store token and userId in localStorage
       localStorage.setItem('token', data.token);
-localStorage.setItem('userId', data.user.userID);
+      localStorage.setItem('userId', data.user.userID);
 
 
-console.log(localStorage.getItem('token'));  // Should print the token
-console.log(localStorage.getItem('userId'));  // Should print the userId
+      console.log(localStorage.getItem('token'));  
+      console.log(localStorage.getItem('userId'));  
 
 
   

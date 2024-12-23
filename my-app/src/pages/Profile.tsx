@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import userProfilePic from '../images/user/user-06.png';
 
@@ -9,56 +10,51 @@ const Profile = () => {
     email: '',
     phone: '',
   });
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Fetch user data when the component mounts
+  // Check if the user is logged in; if not, redirect to login page
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    
+    // const isLoggedIn = localStorage.getItem("token");
+    // if (isLoggedIn) {
+    //   navigate("/profile"); 
+    // }
+
+    // if (!token || !userId) {
+    //   navigate('/signin'); 
+    // }
+
     const fetchUserData = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const userId = localStorage.getItem('userId');
-            
-            console.log('Token:', token);  // Log token
-            console.log('UserID:', userId);  // Log userId
+      try {
+        const response = await axios.get(`https://localhost:7158/api/User/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-            if (!token || !userId) {
-                throw new Error('User is not logged in.');
-            }
+        setUserInfo({
+          firstName: response.data.firstName || '',
+          lastName: response.data.lastName || '',
+          email: response.data.email || '',
+          phone: response.data.phoneNumber || '',
+        });
 
-            // Fetch user data from the API
-            const response = await axios.get(`https://localhost:7158/api/User/${userId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            console.log('API Response:', response.data);  // Log the full API response
-
-            const data = response.data;
-
-            // Check if data contains the expected fields
-            setUserInfo({
-                firstName: data.firstName || '',
-                lastName: data.lastName || '',
-                email: data.email || '',
-                phone: data.phoneNumber || '',
-            });
-
-            setLoading(false);
-        } catch (err) {
-            console.error('Error fetching user data:', err);
-            setError('Failed to fetch user data. Please try again.');
-            setLoading(false);
-        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        setError('Failed to fetch user data.');
+        setLoading(false);
+      }
     };
 
     fetchUserData();
-}, []);  // Empty array ensures this effect runs only once on mount
+  }, [navigate]);
 
-
-  // Handle input changes
+ 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInfo({
@@ -67,7 +63,6 @@ const Profile = () => {
     });
   };
 
-  // Handle form submission to update user info
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -78,7 +73,6 @@ const Profile = () => {
         throw new Error('User is not logged in.');
       }
 
-      // Send PUT request to update user data
       await axios.put(
         `https://localhost:7158/api/User/${userId}`,
         {
@@ -99,6 +93,14 @@ const Profile = () => {
       console.error('Error updating user data:', err);
       alert('Failed to update profile. Please try again.');
     }
+  };
+
+  // Log out
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+
+    navigate('/signin');
   };
 
   if (loading) return <p>Loading...</p>;
@@ -129,9 +131,12 @@ const Profile = () => {
           <a href="/settings" className="hover:text-blue-500 transition duration-300">
             Settings
           </a>
-          <a href="/logout" className="hover:text-blue-500 transition duration-300">
+          <button
+            onClick={handleLogout}
+            className="hover:text-blue-500 transition duration-300"
+          >
             Logout
-          </a>
+          </button>
         </nav>
       </div>
 
