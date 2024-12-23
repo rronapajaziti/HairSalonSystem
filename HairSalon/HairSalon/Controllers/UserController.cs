@@ -31,20 +31,16 @@ namespace HairSalon.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Check if email already exists
-            var existingUserWithEmail = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == user.Email);
-            if (existingUserWithEmail != null)
+            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
             {
                 return BadRequest(new { error = "Email already exists." });
             }
 
-            // Hash and salt the password
             using (var hmac = new HMACSHA512())
             {
                 user.PasswordSalt = Convert.ToBase64String(hmac.Key);
                 user.PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(user.PasswordHash)));
-                user.RoleID = 3; // Default role for new users
+                user.RoleID = 3;
             }
 
             user.Appointments = user.Appointments ?? new List<Appointment>();
@@ -55,33 +51,44 @@ namespace HairSalon.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
-        // User login
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+public async Task<IActionResult> Login([FromBody] LoginRequest request)
+{
+    var user = await _context.Users
+        .Include(u => u.Appointments) // Include related appointments
+        .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+    if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
+    {
+        return Unauthorized(new { error = "Invalid credentials." });
+    }
+
+    var token = GenerateJwtToken(user);
+
+    return Ok(new
+    {
+        Token = token,
+        User = new
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
+            UserID = user.UserID, // Ensure this matches the expected property name
+            user.FirstName,
+            user.LastName,
+            user.PhoneNumber,
+            user.Email,
+            user.RoleID,
+            Appointments = user.Appointments.Select(a => new
             {
-                return Unauthorized("Invalid credentials.");
-            }
-
-            var token = GenerateJwtToken(user);
-
-            return Ok(new
-            {
-                Token = token,
-                User = new
-                {
-                    user.UserID,
-                    user.FirstName,
-                    user.LastName,
-                    user.PhoneNumber,
-                    user.Email,
-                    user.RoleID
-                }
-            });
+                a.AppointmentID,
+                a.AppointmentDate,
+                a.Status
+            }).ToList()
         }
+    });
+}
+
+
+
 
         // Get all users
         [HttpGet]
