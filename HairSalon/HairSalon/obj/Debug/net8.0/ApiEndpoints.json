@@ -518,5 +518,15 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.UserController",
+    "Method": "GetStaff",
+    "RelativePath": "api/User/staff",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   }
 ]

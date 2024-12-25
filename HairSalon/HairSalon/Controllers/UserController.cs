@@ -53,39 +53,56 @@ namespace HairSalon.Controllers
 
 
         [HttpPost("login")]
-public async Task<IActionResult> Login([FromBody] LoginRequest request)
-{
-    var user = await _context.Users
-        .Include(u => u.Appointments) // Include related appointments
-        .FirstOrDefaultAsync(u => u.Email == request.Email);
-
-    if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
-    {
-        return Unauthorized(new { error = "Invalid credentials." });
-    }
-
-    var token = GenerateJwtToken(user);
-
-    return Ok(new
-    {
-        Token = token,
-        User = new
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            UserID = user.UserID, // Ensure this matches the expected property name
-            user.FirstName,
-            user.LastName,
-            user.PhoneNumber,
-            user.Email,
-            user.RoleID,
-            Appointments = user.Appointments.Select(a => new
+            var user = await _context.Users
+                .Include(u => u.Appointments) // Include related appointments
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                a.AppointmentID,
-                a.AppointmentDate,
-                a.Status
-            }).ToList()
+                return Unauthorized(new { error = "Invalid credentials." });
+            }
+
+            var token = GenerateJwtToken(user);
+
+            return Ok(new
+            {
+                Token = token,
+                User = new
+                {
+                    UserID = user.UserID, // Ensure this matches the expected property name
+                    user.FirstName,
+                    user.LastName,
+                    user.PhoneNumber,
+                    user.Email,
+                    user.RoleID,
+                    Appointments = user.Appointments.Select(a => new
+                    {
+                        a.AppointmentID,
+                        a.AppointmentDate,
+                        a.Status
+                    }).ToList()
+                }
+            });
         }
-    });
+
+        [HttpGet("staff")]
+public async Task<IActionResult> GetStaff()
+{
+    var staff = await _context.Users
+        .Where(u => u.RoleID == 3)  // Ensure we filter only staff with RoleID = 3
+        .Select(u => new
+        {
+            u.UserID,
+            u.FirstName,
+            u.LastName
+        })
+        .ToListAsync();
+
+    return Ok(staff);
 }
+
 
 
 
