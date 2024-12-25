@@ -1,73 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-type AppointmentType = {
-  clientName: string;
-  service: string;
-  date: string;
-  time: string;
-  staff: string; // Store staff as the UserID (string)
-  notes: string;
-};
-
-type StaffType = {
-  UserID: string;
-  FirstName: string;
-  LastName: string;
-};
-
-const Appointments: React.FC = () => {
-  // Initialize appointments with some sample data
-  const [appointments, setAppointments] = useState<AppointmentType[]>([
-    {
-      clientName: 'John Doe',
-      service: 'Haircut',
-      date: '2024-12-10',
-      time: '10:00',
-      staff: '1', // Staff ID, not name
-      notes: 'Wants a fade style.',
-    },
-    {
-      clientName: 'Jane Smith',
-      service: 'Manicure',
-      date: '2024-12-12',
-      time: '14:00',
-      staff: '2', // Staff ID, not name
-      notes: 'Prefers light pink polish.',
-    },
-  ]);
-
+const Appointments = () => {
+  const [servicesList, setServicesList] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [staffList, setStaffList] = useState<any[]>([]);
+  
   const [showForm, setShowForm] = useState(false);
-  const [appointment, setAppointment] = useState<AppointmentType>({
-    clientName: '',
-    service: '',
-    date: '',
-    time: '',
-    staff: '', // staff ID will be stored here
+  const [appointment, setAppointment] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    email: '',
+    userID: '',
+    serviceID: '',
+    appointmentDate: '',
+    status: '',
     notes: '',
   });
-  const [staffList, setStaffList] = useState<StaffType[]>([]); // List of staff
 
-  // Fetch staff list on component mount
+  // Fetch appointments, staff list, and services on component mount
   useEffect(() => {
-    axios
-      .get('https://localhost:7158/api/User/staff')
-      .then((response) => {
-        const transformedData = response.data.map((staff: any) => ({
-          UserID: staff.userID,
-          FirstName: staff.firstName,
-          LastName: staff.lastName,
-        }));
-        setStaffList(transformedData);
-      })
-      .catch((error) => {
-        console.error('Error fetching staff:', error);
-      });
+    fetchAppointments();
+    fetchStaffList();
+    fetchServicesList();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get('https://localhost:7158/api/Appointment');
+      console.log('Appointments Data:', response.data);
+      setAppointments(response.data);
+    } catch (error) {
+      console.error('There was a problem fetching appointments:', error);
+    }
+  };
+
+  const fetchStaffList = async () => {
+    try {
+      const response = await axios.get('https://localhost:7158/api/User/staff');
+      setStaffList(response.data);
+    } catch (error) {
+      console.error('There was a problem fetching staff:', error);
+    }
+  };
+
+  const fetchServicesList = async () => {
+    try {
+      const response = await axios.get('https://localhost:7158/api/Service');
+      setServicesList(response.data);
+    } catch (error) {
+      console.error('There was a problem fetching services:', error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setAppointment((prev) => ({
       ...prev,
@@ -75,88 +62,176 @@ const Appointments: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add the new appointment to the list
-    setAppointments((prev) => [...prev, appointment]);
-    // Close the form and reset the input fields
-    setShowForm(false);
-    setAppointment({
-      clientName: '',
-      service: '',
-      date: '',
-      time: '',
-      staff: '',
-      notes: '',
-    });
+  
+    if (!appointment.firstName || !appointment.lastName || !appointment.phoneNumber || !appointment.serviceID || !appointment.userID || !appointment.appointmentDate) {
+      console.error('Please fill out all required fields.');
+      return;
+    }
+  
+    const payload = {
+      client: {
+        firstName: appointment.firstName,
+        lastName: appointment.lastName,
+        phoneNumber: appointment.phoneNumber,
+        email: appointment.email || null,
+      },
+      userID: parseInt(appointment.userID, 10),
+      serviceID: parseInt(appointment.serviceID, 10),
+      appointmentDate: new Date(appointment.appointmentDate).toISOString(),
+      status: appointment.status,
+      notes: appointment.notes,
+    };
+  
+  
+    console.log('Payload:', JSON.stringify(payload, null, 2));
+  
+    try {
+      const response = await axios.post('https://localhost:7158/api/Appointment', payload);
+      console.log('Response:', response.data);
+      fetchAppointments();
+      setShowForm(false);
+      setAppointment({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        email: '',
+        userID: '',
+        serviceID: '',
+        appointmentDate: '',
+        status: '',
+        notes: '',
+      });
+    } catch (error) {
+      console.error('Error creating appointment:', error.response?.data || error.message);
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-boxdark">
+    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-dark dark:text-dark">Appointments</h2>
+        <h2 className="text-2xl font-semibold">Appointments</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
           {showForm ? 'Close Form' : 'Add Appointment'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { label: 'Client Name', name: 'clientName', type: 'text' },
-            { label: 'Service', name: 'service', type: 'text' },
-            { label: 'Date', name: 'date', type: 'date' },
-            { label: 'Time', name: 'time', type: 'time' },
-          ].map((field) => (
-            <div key={field.name}>
-              <label className="block font-medium text-dark dark:text-dark">{field.label}</label>
-              <input
-                type={field.type}
-                name={field.name}
-                value={appointment[field.name as keyof AppointmentType]}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-lg dark:bg-dark dark:text-dark"
-              />
-            </div>
-          ))}
-
-          <div className="md:col-span-2">
-            <label className="block font-medium text-dark dark:text-dark">Staff</label>
-            <select
-              name="staff"
-              value={appointment.staff}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="block font-medium">Client First Name</label>
+            <input
+              type="text"
+              name="firstName"
+              value={appointment.firstName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg dark:bg-dark dark:text-dark"
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Client Last Name</label>
+            <input
+              type="text"
+              name="lastName"
+              value={appointment.lastName}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Phone Number</label>
+            <input
+              type="text"
+              name="phoneNumber"
+              value={appointment.phoneNumber}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={appointment.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Service</label>
+            <select
+              name="serviceID"
+              value={appointment.serviceID}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
             >
-              <option value="">Select Staff</option>
-              {staffList.map((staff) => (
-                <option key={staff.UserID} value={staff.UserID}>
-                  {staff.FirstName} {staff.LastName}
+              <option value="">Select Service</option>
+              {servicesList.map((service: any) => (
+                <option key={service.serviceID} value={service.serviceID}>
+                  {service.serviceName}
                 </option>
               ))}
             </select>
           </div>
-
-          <div className="md:col-span-2">
-            <label className="block font-medium text-dark dark:text-dark">Notes (Optional)</label>
+          <div>
+            <label className="block font-medium">Staff</label>
+            <select
+              name="userID"
+              value={appointment.userID}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
+            >
+              <option value="">Select Staff</option>
+              {staffList.map((staff: any) => (
+                <option key={staff.userID} value={staff.userID}>
+                  {staff.firstName} {staff.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-medium">Appointment Date</label>
+            <input
+              type="datetime-local"
+              name="appointmentDate"
+              value={appointment.appointmentDate}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Status</label>
+            <input
+              type="text"
+              name="status"
+              value={appointment.status}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Notes</label>
             <textarea
               name="notes"
               value={appointment.notes}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg dark:bg-dark dark:text-dark"
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
-
           <div className="md:col-span-2 text-right">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
-            >
+            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg">
               Add Appointment
             </button>
           </div>
@@ -165,31 +240,37 @@ const Appointments: React.FC = () => {
 
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
-          <thead className="bg-gray-200 text-dark dark:bg-meta-4">
+          <thead className="bg-gray-200">
             <tr>
-              <th className="py-3 px-4 font-medium text-left">Client Name</th>
-              <th className="py-3 px-4 font-medium text-left">Service</th>
-              <th className="py-3 px-4 font-medium text-left">Date</th>
-              <th className="py-3 px-4 font-medium text-left">Time</th>
-              <th className="py-3 px-4 font-medium text-left">Staff</th>
-              <th className="py-3 px-4 font-medium text-left">Notes</th>
+              <th className="py-3 px-4">Client</th>
+              <th className="py-3 px-4">Service</th>
+              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Staff</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Notes</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment, index) => (
-              <tr key={index} className="border-b dark:border-gray-700">
-                <td className="py-3 px-4">{appointment.clientName}</td>
-                <td className="py-3 px-4">{appointment.service}</td>
-                <td className="py-3 px-4">{appointment.date}</td>
-                <td className="py-3 px-4">{appointment.time}</td>
-                <td className="py-3 px-4">
-                  {staffList.find((staff) => staff.UserID === appointment.staff)?.FirstName}{' '}
-                  {staffList.find((staff) => staff.UserID === appointment.staff)?.LastName}
-                </td>
-                <td className="py-3 px-4">{appointment.notes}</td>
-              </tr>
-            ))}
-          </tbody>
+  {appointments.map((appt: any) => {
+    console.log('Appointment:', appt); // Debug log
+    return (
+      <tr key={appt.appointmentID}>
+        <td className="py-3 px-4">
+          {appt.client ? `${appt.client.firstName} ${appt.client.lastName}` : 'No Client'}
+        </td>
+        <td className="py-3 px-4">{servicesList.find((s: any) => s.serviceID === appt.serviceID)?.serviceName}</td>
+        <td className="py-3 px-4">{new Date(appt.appointmentDate).toLocaleString()}</td>
+        <td className="py-3 px-4">
+          {staffList.find((s: any) => s.userID === appt.userID)?.firstName}{' '}
+          {staffList.find((s: any) => s.userID === appt.userID)?.lastName}
+        </td>
+        <td className="py-3 px-4">{appt.status}</td>
+        <td className="py-3 px-4">{appt.notes}</td>
+      </tr>
+    );
+  })}
+</tbody>
+
         </table>
       </div>
     </div>

@@ -18,8 +18,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "appointment",
-        "Type": "HairSalon.Models.Appointment",
+        "Name": "appointmentDto",
+        "Type": "AppointmentDto",
         "IsRequired": true
       }
     ],

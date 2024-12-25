@@ -9,8 +9,8 @@ namespace HairSalon.Models
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string? Email { get; set; }
-        [JsonIgnore]
-        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-
+       
+       
+        public ICollection<Appointment> Appointments { get; set; }
     }
 }
