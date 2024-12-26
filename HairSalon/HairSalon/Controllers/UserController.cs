@@ -239,7 +239,14 @@ public async Task<IActionResult> GetStaff()
                 return Convert.ToBase64String(computedHash) == storedHash;
             }
         }
+        [HttpGet("total-staff")]
+        public IActionResult GetTotalStaff()
+        {
+            var totalStaff = _context.Users.Count(u => u.RoleID == 3); // Assuming RoleID 3 is for staff
+            return Ok(new { totalStaff });
+        }
     }
+ 
 
     // Login Request DTO
     public class LoginRequest

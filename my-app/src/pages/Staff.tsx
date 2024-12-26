@@ -90,9 +90,7 @@ const Staff = () => {
 
         window.dispatchEvent(new CustomEvent('staffListUpdated'));
       })
-      
 
-      
       .catch((error) => {
         console.error(error.response?.data || error.message);
       });

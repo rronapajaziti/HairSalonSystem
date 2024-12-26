@@ -127,32 +127,32 @@ const ServiceStaff = () => {
   return (
     <div className="rounded-sm border border-stroke text-black bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 dark:text-white dark:border-strokedark dark:bg-boxdark">
       <h1 className="text-xl font-semibold text-blue-900 dark:text-white">
-        Service Staff Earnings
+        Pagesa sipas Shërbimit
       </h1>
       <div className="overflow-x-auto mt-6">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-200">
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Staff Name
+                Emri i Punëtores
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Service
+                Shërbimi
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Service Price
+                Çmimi i Shërbimit
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Percentage
+                Përqindja
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Earnings
+                Pagesa për shërbim
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Date Completed
+                Data e përfundimit
               </th>
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Actions
+                Fshij
               </th>
             </tr>
           </thead>
@@ -166,13 +166,13 @@ const ServiceStaff = () => {
                   {item.serviceName || 'Unknown Service'}
                 </td>
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  ${item.servicePrice.toFixed(2)}
+                  {item.servicePrice.toFixed(2)}€
                 </td>
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                   {item.percentage.toFixed(2)}%
                 </td>
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  ${item.staffEarning.toFixed(2)}
+                  {item.staffEarning.toFixed(2)}€
                 </td>
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                   {item.dateCompleted || 'N/A'}
@@ -193,23 +193,23 @@ const ServiceStaff = () => {
 
       <div className="mt-10">
         <h2 className="text-xl font-semibold text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
-          Monthly Earnings
+          Pagesat Mujore
         </h2>
         <div className="overflow-x-auto mt-6">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-200">
                 <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Staff Name
+                  Emri i Punëtores
                 </th>
                 <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Month
+                  Muaji
                 </th>
                 <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Year
+                  Viti
                 </th>
                 <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Total Earnings
+                  Totali
                 </th>
               </tr>
             </thead>
@@ -220,21 +220,18 @@ const ServiceStaff = () => {
                     {item.staffName || 'Unknown Staff'}
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                    {new Date(item.year, item.month - 1).toLocaleString(
-                      'default',
-                      {
-                        month: 'long',
-                      },
-                    )}
+                    {new Date(item.year, item.month - 1).toLocaleString('sq', {
+                      month: 'long',
+                    })}
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                     {item.year}
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                    $
                     {item.totalEarnings
                       ? item.totalEarnings.toFixed(2)
                       : '0.00'}
+                    €
                   </td>
                 </tr>
               ))}

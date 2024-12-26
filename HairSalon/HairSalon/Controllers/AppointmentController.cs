@@ -302,7 +302,27 @@ public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentD
             {
                 Console.WriteLine($"Error deleting appointment: {ex.Message}");
                 return StatusCode(500, "An error occurred while deleting the appointment.");
+          
             }
         }
+        [HttpGet("total-price")]
+        public async Task<IActionResult> GetTotalPriceForCompletedAppointments()
+        {
+            try
+            {
+                var totalPrice = await _context.Appointments
+                    .Where(a => a.Status.ToLower() == "përfunduar")
+                    .SumAsync(a => a.Service.Price);
+
+                return Ok(totalPrice);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calculating total price: {ex.Message}");
+                return StatusCode(500, "An error occurred while calculating the total price.");
+            }
+        }
+
     }
+
 }

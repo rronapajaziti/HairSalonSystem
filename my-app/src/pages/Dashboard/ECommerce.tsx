@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
 import ChartThree from '../../components/Charts/ChartThree';
@@ -6,12 +6,48 @@ import ChartTwo from '../../components/Charts/ChartTwo';
 import ChatCard from '../../components/Chat/ChatCard';
 import MapOne from '../../components/Maps/MapOne';
 import TableOne from '../../components/Tables/TableOne';
+import axios from 'axios';
 
 const ECommerce: React.FC = () => {
+  const [totalStaff, setTotalStaff] = useState(0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchTotalStaff = async () => {
+      try {
+        const response = await axios.get(
+          'https://localhost:7158/api/User/total-staff',
+        );
+        setTotalStaff(response.data.totalStaff);
+      } catch (error) {
+        console.error('Error fetching total staff:', error);
+      }
+    };
+
+    const fetchTotalPrice = async () => {
+      try {
+        const response = await axios.get(
+          'https://localhost:7158/api/Appointment/total-price',
+        );
+        setTotalPrice(response.data);
+      } catch (error) {
+        console.error('Error fetching total price:', error);
+      }
+    };
+
+    fetchTotalStaff();
+    fetchTotalPrice();
+  }, []);
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats
+          title="Numri i Stafit"
+          total={`${totalStaff}`}
+          rate="0.43%"
+          levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -30,7 +66,12 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats
+          title="Fitimi total"
+          total={`${totalPrice.toFixed(2)}€`}
+          rate="4.35%"
+          levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="20"

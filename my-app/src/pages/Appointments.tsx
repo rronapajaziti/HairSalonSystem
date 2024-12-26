@@ -5,7 +5,7 @@ const Appointments = () => {
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
-  
+
   const [showForm, setShowForm] = useState(false);
   const [appointment, setAppointment] = useState({
     firstName: '',
@@ -28,7 +28,9 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/Appointment');
+      const response = await axios.get(
+        'https://localhost:7158/api/Appointment',
+      );
       console.log('Appointments Data:', response.data);
       setAppointments(response.data);
     } catch (error) {
@@ -54,7 +56,11 @@ const Appointments = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setAppointment((prev) => ({
       ...prev,
@@ -64,12 +70,19 @@ const Appointments = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!appointment.firstName || !appointment.lastName || !appointment.phoneNumber || !appointment.serviceID || !appointment.userID || !appointment.appointmentDate) {
+
+    if (
+      !appointment.firstName ||
+      !appointment.lastName ||
+      !appointment.phoneNumber ||
+      !appointment.serviceID ||
+      !appointment.userID ||
+      !appointment.appointmentDate
+    ) {
       console.error('Please fill out all required fields.');
       return;
     }
-  
+
     const payload = {
       client: {
         firstName: appointment.firstName,
@@ -83,12 +96,14 @@ const Appointments = () => {
       status: appointment.status,
       notes: appointment.notes,
     };
-  
-  
+
     console.log('Payload:', JSON.stringify(payload, null, 2));
-  
+
     try {
-      const response = await axios.post('https://localhost:7158/api/Appointment', payload);
+      const response = await axios.post(
+        'https://localhost:7158/api/Appointment',
+        payload,
+      );
       console.log('Response:', response.data);
       fetchAppointments();
       setShowForm(false);
@@ -104,7 +119,10 @@ const Appointments = () => {
         notes: '',
       });
     } catch (error) {
-      console.error('Error creating appointment:', error.response?.data || error.message);
+      console.error(
+        'Error creating appointment:',
+        error.response?.data || error.message,
+      );
     }
   };
 
@@ -121,7 +139,10 @@ const Appointments = () => {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+        >
           <div>
             <label className="block font-medium">Client First Name</label>
             <input
@@ -231,7 +252,10 @@ const Appointments = () => {
             />
           </div>
           <div className="md:col-span-2 text-right">
-            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-6 py-2 rounded-lg"
+            >
               Add Appointment
             </button>
           </div>
@@ -251,26 +275,31 @@ const Appointments = () => {
             </tr>
           </thead>
           <tbody>
-  {appointments.map((appt: any) => {
-    console.log('Appointment:', appt); // Debug log
-    return (
-      <tr key={appt.appointmentID}>
-        <td className="py-3 px-4">
-          {appt.client ? `${appt.client.firstName} ${appt.client.lastName}` : 'No Client'}
-        </td>
-        <td className="py-3 px-4">{servicesList.find((s: any) => s.serviceID === appt.serviceID)?.serviceName}</td>
-        <td className="py-3 px-4">{new Date(appt.appointmentDate).toLocaleString()}</td>
-        <td className="py-3 px-4">
-          {staffList.find((s: any) => s.userID === appt.userID)?.firstName}{' '}
-          {staffList.find((s: any) => s.userID === appt.userID)?.lastName}
-        </td>
-        <td className="py-3 px-4">{appt.status}</td>
-        <td className="py-3 px-4">{appt.notes}</td>
-      </tr>
-    );
-  })}
-</tbody>
+            {appointments.map((appt: any) => {
+              console.log('Appointment:', appt); // Debug log for the whole appointment data
+              console.log('Service Name:', appt.serviceName); // Check if serviceName exists
+              console.log('Staff Name:', appt.staffName); // Check if staffName exists
 
+              return (
+                <tr key={appt.appointmentID}>
+                  <td className="py-3 px-4">
+                    {appt.client
+                      ? `${appt.client.firstName} ${appt.client.lastName}`
+                      : 'No Client'}
+                  </td>
+                  <td className="py-3 px-4">
+                    {appt.serviceName || 'Unknown Service'}
+                  </td>
+                  <td className="py-3 px-4">
+                    {new Date(appt.appointmentDate).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
+                  <td className="py-3 px-4">{appt.status}</td>
+                  <td className="py-3 px-4">{appt.notes}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </div>

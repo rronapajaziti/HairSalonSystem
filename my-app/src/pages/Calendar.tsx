@@ -112,6 +112,9 @@ const Calendar = () => {
 
   return (
     <div className="container mx-auto mt-10">
+      <h1 className="text-3xl font-bold text-left text-blue-900 mt-4 mb-6 dark:text-white">
+        Kalendari
+      </h1>
       <div className="wrapper bg-white rounded shadow w-full dark:border-strokedark dark:bg-boxdark dark:text-white">
         <div className="header flex justify-between border-b p-2">
           <span className="text-lg font-bold text-blue-900 dark:text-white">
@@ -161,7 +164,15 @@ const Calendar = () => {
         <table className="w-full dark:border-strokedark dark:bg-boxdark dark:text-white">
           <thead>
             <tr>
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              {[
+                'E Diel',
+                'E Hënë',
+                'E Martë',
+                'E Mërkurë',
+                'E Enjëte',
+                'E Premte',
+                'E  Shtunë',
+              ].map((day) => (
                 <th
                   key={day}
                   className="p-2 border-r h-10 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark"
@@ -180,11 +191,11 @@ const Calendar = () => {
                   return (
                     <td
                       key={colIndex}
-                      className="border p-1 h-40 w-40 overflow-hidden"
+                      className="border border-gray-300 p-1 h-40 w-40 overflow-hidden"
                     >
                       <div className="flex flex-col h-40 mx-auto overflow-hidden">
                         <div className="top h-5 w-full">
-                          <span className="text-gray-500">{day}</span>
+                          <span className="text-gray-900">{day}</span>
                         </div>
                         <div className="bottom flex-grow h-30 py-1 w-full overflow-y-auto">
                           {day && renderEvents(day)}
