@@ -1,32 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Calendar = () => {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [events, setEvents] = useState([
-    {
-      date: '2024-12-01',
-      title: 'Meeting',
-      time: '12:00~14:00',
-      color: 'bg-blue-500',
-      staff: 'John',
-    },
-    {
-      date: '2024-12-01',
-      title: 'Dinner',
-      time: '18:00~20:00',
-      color: 'bg-blue-400',
-      staff: 'Doe',
-    },
+  const [events, setEvents] = useState<any[]>([]);
+  const [staffColors, setStaffColors] = useState<any>({});
 
-    {
-      date: '2024-12-07',
-      title: 'Shopping',
-      time: '12:00~14:00',
-      color: 'bg-blue-600',
-      staff: 'Jane',
-    },
-  ]);
+  const blueShades = [
+    'bg-blue-500',
+    'bg-blue-600',
+    'bg-blue-400',
+    'bg-blue-700',
+    'bg-blue-800',
+    'bg-blue-900',
+  ];
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [month, year]);
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        'https://localhost:7158/api/Appointment',
+      );
+      const appointments = response.data;
+
+      const newStaffColors: any = {};
+      let colorIndex = 0;
+
+      const formattedEvents = appointments.map((appointment: any) => {
+        const staffName = appointment.staffName || 'No Staff';
+
+        // Assign a unique color for each staff
+        if (!newStaffColors[staffName]) {
+          newStaffColors[staffName] =
+            blueShades[colorIndex % blueShades.length];
+          colorIndex++;
+        }
+
+        return {
+          date: appointment.appointmentDate.split('T')[0],
+          title: appointment.serviceName || 'No Service',
+          time: 'All Day',
+          color: newStaffColors[staffName],
+          staff: staffName,
+        };
+      });
+
+      setEvents(formattedEvents);
+      setStaffColors(newStaffColors);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month, 0).getDate();
@@ -37,12 +65,10 @@ const Calendar = () => {
     const daysInMonth = getDaysInMonth(month, year);
     const days = [];
 
-    // Fill the calendar with empty days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
 
-    // Fill the calendar with days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
@@ -84,19 +110,9 @@ const Calendar = () => {
       ));
   };
 
-  const rows = [];
-  for (let i = 0; i < 5; i++) {
-    const start = i * 6;
-    const end = start + 6;
-    const week = calendarData.slice(start, end);
-    if (week.some((day) => day !== null)) {
-      rows.push(week);
-    }
-  }
-
   return (
     <div className="container mx-auto mt-10">
-      <div className="wrapper bg-white rounded shadow w-full  dark:border-strokedark dark:bg-boxdark dark:text-white">
+      <div className="wrapper bg-white rounded shadow w-full dark:border-strokedark dark:bg-boxdark dark:text-white">
         <div className="header flex justify-between border-b p-2">
           <span className="text-lg font-bold text-blue-900 dark:text-white">
             {year} {month < 10 ? `0${month}` : month}
@@ -104,7 +120,7 @@ const Calendar = () => {
           <div className="buttons flex gap-4">
             <button className="p-1" onClick={handlePrevMonth}>
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6 text-white dark:text-white"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -114,16 +130,16 @@ const Calendar = () => {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m15 19-7-7 7-7"
                 />
               </svg>
             </button>
             <button className="p-1" onClick={handleNextMonth}>
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6 text-white dark:text-white"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -133,16 +149,16 @@ const Calendar = () => {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m9 5 7 7-7 7"
                 />
               </svg>
             </button>
           </div>
         </div>
-        <table className="w-full  dark:border-strokedark dark:bg-boxdark dark:text-white">
+        <table className="w-full dark:border-strokedark dark:bg-boxdark dark:text-white">
           <thead>
             <tr>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (

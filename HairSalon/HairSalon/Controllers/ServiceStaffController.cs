@@ -1,158 +1,128 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HairSalon.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HairSalon.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
-namespace HairSalon.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class ServiceStaffController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ServiceStaffController : ControllerBase
+    private readonly MyContext _context;
+
+    public ServiceStaffController(MyContext context)
     {
-        private readonly MyContext _context;
+        _context = context;
+    }
 
-        public ServiceStaffController(MyContext context)
+    [HttpGet]
+    public async Task<IActionResult> GetAllServiceStaff()
+    {
+        try
         {
-            _context = context;
-        }
-
-        // GET: api/ServiceStaff
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServiceStaffDto>>> GetAllServiceStaff()
-        {
-            var serviceStaffList = await _context.ServiceStaff
+            var staff = await _context.ServiceStaff
                 .Include(ss => ss.User)
                 .Include(ss => ss.Service)
-                .Include(ss => ss.Appointment)
-                .Select(ss => new ServiceStaffDto
+                .Select(ss => new
                 {
-                    ServiceStaffID = ss.ServiceStaffID,
-                    UserName = ss.User.FirstName + " " + ss.User.LastName,
-                    ServiceName = ss.Service.ServiceName,
-                    AppointmentDate = ss.Appointment.AppointmentDate.ToString("yyyy-MM-dd"),
-                    Percentage = ss.Percentage,
-                    AmountEarned = ss.AmountEarned
+                    ss.ServiceStaffID,
+                    StaffName = ss.User != null ? $"{ss.User.FirstName} {ss.User.LastName}" : "Unknown Staff",
+                    ServiceName = ss.Service != null ? ss.Service.ServiceName : "Unknown Service",
+                    ServicePrice = ss.Price,
+                    Percentage = ss.Price > 0 ? (ss.StaffEarning / ss.Price) * 100 : 0, // Handle divide by zero
+                    StaffEarning = ss.StaffEarning,
+                    DateCompleted = ss.DateCompleted
                 })
                 .ToListAsync();
 
-            return Ok(serviceStaffList);
+            return Ok(staff);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching service staff: {ex.Message}");
+            return StatusCode(500, "An error occurred while fetching service staff data.");
+        }
+    }
+
+
+
+    [HttpPost]
+    public async Task<IActionResult> CreateServiceStaff([FromBody] ServiceStaff serviceStaff)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        // Fetch the service to calculate the price and earnings
+        var service = await _context.Services.FindAsync(serviceStaff.ServiceID);
+        if (service == null)
+        {
+            return BadRequest("Invalid Service ID.");
         }
 
-        // GET: api/ServiceStaff/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceStaffDto>> GetServiceStaff(int id)
+        // Calculate earnings based on the service price and percentage
+        serviceStaff.Price = service.Price;
+        serviceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
+
+        _context.ServiceStaff.Add(serviceStaff);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetAllServiceStaff), new { id = serviceStaff.ServiceStaffID }, serviceStaff);
+    }
+    [HttpGet("monthly-earnings")]
+    public async Task<IActionResult> GetMonthlyEarnings()
+    {
+        try
         {
-            var serviceStaff = await _context.ServiceStaff
+            var monthlyEarnings = await _context.ServiceStaff
                 .Include(ss => ss.User)
-                .Include(ss => ss.Service)
-                .Include(ss => ss.Appointment)
-                .Where(ss => ss.ServiceStaffID == id)
-                .Select(ss => new ServiceStaffDto
+                .GroupBy(ss => new
                 {
-                    ServiceStaffID = ss.ServiceStaffID,
-                    UserName = ss.User.FirstName + " " + ss.User.LastName,
-                    ServiceName = ss.Service.ServiceName,
-                    AppointmentDate = ss.Appointment.AppointmentDate.ToString("yyyy-MM-dd"),
-                    Percentage = ss.Percentage,
-                    AmountEarned = ss.AmountEarned
+                    ss.StaffID,
+                    ss.User.FirstName,
+                    ss.User.LastName,
+                    Month = ss.DateCompleted.Month,
+                    Year = ss.DateCompleted.Year
                 })
-                .FirstOrDefaultAsync();
-
-            if (serviceStaff == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(serviceStaff);
-        }
-
-        // POST: api/ServiceStaff
-        [HttpPost]
-        public async Task<IActionResult> AddServiceStaff(ServiceStaff serviceStaff)
-        {
-            // Validate foreign keys
-            if (!_context.Users.Any(u => u.UserID == serviceStaff.UserID))
-                return BadRequest("Invalid User ID.");
-            if (!_context.Services.Any(s => s.ServiceID == serviceStaff.ServiceID))
-                return BadRequest("Invalid Service ID.");
-            if (!_context.Appointments.Any(a => a.AppointmentID == serviceStaff.AppointmentID))
-                return BadRequest("Invalid Appointment ID.");
-
-            _context.ServiceStaff.Add(serviceStaff);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetServiceStaff", new { id = serviceStaff.ServiceStaffID }, serviceStaff);
-        }
-
-        // PUT: api/ServiceStaff/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateServiceStaff(int id, ServiceStaff serviceStaff)
-        {
-            if (id != serviceStaff.ServiceStaffID)
-            {
-                return BadRequest();
-            }
-
-            // Validate foreign keys
-            if (!_context.Users.Any(u => u.UserID == serviceStaff.UserID))
-                return BadRequest("Invalid User ID.");
-            if (!_context.Services.Any(s => s.ServiceID == serviceStaff.ServiceID))
-                return BadRequest("Invalid Service ID.");
-            if (!_context.Appointments.Any(a => a.AppointmentID == serviceStaff.AppointmentID))
-                return BadRequest("Invalid Appointment ID.");
-
-            _context.Entry(serviceStaff).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ServiceStaffExists(id))
+                .Select(group => new
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                    StaffID = group.Key.StaffID,
+                    StaffName = $"{group.Key.FirstName} {group.Key.LastName}",
+                    Month = group.Key.Month,
+                    Year = group.Key.Year,
+                    TotalEarnings = group.Sum(ss => ss.StaffEarning)
+                })
+                .OrderBy(x => x.StaffID)
+                .ThenBy(x => x.Year)
+                .ThenBy(x => x.Month)
+                .ToListAsync();
 
-            return NoContent();
+            return Ok(monthlyEarnings);
         }
-
-        // DELETE: api/ServiceStaff/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteServiceStaff(int id)
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error calculating monthly earnings: {ex.Message}");
+            return StatusCode(500, "An error occurred while calculating monthly earnings.");
+        }
+    }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteServiceStaff(int id)
+    {
+        try
         {
             var serviceStaff = await _context.ServiceStaff.FindAsync(id);
             if (serviceStaff == null)
             {
-                return NotFound();
+                return NotFound("ServiceStaff record not found.");
             }
 
             _context.ServiceStaff.Remove(serviceStaff);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return NoContent(); 
         }
-
-        private bool ServiceStaffExists(int id)
+        catch (Exception ex)
         {
-            return _context.ServiceStaff.Any(e => e.ServiceStaffID == id);
+            Console.WriteLine($"Error deleting ServiceStaff record: {ex.Message}");
+            return StatusCode(500, "An error occurred while deleting the ServiceStaff record.");
         }
     }
 
-    public class ServiceStaffDto
-    {
-        public int ServiceStaffID { get; set; }
-        public string UserName { get; set; }
-        public string ServiceName { get; set; }
-        public string AppointmentDate { get; set; }
-        public decimal Percentage { get; set; }
-        public decimal AmountEarned { get; set; }
-    }
+
 }

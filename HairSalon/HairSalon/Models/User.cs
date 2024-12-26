@@ -39,7 +39,10 @@ namespace HairSalon.Models
         [JsonIgnore]
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         [JsonIgnore]
-        public ICollection<ServiceStaff> ServiceStaff { get; set; } = new List<ServiceStaff>(); 
+        public ICollection<ServiceStaff> ServiceStaff { get; set; } = new List<ServiceStaff>();
+
+        [NotMapped]
+        public bool IsStaff => RoleID == 3;
 
     }
 }

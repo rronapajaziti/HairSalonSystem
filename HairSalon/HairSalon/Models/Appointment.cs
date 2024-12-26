@@ -16,7 +16,7 @@ namespace HairSalon.Models
         public Service? Service { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string Status { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [JsonIgnore]
         public ICollection<ServiceStaff> ServiceStaff { get; set; } = new List<ServiceStaff>(); 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace HairSalon.Models
 {
@@ -10,31 +9,21 @@ namespace HairSalon.Models
         [Key]
         public int ServiceStaffID { get; set; }
 
-        [ForeignKey("StaffID")]
-        public int UserID { get; set; }
-        [JsonIgnore]
-        public User? User { get; set; }
-
         [ForeignKey("Service")]
         public int ServiceID { get; set; }
-        [JsonIgnore]
+        public virtual Service Service { get; set; }
 
-        public Service? Service { get; set; }
-
-        [ForeignKey("Appointment")]
-        public int AppointmentID { get; set; }
-        [JsonIgnore]
-        public Appointment? Appointment { get; set; }
+        [ForeignKey("User")]
+        public int StaffID { get; set; }
+        public virtual User User { get; set; }
 
         [Required]
-        [Range(0, 100)]
-        public decimal Percentage { get; set; }
+        public DateTime DateCompleted { get; set; }
 
-        [Required]
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal AmountEarned { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
 
-        [Required]
-        public DateTime DateProvided { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal StaffEarning { get; set; }
     }
 }

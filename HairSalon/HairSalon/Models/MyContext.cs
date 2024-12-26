@@ -26,25 +26,23 @@ namespace HairSalon.Models
             );
 
             modelBuilder.Entity<ServiceStaff>()
+         .HasOne(ss => ss.Service)
+         .WithMany(s => s.ServiceStaff)
+         .HasForeignKey(ss => ss.ServiceID)
+         .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ServiceStaff>()
                 .HasOne(ss => ss.User)
-                .WithMany(u => u.ServiceStaff) 
-                .HasForeignKey(ss => ss.UserID)
+                .WithMany(u => u.ServiceStaff)
+                .HasForeignKey(ss => ss.StaffID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ServiceStaff>()
-                .HasOne(ss => ss.Service)
-                .WithMany(s => s.ServiceStaff) 
-                .HasForeignKey(ss => ss.ServiceID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .Property(ss => ss.Price)
+                .HasPrecision(18, 2);
 
             modelBuilder.Entity<ServiceStaff>()
-                .HasOne(ss => ss.Appointment)
-                .WithMany(a => a.ServiceStaff) 
-                .HasForeignKey(ss => ss.AppointmentID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ServiceStaff>()
-                .Property(ss => ss.AmountEarned)
+                .Property(ss => ss.StaffEarning)
                 .HasPrecision(18, 2);
         }
     }

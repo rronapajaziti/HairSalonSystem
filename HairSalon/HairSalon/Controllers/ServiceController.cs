@@ -1,104 +1,89 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HairSalon.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HairSalon.Models;
-using System.Threading.Tasks;
 
-namespace HairSalon.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class ServiceController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ServiceController : ControllerBase
+    private readonly MyContext _context;
+
+    public ServiceController(MyContext context)
     {
-        private readonly MyContext _context;
+        _context = context;
+    }
 
-        public ServiceController(MyContext context)
+    [HttpGet]
+    public async Task<IActionResult> GetServices()
+    {
+        var services = await _context.Services.ToListAsync();
+        return Ok(services);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateService([FromBody] Service service)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        _context.Services.Add(service);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetServices), new { id = service.ServiceID }, service);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditService(int id, [FromBody] Service service)
+    {
+        if (id != service.ServiceID)
+            return BadRequest("ID mismatch.");
+
+        var existingService = await _context.Services.FindAsync(id);
+        if (existingService == null)
+            return NotFound("Service not found.");
+
+        try
         {
-            _context = context;
-        }
+            // Update the service details
+            existingService.ServiceName = service.ServiceName;
+            existingService.Description = service.Description;
+            existingService.Price = service.Price;
+            existingService.Duration = service.Duration;
+            existingService.StaffEarningPercentage = service.StaffEarningPercentage;
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
-        {
-            return await _context.Services.ToListAsync();
-        }
+            _context.Entry(existingService).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetService(int id)
-        {
-            var service = await _context.Services
-                .FirstOrDefaultAsync(m => m.ServiceID == id);
+            // Update related ServiceStaff records
+            var relatedServiceStaff = await _context.ServiceStaff
+                .Where(ss => ss.ServiceID == id)
+                .ToListAsync();
 
-            if (service == null)
+            foreach (var staff in relatedServiceStaff)
             {
-                return NotFound();
+                staff.Price = existingService.Price; // Ensure Price is in sync
+                staff.StaffEarning = existingService.Price * (existingService.StaffEarningPercentage / 100);
+                _context.ServiceStaff.Update(staff);
             }
 
-            return Ok(service);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateService([FromBody] Service service)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(service);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetService), new { id = service.ServiceID }, service);
-            }
-
-            return BadRequest(ModelState);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditService(int id, [FromBody] Service service)
-        {
-            if (id != service.ServiceID)
-            {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(service);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ServiceExists(id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return NoContent();
-            }
-
-            return BadRequest(ModelState);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteService(int id)
-        {
-            var service = await _context.Services.FindAsync(id);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            _context.Services.Remove(service);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
-        private bool ServiceExists(int id)
+        catch (Exception ex)
         {
-            return _context.Services.Any(e => e.ServiceID == id);
+            Console.WriteLine($"Error updating service: {ex.Message}");
+            return StatusCode(500, "An error occurred while updating the service.");
         }
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteService(int id)
+    {
+        var service = await _context.Services.FindAsync(id);
+        if (service == null) return NotFound();
+
+        _context.Services.Remove(service);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }
