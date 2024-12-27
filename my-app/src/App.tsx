@@ -77,6 +77,7 @@ function App() {
             </>
           }
         />
+        <Route path="/appointments" element={<Appointments />} />
         <Route
           path="/forms/form-elements"
           element={

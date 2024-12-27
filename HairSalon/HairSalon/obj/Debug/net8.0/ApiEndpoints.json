@@ -89,6 +89,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetAppointmentsByUser",
+    "RelativePath": "api/Appointment/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "HairSalon.Controllers.ClientController",
     "Method": "GetClients",
     "RelativePath": "api/Client",

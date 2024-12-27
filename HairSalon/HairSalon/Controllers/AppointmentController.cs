@@ -323,6 +323,44 @@ public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentD
             }
         }
 
+
+        // Appointmens for
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetAppointmentsByUser(int userId)
+        {
+            var appointments = await _context.Appointments
+                .Include(a => a.Client)
+                .Include(a => a.User)
+                .Include(a => a.Service)
+                .Where(a => a.UserID == userId)
+                .Select(a => new
+                {
+                    a.AppointmentID,
+                    Client = a.Client != null ? new
+                    {
+                        a.Client.FirstName,
+                        a.Client.LastName,
+                        a.Client.PhoneNumber,
+                        a.Client.Email
+                    } : null,
+                    a.UserID,
+                    a.ServiceID,
+                    a.AppointmentDate,
+                    a.Status,
+                    a.Notes,
+                    ServiceName = a.Service != null ? a.Service.ServiceName : "No Service"
+                })
+                .ToListAsync();
+
+            if (appointments == null || !appointments.Any())
+            {
+                return NotFound("No appointments found for the user.");
+            }
+
+            return Ok(appointments);
+        }
+
+
     }
 
 }
