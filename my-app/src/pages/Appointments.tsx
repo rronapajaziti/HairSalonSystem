@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaEdit } from 'react-icons/fa';
+import { MdOutlineDelete } from 'react-icons/md';
+
+
 
 const Appointments = () => {
   const [servicesList, setServicesList] = useState<any[]>([]);
@@ -8,6 +12,7 @@ const Appointments = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [appointment, setAppointment] = useState({
+    appointmentID: null,
     firstName: '',
     lastName: '',
     phoneNumber: '',
@@ -19,6 +24,8 @@ const Appointments = () => {
     notes: '',
   });
 
+  const [editingRowId, setEditingRowId] = useState<number | null>(null);
+
   // Fetch appointments, staff list, and services on component mount
   useEffect(() => {
     fetchAppointments();
@@ -28,10 +35,7 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(
-        'https://localhost:7158/api/Appointment',
-      );
-      console.log('Appointments Data:', response.data);
+      const response = await axios.get('https://localhost:7158/api/Appointment');
       setAppointments(response.data);
     } catch (error) {
       console.error('There was a problem fetching appointments:', error);
@@ -59,7 +63,7 @@ const Appointments = () => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setAppointment((prev) => ({
@@ -84,6 +88,7 @@ const Appointments = () => {
     }
 
     const payload = {
+      appointmentID: appointment.appointmentID || 0,
       client: {
         firstName: appointment.firstName,
         lastName: appointment.lastName,
@@ -97,17 +102,21 @@ const Appointments = () => {
       notes: appointment.notes,
     };
 
-    console.log('Payload:', JSON.stringify(payload, null, 2));
-
     try {
-      const response = await axios.post(
-        'https://localhost:7158/api/Appointment',
-        payload,
-      );
-      console.log('Response:', response.data);
+      if (appointment.appointmentID) {
+        // Edit existing appointment
+        await axios.put(`https://localhost:7158/api/Appointment/${appointment.appointmentID}`, payload);
+        console.log('Appointment updated successfully.');
+      } else {
+        // Add new appointment
+        await axios.post('https://localhost:7158/api/Appointment', payload);
+        console.log('Appointment added successfully.');
+      }
+
       fetchAppointments();
       setShowForm(false);
       setAppointment({
+        appointmentID: null,
         firstName: '',
         lastName: '',
         phoneNumber: '',
@@ -118,11 +127,37 @@ const Appointments = () => {
         status: '',
         notes: '',
       });
-    } catch (error) {
-      console.error(
-        'Error creating appointment:',
-        error.response?.data || error.message,
-      );
+    } catch (error: any) {
+      console.error('Error creating/updating appointment:', error.response?.data || error.message);
+    }
+  };
+
+  const handleEditClick = (appt: any) => {
+    setEditingRowId(appt.appointmentID);
+    setAppointment({
+      appointmentID: appt.appointmentID,
+      firstName: appt.client?.firstName || '',
+      lastName: appt.client?.lastName || '',
+      phoneNumber: appt.client?.phoneNumber || '',
+      email: appt.client?.email || '',
+      userID: appt.userID,
+      serviceID: appt.serviceID,
+      appointmentDate: appt.appointmentDate,
+      status: appt.status,
+      notes: appt.notes,
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async (appointmentID: number) => {
+    if (window.confirm('Are you sure you want to delete this appointment?')) {
+      try {
+        await axios.delete(`https://localhost:7158/api/Appointment/${appointmentID}`);
+        fetchAppointments();
+        console.log('Appointment deleted successfully.');
+      } catch (error) {
+        console.error('Error deleting appointment:', error);
+      }
     }
   };
 
@@ -131,7 +166,21 @@ const Appointments = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Appointments</h2>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            setShowForm(!showForm);
+            setAppointment({
+              appointmentID: null,
+              firstName: '',
+              lastName: '',
+              phoneNumber: '',
+              email: '',
+              userID: '',
+              serviceID: '',
+              appointmentDate: '',
+              status: '',
+              notes: '',
+            });
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
           {showForm ? 'Close Form' : 'Add Appointment'}
@@ -256,7 +305,7 @@ const Appointments = () => {
               type="submit"
               className="bg-blue-500 text-white px-6 py-2 rounded-lg"
             >
-              Add Appointment
+              {appointment.appointmentID ? 'Update Appointment' : 'Add Appointment'}
             </button>
           </div>
         </form>
@@ -270,35 +319,37 @@ const Appointments = () => {
               <th className="py-3 px-4">Service</th>
               <th className="py-3 px-4">Date</th>
               <th className="py-3 px-4">Staff</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">Notes</th>
+              <th className="py-3 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appt: any) => {
-              console.log('Appointment:', appt); // Debug log for the whole appointment data
-              console.log('Service Name:', appt.serviceName); // Check if serviceName exists
-              console.log('Staff Name:', appt.staffName); // Check if staffName exists
-
-              return (
-                <tr key={appt.appointmentID}>
-                  <td className="py-3 px-4">
-                    {appt.client
-                      ? `${appt.client.firstName} ${appt.client.lastName}`
-                      : 'No Client'}
-                  </td>
-                  <td className="py-3 px-4">
-                    {appt.serviceName || 'Unknown Service'}
-                  </td>
-                  <td className="py-3 px-4">
-                    {new Date(appt.appointmentDate).toLocaleString()}
-                  </td>
-                  <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
-                  <td className="py-3 px-4">{appt.status}</td>
-                  <td className="py-3 px-4">{appt.notes}</td>
-                </tr>
-              );
-            })}
+            {appointments.map((appt: any) => (
+              <tr key={appt.appointmentID}>
+                <td className="py-3 px-4">
+                  {appt.client
+                    ? `${appt.client.firstName} ${appt.client.lastName}`
+                    : 'No Client'}
+                </td>
+                <td className="py-3 px-4">{appt.serviceName || 'Unknown Service'}</td>
+                <td className="py-3 px-4">{new Date(appt.appointmentDate).toLocaleString()}</td>
+                <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
+                <td className="py-3 px-4">
+                  <button
+                    onClick={() => handleEditClick(appt)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                  >
+                    
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(appt.appointmentID)}
+                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
+                  >
+                     <MdOutlineDelete />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
