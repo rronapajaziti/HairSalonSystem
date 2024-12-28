@@ -3,8 +3,6 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-
-
 const Appointments = () => {
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -35,7 +33,9 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/Appointment');
+      const response = await axios.get(
+        'https://localhost:7158/api/Appointment',
+      );
       setAppointments(response.data);
     } catch (error) {
       console.error('There was a problem fetching appointments:', error);
@@ -63,7 +63,7 @@ const Appointments = () => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setAppointment((prev) => ({
@@ -74,18 +74,7 @@ const Appointments = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (
-      !appointment.firstName ||
-      !appointment.lastName ||
-      !appointment.phoneNumber ||
-      !appointment.serviceID ||
-      !appointment.userID ||
-      !appointment.appointmentDate
-    ) {
-      console.error('Please fill out all required fields.');
-      return;
-    }
+    console.log('Form submission started.');
 
     const payload = {
       appointmentID: appointment.appointmentID || 0,
@@ -104,17 +93,29 @@ const Appointments = () => {
 
     try {
       if (appointment.appointmentID) {
-        // Edit existing appointment
-        await axios.put(`https://localhost:7158/api/Appointment/${appointment.appointmentID}`, payload);
+        await axios.put(
+          `https://localhost:7158/api/Appointment/${appointment.appointmentID}`,
+          payload,
+        );
         console.log('Appointment updated successfully.');
       } else {
-        // Add new appointment
         await axios.post('https://localhost:7158/api/Appointment', payload);
         console.log('Appointment added successfully.');
       }
 
       fetchAppointments();
-      setShowForm(false);
+
+      // Sync ServiceStaff data
+      await axios.post(
+        'https://localhost:7158/api/ServiceStaff/sync-from-appointment',
+        payload,
+      );
+
+      window.dispatchEvent(new CustomEvent('dataUpdated')); // Notify ServiceStaff
+      console.log('Closing the form...');
+      setShowForm(false); // Close the form after saving
+
+      // Reset appointment form
       setAppointment({
         appointmentID: null,
         firstName: '',
@@ -127,8 +128,23 @@ const Appointments = () => {
         status: '',
         notes: '',
       });
-    } catch (error: any) {
-      console.error('Error creating/updating appointment:', error.response?.data || error.message);
+    } catch (error) {
+      console.error('Error creating/updating appointment:', error);
+    }
+  };
+
+  const handleDelete = async (appointmentID: number) => {
+    if (window.confirm('Are you sure you want to delete this appointment?')) {
+      try {
+        await axios.delete(
+          `https://localhost:7158/api/Appointment/${appointmentID}`,
+        );
+        fetchAppointments();
+        window.dispatchEvent(new CustomEvent('dataUpdated')); // Notify updates
+        console.log('Appointment deleted successfully.');
+      } catch (error) {
+        console.error('Error deleting appointment:', error);
+      }
     }
   };
 
@@ -147,18 +163,6 @@ const Appointments = () => {
       notes: appt.notes,
     });
     setShowForm(true);
-  };
-
-  const handleDelete = async (appointmentID: number) => {
-    if (window.confirm('Are you sure you want to delete this appointment?')) {
-      try {
-        await axios.delete(`https://localhost:7158/api/Appointment/${appointmentID}`);
-        fetchAppointments();
-        console.log('Appointment deleted successfully.');
-      } catch (error) {
-        console.error('Error deleting appointment:', error);
-      }
-    }
   };
 
   return (
@@ -305,7 +309,9 @@ const Appointments = () => {
               type="submit"
               className="bg-blue-500 text-white px-6 py-2 rounded-lg"
             >
-              {appointment.appointmentID ? 'Update Appointment' : 'Add Appointment'}
+              {appointment.appointmentID
+                ? 'Update Appointment'
+                : 'Add Appointment'}
             </button>
           </div>
         </form>
@@ -319,6 +325,7 @@ const Appointments = () => {
               <th className="py-3 px-4">Service</th>
               <th className="py-3 px-4">Date</th>
               <th className="py-3 px-4">Staff</th>
+              <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Actions</th>
             </tr>
           </thead>
@@ -330,22 +337,26 @@ const Appointments = () => {
                     ? `${appt.client.firstName} ${appt.client.lastName}`
                     : 'No Client'}
                 </td>
-                <td className="py-3 px-4">{appt.serviceName || 'Unknown Service'}</td>
-                <td className="py-3 px-4">{new Date(appt.appointmentDate).toLocaleString()}</td>
+                <td className="py-3 px-4">
+                  {appt.serviceName || 'Unknown Service'}
+                </td>
+                <td className="py-3 px-4">
+                  {new Date(appt.appointmentDate).toLocaleString()}
+                </td>
                 <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
+                <td className="py-3 px-4">{appt.status}</td>
                 <td className="py-3 px-4">
                   <button
                     onClick={() => handleEditClick(appt)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-md"
                   >
-                    
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(appt.appointmentID)}
                     className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
                   >
-                     <MdOutlineDelete />
+                    <MdOutlineDelete />
                   </button>
                 </td>
               </tr>

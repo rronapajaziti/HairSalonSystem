@@ -86,4 +86,19 @@ public class ServiceController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
+    [HttpGet("total-services")]
+    public IActionResult GetTotalServices()
+    {
+        try
+        {
+            var totalServices = _context.Services.Count();  
+            return Ok(new { totalServices });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching total services: {ex.Message}");
+            return StatusCode(500, "An error occurred while fetching the total services.");
+        }
+    }
+
 }

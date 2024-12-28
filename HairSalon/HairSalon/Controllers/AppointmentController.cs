@@ -174,113 +174,62 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while creating the appointment.");
             }
         }
-
-    [HttpPut("{id}")]
-public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
-{
-    if (id != appointmentDto.AppointmentID)
-    {
-        return BadRequest("Appointment ID mismatch.");
-    }
-
-    var existingAppointment = await _context.Appointments
-        .Include(a => a.Service)
-        .FirstOrDefaultAsync(a => a.AppointmentID == id);
-
-    if (existingAppointment == null)
-    {
-        return NotFound("Appointment not found.");
-    }
-
-    using var transaction = await _context.Database.BeginTransactionAsync();
-    try
-    {
-        // Handle client information
-        var clientDto = appointmentDto.Client;
-        if (clientDto != null)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
         {
-            var existingClient = await _context.Clients
-                .FirstOrDefaultAsync(c => c.FirstName == clientDto.FirstName &&
-                                          c.LastName == clientDto.LastName &&
-                                          c.PhoneNumber == clientDto.PhoneNumber &&
-                                          c.Email == clientDto.Email);
-
-            if (existingClient == null)
+            if (id != appointmentDto.AppointmentID)
             {
-                var newClient = new Client
-                {
-                    FirstName = clientDto.FirstName,
-                    LastName = clientDto.LastName,
-                    PhoneNumber = clientDto.PhoneNumber,
-                    Email = clientDto.Email
-                };
-                _context.Clients.Add(newClient);
+                return BadRequest("Appointment ID mismatch.");
+            }
+
+            var existingAppointment = await _context.Appointments
+                .Include(a => a.Service)
+                .FirstOrDefaultAsync(a => a.AppointmentID == id);
+
+            if (existingAppointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                bool isDateChanged = existingAppointment.AppointmentDate != appointmentDto.AppointmentDate;
+
+                existingAppointment.UserID = appointmentDto.UserID;
+                existingAppointment.ServiceID = appointmentDto.ServiceID;
+                existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
+                existingAppointment.Status = appointmentDto.Status;
+                existingAppointment.Notes = appointmentDto.Notes;
+
+                _context.Entry(existingAppointment).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
-                existingAppointment.ClientID = newClient.ClientID;
-            }
-            else
-            {
-                existingAppointment.ClientID = existingClient.ClientID;
-            }
-        }
 
-        // Update appointment details
-        existingAppointment.UserID = appointmentDto.UserID;
-        existingAppointment.ServiceID = appointmentDto.ServiceID;
-        existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
-        existingAppointment.Status = appointmentDto.Status;
-        existingAppointment.Notes = appointmentDto.Notes;
-
-        _context.Entry(existingAppointment).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        // Add or update ServiceStaff only if the status is "përfunduar"
-        if (appointmentDto.Status?.ToLower() == "përfunduar")
-        {
-            var service = await _context.Services.FindAsync(existingAppointment.ServiceID);
-            if (service == null)
-            {
-                return BadRequest("Invalid Service ID.");
-            }
-
-            // Check if a ServiceStaff record already exists for this appointment
-            var existingServiceStaff = await _context.ServiceStaff
-                .FirstOrDefaultAsync(ss => ss.ServiceID == existingAppointment.ServiceID && ss.StaffID == appointmentDto.UserID);
-
-            if (existingServiceStaff == null)
-            {
-                var serviceStaff = new ServiceStaff
+                // Update ServiceStaff date if appointment date changes
+                if (isDateChanged && appointmentDto.Status?.ToLower() == "përfunduar")
                 {
-                    ServiceID = service.ServiceID,
-                    StaffID = appointmentDto.UserID,
-                    DateCompleted = existingAppointment.AppointmentDate,
-                    Price = service.Price,
-                    StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
-                };
-                _context.ServiceStaff.Add(serviceStaff);
-            }
-            else
-            {
-                existingServiceStaff.DateCompleted = existingAppointment.AppointmentDate;
-                existingServiceStaff.Price = service.Price;
-                existingServiceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
-                _context.ServiceStaff.Update(existingServiceStaff);
-            }
+                    var serviceStaff = await _context.ServiceStaff
+                        .FirstOrDefaultAsync(ss => ss.ServiceID == existingAppointment.ServiceID && ss.StaffID == appointmentDto.UserID);
 
-            await _context.SaveChangesAsync();
+                    if (serviceStaff != null)
+                    {
+                        serviceStaff.DateCompleted = appointmentDto.AppointmentDate;
+                        _context.ServiceStaff.Update(serviceStaff);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                await transaction.CommitAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error editing appointment: {ex.Message}");
+                return StatusCode(500, "An error occurred while editing the appointment.");
+            }
         }
 
-        await transaction.CommitAsync();
-
-        return NoContent();
-    }
-    catch (Exception ex)
-    {
-        await transaction.RollbackAsync();
-        Console.WriteLine($"Error editing appointment: {ex.Message}");
-        return StatusCode(500, "An error occurred while editing the appointment.");
-    }
-}
 
 
         [HttpDelete("{id}")]
@@ -322,6 +271,103 @@ public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentD
                 return StatusCode(500, "An error occurred while calculating the total price.");
             }
         }
+        [HttpGet("total-completed-appointments")]
+        public async Task<IActionResult> GetTotalCompletedAppointments()
+        {
+            try
+            {
+                var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+                var completedAppointmentsCount = await _context.Appointments
+                    .Where(a => a.Status == "përfunduar" && a.AppointmentDate >= startOfMonth && a.AppointmentDate <= endOfMonth)
+                    .CountAsync();
+
+                return Ok(new { completedAppointmentsCount });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching completed appointments: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching completed appointments.");
+            }
+        }
+        [HttpGet("total-revenue")]
+        public async Task<IActionResult> GetTotalRevenueForCompletedAppointments([FromQuery] string period = "month")
+        {
+            try
+            {
+                DateTime startDate;
+                DateTime endDate;
+
+                if (period.ToLower() == "day")
+                {
+                    startDate = DateTime.Today;
+                    endDate = DateTime.Today.AddDays(1);
+                }
+                else if (period.ToLower() == "week")
+                {
+                    startDate = DateTime.Now.StartOfWeek(DayOfWeek.Monday); // Using the StartOfWeek extension method
+                    endDate = startDate.AddDays(7); // End of the week
+                }
+                else
+                {
+                    // Default is month
+                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    endDate = startDate.AddMonths(1).AddDays(-1);
+                }
+
+                var totalRevenue = await _context.Appointments
+                    .Where(a => a.Status.ToLower() == "përfunduar" && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                    .SumAsync(a => a.Service.Price);
+
+                return Ok(new { totalRevenue });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calculating total revenue: {ex.Message}");
+                return StatusCode(500, "An error occurred while calculating the total revenue.");
+            }
+        }
+
+        [HttpGet("total-sales")]
+        public async Task<IActionResult> GetTotalSalesForCompletedAppointments([FromQuery] string period = "month")
+        {
+            try
+            {
+                DateTime startDate;
+                DateTime endDate;
+
+                if (period.ToLower() == "day")
+                {
+                    startDate = DateTime.Today;
+                    endDate = DateTime.Today.AddDays(1);
+                }
+                else if (period.ToLower() == "week")
+                {
+                    startDate = DateTime.Now.StartOfWeek(DayOfWeek.Monday); // Using the StartOfWeek extension method
+                    endDate = startDate.AddDays(7); // End of the week
+                }
+                else
+                {
+                    // Default is month
+                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    endDate = startDate.AddMonths(1).AddDays(-1);
+                }
+
+                var totalSales = await _context.Appointments
+                    .Where(a => a.Status.ToLower() == "përfunduar" && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                    .CountAsync();
+
+                return Ok(new { totalSales });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calculating total sales: {ex.Message}");
+                return StatusCode(500, "An error occurred while calculating the total sales.");
+            }
+        }
+
+
+
 
 
         // Appointmens for
@@ -359,8 +405,116 @@ public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentD
 
             return Ok(appointments);
         }
+        [HttpGet("daily-summary")]
+        public async Task<IActionResult> GetDailySummary()
+        {
+            try
+            {
+                var dailySummary = await _context.Appointments
+                    .Include(a => a.User) // Include staff
+                    .Include(a => a.Service) // Include service
+                    .GroupBy(a => a.AppointmentDate.Date)
+                    .Select(group => new
+                    {
+                        Date = group.Key,
+                        Appointments = group.Select(a => new
+                        {
+                            a.AppointmentID,
+                            a.AppointmentDate,
+                            a.Status,
+                            a.Notes,
+                            StaffName = a.User != null ? $"{a.User.FirstName} {a.User.LastName}" : "No Staff",
+                            ServiceName = a.Service != null ? a.Service.ServiceName : "No Service",
+                            ServicePrice = a.Service != null ? a.Service.Price : 0,
+                            Client = a.Client != null ? new
+                            {
+                                a.Client.FirstName,
+                                a.Client.LastName
+                            } : null
+                        }).ToList(),
+                        TotalPrice = group.Where(a => a.Status.ToLower() == "përfunduar")
+                                          .Sum(a => a.Service.Price)
+                    })
+                    .OrderBy(x => x.Date)
+                    .ToListAsync();
+
+                return Ok(dailySummary);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching daily summary: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching daily summary.");
+            }
+        }
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetDailySchedule([FromQuery] DateTime date)
+        {
+            try
+            {
+                var appointments = await _context.Appointments
+                    .Include(a => a.User) // Include Staff
+                    .Include(a => a.Service) // Include Service
+                    .Include(a => a.Client) // Include Client
+                    .Where(a => a.AppointmentDate.Date == date.Date) // Compare date part only
+                    .Select(a => new
+                    {
+                        a.AppointmentID,
+                        AppointmentDate = a.AppointmentDate,
+                        a.Status,
+                        ServiceName = a.Service != null ? a.Service.ServiceName : "No Service",
+                        ClientName = a.Client != null ? $"{a.Client.FirstName} {a.Client.LastName}" : "No Client",
+                        StaffName = a.User != null ? $"{a.User.FirstName} {a.User.LastName}" : "No Staff",
+                        Price = a.Service != null ? a.Service.Price : 0
+                    })
+                    .OrderBy(a => a.AppointmentDate)
+                    .ToListAsync();
+
+                return Ok(new
+                {
+                    Appointments = appointments,
+                    TimeSlots = GenerateTimeSlots() // Send time slots from the backend
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching daily schedule: {ex.Message}");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        private List<string> GenerateTimeSlots()
+        {
+            var timeSlots = new List<string>();
+            var startTime = new TimeSpan(9, 0, 0);
+            var endTime = new TimeSpan(18, 0, 0);
+
+            while (startTime <= endTime)
+            {
+                timeSlots.Add(startTime.ToString(@"hh\:mm"));
+                startTime = startTime.Add(new TimeSpan(0, 30, 0)); // Add 30 minutes
+            }
+
+            return timeSlots;
+        }
+
+
 
 
     }
+
+    public static class DateTimeExtensions
+    {
+        public static DateTime StartOfWeek(this DateTime dateTime, DayOfWeek firstDayOfWeek)
+        {
+            var diff = dateTime.DayOfWeek - firstDayOfWeek;
+            if (diff < 0)
+            {
+                diff += 7;
+            }
+            return dateTime.AddDays(-diff).Date;
+        }
+    }
+
+
 
 }

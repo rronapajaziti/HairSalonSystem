@@ -5,6 +5,15 @@ import { MdOutlineDelete } from 'react-icons/md';
 
 const Services = () => {
   const [serviceList, setServiceList] = useState<any[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [newService, setNewService] = useState({
+    id: null,
+    serviceName: '',
+    description: '',
+    price: '',
+    duration: '',
+    staffEarningPercentage: '',
+  });
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
     id: null,
@@ -32,20 +41,14 @@ const Services = () => {
     }
   };
 
-  const handleEdit = (service: any) => {
-    if (editingRowId === service.id) {
-      setEditingRowId(null);
-    } else {
-      setEditingRowId(service.id);
-      setEditFormData({
-        id: service.id,
-        serviceName: service.serviceName,
-        description: service.description,
-        price: service.price,
-        duration: service.duration,
-        staffEarningPercentage: service.staffEarningPercentage,
-      });
-    }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setNewService((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleEditInputChange = (
@@ -58,8 +61,32 @@ const Services = () => {
     }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        'https://localhost:7158/api/Service',
+        newService,
+      );
+      setServiceList([...serviceList, response.data]);
+      setShowForm(false);
+      setNewService({
+        id: null,
+        serviceName: '',
+        description: '',
+        price: '',
+        duration: '',
+        staffEarningPercentage: '',
+      });
+    } catch (error) {
+      console.error('Error adding service:', error);
+    }
+  };
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await axios.put(
         `https://localhost:7158/api/Service/${editFormData.id}`,
@@ -87,11 +114,106 @@ const Services = () => {
     }
   };
 
+  const handleEdit = (service: any) => {
+    if (editingRowId === service.id) {
+      setEditingRowId(null);
+    } else {
+      setEditingRowId(service.id);
+      setEditFormData(service);
+    }
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <h1 className="text-xl font-semibold text-blue-900 dark:text-white">
-        Shërbimet
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
+          Shërbimet
+        </h1>
+        <button
+          onClick={() => {
+            setShowForm(!showForm);
+            setNewService({
+              id: null,
+              serviceName: '',
+              description: '',
+              price: '',
+              duration: '',
+              staffEarningPercentage: '',
+            });
+          }}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+        >
+          {showForm ? 'X' : 'Shto Shërbimin'}
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="mt-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium">Shërbimi</label>
+              <input
+                type="text"
+                name="serviceName"
+                value={newService.serviceName}
+                onChange={handleInputChange}
+                className="px-4 py-2 border rounded-md w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Përshkrimi</label>
+              <textarea
+                name="description"
+                value={newService.description}
+                onChange={handleInputChange}
+                className="px-4 py-2 border rounded-md w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Çmimi</label>
+              <input
+                type="number"
+                name="price"
+                value={newService.price}
+                onChange={handleInputChange}
+                className="px-4 py-2 border rounded-md w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Kohëzgjatja</label>
+              <input
+                type="number"
+                name="duration"
+                value={newService.duration}
+                onChange={handleInputChange}
+                className="px-4 py-2 border rounded-md w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Përqindja</label>
+              <input
+                type="number"
+                name="staffEarningPercentage"
+                value={newService.staffEarningPercentage}
+                onChange={handleInputChange}
+                className="px-4 py-2 border rounded-md w-full"
+                required
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+          >
+            Shto
+          </button>
+        </form>
+      )}
+
       <div className="max-w-full overflow-x-auto mt-6">
         <table className="w-full table-auto dark:border-strokedark dark:bg-boxdark">
           <thead>

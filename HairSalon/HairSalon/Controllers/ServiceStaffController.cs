@@ -13,6 +13,7 @@ public class ServiceStaffController : ControllerBase
         _context = context;
     }
 
+    // Fetch all service staff
     [HttpGet]
     public async Task<IActionResult> GetAllServiceStaff()
     {
@@ -42,41 +43,78 @@ public class ServiceStaffController : ControllerBase
         }
     }
 
-
-
-    [HttpPost]
-    public async Task<IActionResult> CreateServiceStaff([FromBody] ServiceStaff serviceStaff)
+    // Create or update ServiceStaff based on Appointment changes
+    [HttpPost("sync-from-appointment")]
+    public async Task<IActionResult> SyncServiceStaffFromAppointment([FromBody] Appointment appointment)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        // Fetch the service to calculate the price and earnings
-        var service = await _context.Services.FindAsync(serviceStaff.ServiceID);
-        if (service == null)
+        try
         {
-            return BadRequest("Invalid Service ID.");
+            var service = await _context.Services.FindAsync(appointment.ServiceID);
+            if (service == null)
+                return BadRequest("Invalid Service ID.");
+
+            // Check if the appointment is completed
+            if (appointment.Status?.ToLower() == "përfunduar")
+            {
+                // Check if a ServiceStaff record already exists for this appointment
+                var existingServiceStaff = await _context.ServiceStaff
+                    .FirstOrDefaultAsync(ss =>
+                        ss.ServiceID == appointment.ServiceID &&
+                        ss.StaffID == appointment.UserID &&
+                        ss.DateCompleted == appointment.AppointmentDate);
+
+                if (existingServiceStaff == null)
+                {
+                    // Create a new ServiceStaff record
+                    var newServiceStaff = new ServiceStaff
+                    {
+                        ServiceID = appointment.ServiceID,
+                        StaffID = appointment.UserID,
+                        DateCompleted = appointment.AppointmentDate,
+                        Price = service.Price,
+                        StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
+                    };
+
+                    _context.ServiceStaff.Add(newServiceStaff);
+                }
+                else
+                {
+                    // Update existing ServiceStaff record
+                    existingServiceStaff.DateCompleted = appointment.AppointmentDate;
+                    existingServiceStaff.Price = service.Price;
+                    existingServiceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
+                    _context.ServiceStaff.Update(existingServiceStaff);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok("ServiceStaff synced successfully.");
         }
-
-        // Calculate earnings based on the service price and percentage
-        serviceStaff.Price = service.Price;
-        serviceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
-
-        _context.ServiceStaff.Add(serviceStaff);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetAllServiceStaff), new { id = serviceStaff.ServiceStaffID }, serviceStaff);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error syncing ServiceStaff: {ex.Message}");
+            return StatusCode(500, "An error occurred while syncing ServiceStaff data.");
+        }
     }
-    [HttpGet("monthly-earnings")]
-    public async Task<IActionResult> GetMonthlyEarnings()
+
+    // Get daily earnings
+    [HttpGet("daily-earnings")]
+    public async Task<IActionResult> GetDailyEarnings()
     {
         try
         {
-            var monthlyEarnings = await _context.ServiceStaff
+            var dailyEarnings = await _context.ServiceStaff
                 .Include(ss => ss.User)
                 .GroupBy(ss => new
                 {
                     ss.StaffID,
                     ss.User.FirstName,
                     ss.User.LastName,
+                    Day = ss.DateCompleted.Day,
                     Month = ss.DateCompleted.Month,
                     Year = ss.DateCompleted.Year
                 })
@@ -84,6 +122,7 @@ public class ServiceStaffController : ControllerBase
                 {
                     StaffID = group.Key.StaffID,
                     StaffName = $"{group.Key.FirstName} {group.Key.LastName}",
+                    Day = group.Key.Day,
                     Month = group.Key.Month,
                     Year = group.Key.Year,
                     TotalEarnings = group.Sum(ss => ss.StaffEarning)
@@ -91,16 +130,19 @@ public class ServiceStaffController : ControllerBase
                 .OrderBy(x => x.StaffID)
                 .ThenBy(x => x.Year)
                 .ThenBy(x => x.Month)
+                .ThenBy(x => x.Day)
                 .ToListAsync();
 
-            return Ok(monthlyEarnings);
+            return Ok(dailyEarnings);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error calculating monthly earnings: {ex.Message}");
-            return StatusCode(500, "An error occurred while calculating monthly earnings.");
+            Console.WriteLine($"Error calculating daily earnings: {ex.Message}");
+            return StatusCode(500, "An error occurred while calculating daily earnings.");
         }
     }
+
+    // Delete ServiceStaff record
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteServiceStaff(int id)
     {
@@ -108,14 +150,12 @@ public class ServiceStaffController : ControllerBase
         {
             var serviceStaff = await _context.ServiceStaff.FindAsync(id);
             if (serviceStaff == null)
-            {
                 return NotFound("ServiceStaff record not found.");
-            }
 
             _context.ServiceStaff.Remove(serviceStaff);
             await _context.SaveChangesAsync();
 
-            return NoContent(); 
+            return NoContent();
         }
         catch (Exception ex)
         {
@@ -123,6 +163,4 @@ public class ServiceStaffController : ControllerBase
             return StatusCode(500, "An error occurred while deleting the ServiceStaff record.");
         }
     }
-
-
 }

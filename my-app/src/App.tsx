@@ -18,6 +18,7 @@ import DefaultLayout from './layout/DefaultLayout';
 import Staff from './pages/Staff';
 import Appointments from './pages/Appointments';
 import ServiceStaff from './pages/ServiceStaff';
+import DailyAppointments from './pages/DailyAppointment';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,12 +60,22 @@ function App() {
             </>
           }
         />
+
         <Route
           path="/calendar"
           element={
             <>
               <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Calendar />
+            </>
+          }
+        />
+        <Route
+          path="/terminet-Ditore"
+          element={
+            <>
+              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DailyAppointments />
             </>
           }
         />

@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MdOutlineDelete } from 'react-icons/md';
 
 const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
   const [monthlyEarnings, setMonthlyEarnings] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [newServiceStaff, setNewServiceStaff] = useState({
-    serviceID: '',
-    staffID: '',
-    dateCompleted: '',
-  });
-  const [users, setUsers] = useState([]);
-  const [services, setServices] = useState([]);
+  const [dailyEarnings, setDailyEarnings] = useState<any[]>([]);
 
   useEffect(() => {
     fetchServiceStaff();
-    fetchUsers();
-    fetchServices();
     fetchMonthlyEarnings();
+    fetchDailyEarnings();
+
+    const handleDataUpdate = () => {
+      console.log('Data update detected, refreshing ServiceStaff data...');
+      fetchServiceStaff();
+      fetchDailyEarnings();
+      fetchMonthlyEarnings();
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
   }, []);
 
   const fetchServiceStaff = async () => {
@@ -26,13 +30,8 @@ const ServiceStaff = () => {
       const response = await axios.get(
         'https://localhost:7158/api/ServiceStaff',
       );
-      const data = response.data.map((item) => ({
-        ...item,
-        servicePrice: item.servicePrice || 0,
-        percentage: item.percentage || 0,
-        staffEarning: item.staffEarning || 0,
-      }));
-      setServiceStaffList(data);
+      console.log('Fetched ServiceStaff:', response.data); // Debugging log
+      setServiceStaffList(response.data);
     } catch (error) {
       console.error('Error fetching service staff data:', error);
     }
@@ -43,85 +42,21 @@ const ServiceStaff = () => {
       const response = await axios.get(
         'https://localhost:7158/api/ServiceStaff/monthly-earnings',
       );
-      const data = response.data.map((item) => ({
-        ...item,
-        TotalEarnings: item.TotalEarnings || 0,
-      }));
-      setMonthlyEarnings(data);
+      setMonthlyEarnings(response.data);
     } catch (error) {
       console.error('Error fetching monthly earnings:', error);
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchDailyEarnings = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/ServiceStaff/Users',
+        'https://localhost:7158/api/ServiceStaff/daily-earnings',
       );
-      const allUsers = response.data;
-      const staffAndOwners = allUsers.filter(
-        (user: any) => user.roleID === 2 || user.roleID === 3,
-      );
-      setUsers(staffAndOwners);
+      setDailyEarnings(response.data);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching daily earnings:', error);
     }
-  };
-
-  const fetchServices = async () => {
-    try {
-      const response = await axios.get('https://localhost:7158/api/Service');
-      setServices(response.data);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setNewServiceStaff((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.post('https://localhost:7158/api/ServiceStaff', {
-        serviceID: newServiceStaff.serviceID,
-        staffID: newServiceStaff.staffID,
-        dateCompleted: newServiceStaff.dateCompleted,
-      });
-      fetchServiceStaff(); // Refresh data
-      resetForm();
-    } catch (error) {
-      console.error('Error creating service staff:', error);
-    }
-  };
-
-  const handleDelete = async (serviceStaffID: number) => {
-    try {
-      await axios.delete(
-        `https://localhost:7158/api/ServiceStaff/${serviceStaffID}`,
-      );
-      setServiceStaffList((prev) =>
-        prev.filter((item) => item.serviceStaffID !== serviceStaffID),
-      );
-    } catch (error) {
-      console.error('Error deleting service staff:', error);
-    }
-  };
-
-  const resetForm = () => {
-    setNewServiceStaff({
-      serviceID: '',
-      staffID: '',
-      dateCompleted: '',
-    });
-    setShowForm(false);
   };
 
   return (
@@ -129,61 +64,52 @@ const ServiceStaff = () => {
       <h1 className="text-xl font-semibold text-blue-900 dark:text-white">
         Pagesa sipas Shërbimit
       </h1>
+
+      {/* Service Staff Table */}
       <div className="overflow-x-auto mt-6">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-200">
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              <th className="py-2 px-4 text-black dark:text-white">
                 Emri i Punëtores
               </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Shërbimi
-              </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              <th className="py-2 px-4 text-black dark:text-white">Shërbimi</th>
+              <th className="py-2 px-4 text-black dark:text-white">
                 Çmimi i Shërbimit
               </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              <th className="py-2 px-4 text-black dark:text-white">
                 Përqindja
               </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              <th className="py-2 px-4 text-black dark:text-white">
                 Pagesa për shërbim
               </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              <th className="py-2 px-4 text-black dark:text-white">
                 Data e përfundimit
-              </th>
-              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Fshij
               </th>
             </tr>
           </thead>
           <tbody>
             {serviceStaffList.map((item) => (
               <tr key={item.serviceStaffID}>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  {item.staffName || 'Unknown Staff'}
+                <td className="py-2 px-4 text-black dark:text-white">
+                  {item.staffName}
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  {item.serviceName || 'Unknown Service'}
+                <td className="py-2 px-4 text-black dark:text-white">
+                  {item.serviceName}
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                <td className="py-2 px-4 text-black dark:text-white">
                   {item.servicePrice.toFixed(2)}€
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                <td className="py-2 px-4 text-black dark:text-white">
                   {item.percentage.toFixed(2)}%
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                <td className="py-2 px-4 text-black dark:text-white">
                   {item.staffEarning.toFixed(2)}€
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  {item.dateCompleted || 'N/A'}
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  <button
-                    onClick={() => handleDelete(item.serviceStaffID)}
-                    className="px-2 py-1 bg-red-500 text-white rounded"
-                  >
-                    <MdOutlineDelete />
-                  </button>
+                <td className="py-2 px-4 text-black dark:text-white">
+                  {item.dateCompleted
+                    ? new Date(item.dateCompleted).toLocaleString()
+                    : 'N/A'}
                 </td>
               </tr>
             ))}
@@ -191,47 +117,45 @@ const ServiceStaff = () => {
         </table>
       </div>
 
+      {/* Daily Earnings Table */}
       <div className="mt-10">
-        <h2 className="text-xl font-semibold text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
-          Pagesat Mujore
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-white">
+          Pagesat Ditore
         </h2>
         <div className="overflow-x-auto mt-6">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-200">
-                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                <th className="py-2 px-4 text-black dark:text-white">
                   Emri i Punëtores
                 </th>
-                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Muaji
-                </th>
-                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Viti
-                </th>
-                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  Totali
-                </th>
+                <th className="py-2 px-4 text-black dark:text-white">Dita</th>
+                <th className="py-2 px-4 text-black dark:text-white">Muaji</th>
+                <th className="py-2 px-4 text-black dark:text-white">Viti</th>
+                <th className="py-2 px-4 text-black dark:text-white">Totali</th>
               </tr>
             </thead>
             <tbody>
-              {monthlyEarnings.map((item) => (
-                <tr key={`${item.staffID}-${item.year}-${item.month}`}>
-                  <td className="py-2 px-4  text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                    {item.staffName || 'Unknown Staff'}
+              {dailyEarnings.map((item) => (
+                <tr
+                  key={`${item.staffID}-${item.year}-${item.month}-${item.day}`}
+                >
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.staffName}
                   </td>
-                  <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.day}
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
                     {new Date(item.year, item.month - 1).toLocaleString('sq', {
                       month: 'long',
                     })}
                   </td>
-                  <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  <td className="py-2 px-4 text-black dark:text-white">
                     {item.year}
                   </td>
-                  <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                    {item.totalEarnings
-                      ? item.totalEarnings.toFixed(2)
-                      : '0.00'}
-                    €
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.totalEarnings.toFixed(2)}€
                   </td>
                 </tr>
               ))}
