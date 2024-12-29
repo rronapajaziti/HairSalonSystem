@@ -7,8 +7,7 @@ const DailyAppointments = () => {
     new Date().toISOString().split('T')[0],
   );
   const [services, setServices] = useState([]);
-
-  const timeSlots = [
+  const [timeSlots, setTimeSlots] = useState([
     '09:00',
     '09:30',
     '10:00',
@@ -29,7 +28,7 @@ const DailyAppointments = () => {
     '17:30',
     '18:00',
     '18:30',
-  ];
+  ]);
 
   useEffect(() => {
     fetchAppointments();
@@ -41,9 +40,27 @@ const DailyAppointments = () => {
       const response = await axios.get(
         `https://localhost:7158/api/Appointment/schedule?date=${selectedDate}`,
       );
-      setAppointments(response.data.appointments || []);
+      const fetchedAppointments = response.data.appointments || [];
+      setAppointments(fetchedAppointments);
+
+      // Update timeSlots with missing times
+      const newTimes = fetchedAppointments.map((appt) =>
+        new Date(appt.appointmentDate)
+          .toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          })
+          .slice(0, 5),
+      );
+
+      setTimeSlots((prevTimeSlots) => {
+        const allTimes = [...prevTimeSlots, ...newTimes];
+        const uniqueTimes = Array.from(new Set(allTimes)); // Remove duplicates
+        return uniqueTimes.sort(); // Ensure times are sorted
+      });
     } catch (error) {
-      console.error('Gabim gjatë marrjes së termineve:', error);
+      console.error('Error fetching appointments:', error);
     }
   };
 
@@ -52,7 +69,7 @@ const DailyAppointments = () => {
       const response = await axios.get('https://localhost:7158/api/Service');
       setServices(response.data || []);
     } catch (error) {
-      console.error('Gabim gjatë marrjes së shërbimeve:', error);
+      console.error('Error fetching services:', error);
     }
   };
 
@@ -65,31 +82,29 @@ const DailyAppointments = () => {
           hour12: false,
         })
         .slice(0, 5);
+
       return appointmentTime === timeSlot && appt.serviceName === serviceName;
     });
   };
 
-  const calculateServiceRemaining = (serviceName) => {
-    const service = services.find((s) => s.serviceName === serviceName);
-    if (!service) return 0;
+  const calculateRemainingRevenue = (service) => {
+    const serviceAppointments = appointments.filter(
+      (appt) =>
+        appt.serviceName === service.serviceName &&
+        appt.status.toLowerCase() === 'përfunduar',
+    );
 
-    const percentage = service.staffPercentage || 0;
-
-    return appointments
-      .filter(
-        (appt) =>
-          appt.serviceName === serviceName &&
-          appt.status.toLowerCase() === 'përfunduar',
-      )
-      .reduce((total, appt) => {
-        const priceAfterStaffCut = appt.price * (1 - percentage / 100);
-        return total + priceAfterStaffCut;
-      }, 0);
+    return serviceAppointments.reduce((total, appt) => {
+      const percentage = parseFloat(service.staffEarningPercentage) || 0;
+      const price = parseFloat(appt.price) || 0;
+      const priceAfterStaffCut = price * (1 - percentage / 100);
+      return total + priceAfterStaffCut;
+    }, 0);
   };
 
   const calculateTotalForDay = () => {
     return services.reduce((total, service) => {
-      return total + calculateServiceRemaining(service.serviceName);
+      return total + calculateRemainingRevenue(service);
     }, 0);
   };
 
@@ -166,7 +181,7 @@ const DailyAppointments = () => {
                   key={index}
                   className="border border-gray-300 px-4 py-2 font-medium text-green-600"
                 >
-                  {calculateServiceRemaining(service.serviceName).toFixed(2)}€
+                  {calculateRemainingRevenue(service).toFixed(2)}€
                 </td>
               ))}
             </tr>
@@ -177,7 +192,7 @@ const DailyAppointments = () => {
                 colSpan={services.length + 1}
                 className="border border-gray-300 px-4 py-2 font-bold text-right text-blue-700"
               >
-                Totali i Ditës: {calculateTotalForDay().toFixed(2)}€
+                Fitimi i Ditës: {calculateTotalForDay().toFixed(2)}€
               </td>
             </tr>
           </tfoot>
