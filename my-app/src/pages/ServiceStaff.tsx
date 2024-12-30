@@ -3,19 +3,19 @@ import axios from 'axios';
 
 const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
-  const [monthlyEarnings, setMonthlyEarnings] = useState<any[]>([]);
   const [dailyEarnings, setDailyEarnings] = useState<any[]>([]);
+  const [filterDate, setFilterDate] = useState<string>(
+    new Date().toISOString().split('T')[0],
+  );
 
   useEffect(() => {
     fetchServiceStaff();
-    fetchMonthlyEarnings();
     fetchDailyEarnings();
 
     const handleDataUpdate = () => {
       console.log('Data update detected, refreshing ServiceStaff data...');
       fetchServiceStaff();
       fetchDailyEarnings();
-      fetchMonthlyEarnings();
     };
 
     window.addEventListener('dataUpdated', handleDataUpdate);
@@ -30,21 +30,9 @@ const ServiceStaff = () => {
       const response = await axios.get(
         'https://localhost:7158/api/ServiceStaff',
       );
-      console.log('Fetched ServiceStaff:', response.data); // Debugging log
       setServiceStaffList(response.data);
     } catch (error) {
       console.error('Error fetching service staff data:', error);
-    }
-  };
-
-  const fetchMonthlyEarnings = async () => {
-    try {
-      const response = await axios.get(
-        'https://localhost:7158/api/ServiceStaff/monthly-earnings',
-      );
-      setMonthlyEarnings(response.data);
-    } catch (error) {
-      console.error('Error fetching monthly earnings:', error);
     }
   };
 
@@ -59,31 +47,40 @@ const ServiceStaff = () => {
     }
   };
 
+  const filteredDailyEarnings = dailyEarnings.filter((item) => {
+    const itemDate = new Date(Date.UTC(item.year, item.month - 1, item.day))
+      .toISOString()
+      .split('T')[0];
+    return itemDate === filterDate;
+  });
+
   return (
     <div className="rounded-sm border border-stroke text-black bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 dark:text-white dark:border-strokedark dark:bg-boxdark">
-      <h1 className="text-xl font-semibold text-blue-900 dark:text-white">
+      <h1 className="text-xl font-semibold text-blue-900 dark:text-white ">
         Pagesa sipas Shërbimit
       </h1>
 
       {/* Service Staff Table */}
       <div className="overflow-x-auto mt-6">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
           <thead>
             <tr className="bg-gray-200">
-              <th className="py-2 px-4 text-black dark:text-white">
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Emri i Punëtores
               </th>
-              <th className="py-2 px-4 text-black dark:text-white">Shërbimi</th>
-              <th className="py-2 px-4 text-black dark:text-white">
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shërbimi
+              </th>
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Çmimi i Shërbimit
               </th>
-              <th className="py-2 px-4 text-black dark:text-white">
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Përqindja
               </th>
-              <th className="py-2 px-4 text-black dark:text-white">
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Pagesa për shërbim
               </th>
-              <th className="py-2 px-4 text-black dark:text-white">
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Data e përfundimit
               </th>
             </tr>
@@ -119,24 +116,43 @@ const ServiceStaff = () => {
 
       {/* Daily Earnings Table */}
       <div className="mt-10">
-        <h2 className="text-xl font-semibold text-blue-900 dark:text-white">
+        <h2 className="text-xl font-semibold text-blue-900 dark:text-white ">
           Pagesat Ditore
         </h2>
+        <div className="flex items-center mb-4">
+          <label className="mr-4 text-black dark:text-white">
+            Filtro sipas datës:
+          </label>
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="px-4 py-2 border rounded-md text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+          />
+        </div>
         <div className="overflow-x-auto mt-6">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
             <thead>
               <tr className="bg-gray-200">
-                <th className="py-2 px-4 text-black dark:text-white">
+                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                   Emri i Punëtores
                 </th>
-                <th className="py-2 px-4 text-black dark:text-white">Dita</th>
-                <th className="py-2 px-4 text-black dark:text-white">Muaji</th>
-                <th className="py-2 px-4 text-black dark:text-white">Viti</th>
-                <th className="py-2 px-4 text-black dark:text-white">Totali</th>
+                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Dita
+                </th>
+                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Muaji
+                </th>
+                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Viti
+                </th>
+                <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Totali
+                </th>
               </tr>
             </thead>
             <tbody>
-              {dailyEarnings.map((item) => (
+              {filteredDailyEarnings.map((item) => (
                 <tr
                   key={`${item.staffID}-${item.year}-${item.month}-${item.day}`}
                 >

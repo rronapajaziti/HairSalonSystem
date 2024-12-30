@@ -19,6 +19,8 @@ import Staff from './pages/Staff';
 import Appointments from './pages/Appointments';
 import ServiceStaff from './pages/ServiceStaff';
 import DailyAppointments from './pages/DailyAppointment';
+import WhatsAppForm from './pages/WhatsAppForm';
+import DailyExpenses from './pages/DailyExpensess';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -85,6 +87,24 @@ function App() {
             <>
               <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/dailyExpensess"
+          element={
+            <>
+              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DailyExpenses />
+            </>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <>
+              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <WhatsAppForm />
             </>
           }
         />

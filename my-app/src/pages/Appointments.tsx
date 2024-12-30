@@ -189,81 +189,93 @@ const Appointments = () => {
   );
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold text-blue-900">Appointments</h1>
+        <h1 className="text-xl font-semibold text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+          Terminet
+        </h1>
         <div className="flex items-center">
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-4 py-2 border rounded-md mr-4"
+            className="px-4 py-2 border rounded-md mr-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
           />
           <button
             onClick={() => setShowForm(!showForm)}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
           >
-            {showForm ? 'Close Form' : 'Add Appointment'}
+            {showForm ? 'X' : 'Shto Terminin'}
           </button>
         </div>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 ">
             <div>
-              <label className="block font-medium">First Name</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Emri i Klientit
+              </label>
               <input
                 type="text"
                 name="firstName"
                 value={newAppointment.firstName}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium">Last Name</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Mbiemri i Klientit
+              </label>
               <input
                 type="text"
                 name="lastName"
                 value={newAppointment.lastName}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium">Phone Number</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Numri i Klientit
+              </label>
               <input
                 type="text"
                 name="phoneNumber"
                 value={newAppointment.phoneNumber}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium">Email</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Email i Klientit
+              </label>
               <input
                 type="email"
                 name="email"
                 value={newAppointment.email}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
               />
             </div>
             <div>
-              <label className="block font-medium">Service</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shërbimi
+              </label>
               <select
                 name="serviceID"
                 value={newAppointment.serviceID}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               >
-                <option value="">Select Service</option>
+                <option value="">Zgjedh Shërbimin</option>
                 {servicesList.map((service) => (
                   <option key={service.serviceID} value={service.serviceID}>
                     {service.serviceName}
@@ -272,15 +284,17 @@ const Appointments = () => {
               </select>
             </div>
             <div>
-              <label className="block font-medium">Staff</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Stafi
+              </label>
               <select
                 name="userID"
                 value={newAppointment.userID}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               >
-                <option value="">Select Staff</option>
+                <option value="">Zgjedh Stafin</option>
                 {staffList.map((staff) => (
                   <option key={staff.userID} value={staff.userID}>
                     {staff.firstName} {staff.lastName}
@@ -289,23 +303,27 @@ const Appointments = () => {
               </select>
             </div>
             <div>
-              <label className="block font-medium">Appointment Date</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Data e Terminit
+              </label>
               <input
                 type="datetime-local"
                 name="appointmentDate"
                 value={newAppointment.appointmentDate}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium">Status</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Statusi i Terminit
+              </label>
               <select
                 name="status"
                 value={newAppointment.status}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               >
                 <option value="pa përfunduar">Pa Përfunduar</option>
@@ -313,12 +331,14 @@ const Appointments = () => {
               </select>
             </div>
             <div>
-              <label className="block font-medium">Notes</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shënime
+              </label>
               <textarea
                 name="notes"
                 value={newAppointment.notes}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
               />
             </div>
           </div>
@@ -326,41 +346,56 @@ const Appointments = () => {
             type="submit"
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
           >
-            Save Appointment
+            Shto Terminin
           </button>
         </form>
       )}
 
-      <div className="max-w-full overflow-x-auto mt-6">
-        <table className="w-full table-auto">
-          <thead className="bg-gray-200">
+      <div className="max-w-full overflow-x-auto mt-6 ">
+        <table className="w-full table-auto text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+          <thead className="bg-gray-200 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
             <tr>
-              <th className="py-3 px-4">Client</th>
-              <th className="py-3 px-4">Phone Number</th>
-              <th className="py-3 px-4">Email</th>
-              <th className="py-3 px-4">Service</th>
-              <th className="py-3 px-4">Staff</th>
-              <th className="py-3 px-4">Date</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">Notes</th>
-              <th className="py-3 px-4">Actions</th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Klienti
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Numri i Klientit
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Email i Klientit
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shërbimi
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Stafi
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Data
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Statusi
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shënimet
+              </th>
+              <th className="py-3 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Veptimet
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredAppointments.map((appt) => (
               <React.Fragment key={appt.appointmentID}>
                 <tr>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 ">
                     {appt.client?.firstName} {appt.client?.lastName}
                   </td>
                   <td className="py-3 px-4">{appt.client?.phoneNumber}</td>
                   <td className="py-3 px-4">{appt.client?.email}</td>
                   <td className="py-3 px-4">{appt.serviceName}</td>
-                  <td className="py-3 px-4">
-                    {appt.staffName
-                      ? `${appt.staffName.firstName} ${appt.staffName.lastName}`
-                      : 'No Staff'}
-                  </td>
+                  <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
+
                   <td className="py-3 px-4">
                     {new Date(appt.appointmentDate).toLocaleString()}
                   </td>
@@ -383,133 +418,138 @@ const Appointments = () => {
                 </tr>
                 {editingRowId === appt.appointmentID && (
                   <tr>
-                    <td colSpan={9} className="py-4 px-4 bg-gray-100">
+                    <td
+                      colSpan={9}
+                      className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                    >
                       <form onSubmit={handleEditSubmit}>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                           {/* First Name */}
                           <div>
-                            <label className="block font-medium">
-                              First Name
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Emri i Klientit
                             </label>
                             <input
                               type="text"
                               name="firstName"
                               value={editFormData.firstName}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
 
                           {/* Last Name */}
                           <div>
-                            <label className="block font-medium">
-                              Last Name
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Mbiemri i Klientit
                             </label>
                             <input
                               type="text"
                               name="lastName"
                               value={editFormData.lastName}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
 
                           {/* Phone Number */}
                           <div>
-                            <label className="block font-medium">
-                              Phone Number
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Numri i Klientit
                             </label>
                             <input
                               type="text"
                               name="phoneNumber"
                               value={editFormData.phoneNumber}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
 
                           {/* Email */}
                           <div>
-                            <label className="block font-medium">Email</label>
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Email i Klientit
+                            </label>
                             <input
                               type="email"
                               name="email"
                               value={editFormData.email}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                             />
                           </div>
 
                           {/* Service */}
                           <div>
-                            <label className="block font-medium">Service</label>
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Shërbimi
+                            </label>
                             <select
                               name="serviceID"
-                              value={editFormData.serviceID || ''} // Bind the selected value
+                              value={editFormData.serviceID || ''}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             >
-                              <option value="">Select Service</option>
+                              <option value="">Zhgjedh Shërbimin</option>
                               {servicesList.map((service) => (
                                 <option
                                   key={service.serviceID}
-                                  value={service.serviceID} // ID of the service
+                                  value={service.serviceID}
                                 >
-                                  {service.serviceName} {/* Name displayed */}
+                                  {service.serviceName}
                                 </option>
                               ))}
                             </select>
                           </div>
 
                           <div>
-                            <label className="block font-medium">Staff</label>
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Stafi
+                            </label>
                             <select
                               name="userID"
-                              value={editFormData.userID || ''} // Bind the selected value
+                              value={editFormData.userID || ''}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             >
-                              <option value="">Select Staff</option>
+                              <option value="">Zgjedh Stafin</option>
                               {staffList.map((staff) => (
-                                <option
-                                  key={staff.userID}
-                                  value={staff.userID} // ID of the staff member
-                                >
+                                <option key={staff.userID} value={staff.userID}>
                                   {staff.firstName} {staff.lastName}{' '}
-                                  {/* Name displayed */}
                                 </option>
                               ))}
                             </select>
                           </div>
-
-                          {/* Appointment Date */}
                           <div>
-                            <label className="block font-medium">
-                              Appointment Date
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Data e Terminit
                             </label>
                             <input
                               type="datetime-local"
                               name="appointmentDate"
                               value={editFormData.appointmentDate}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
 
                           {/* Status */}
                           <div>
-                            <label className="block font-medium">Status</label>
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Statusi
+                            </label>
                             <select
                               name="status"
                               value={editFormData.status}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             >
                               <option value="pa përfunduar">
@@ -521,12 +561,14 @@ const Appointments = () => {
 
                           {/* Notes */}
                           <div className="col-span-2">
-                            <label className="block font-medium">Notes</label>
+                            <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Shënimet
+                            </label>
                             <textarea
                               name="notes"
                               value={editFormData.notes}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                             />
                           </div>
                         </div>
@@ -536,7 +578,7 @@ const Appointments = () => {
                           type="submit"
                           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
                         >
-                          Save Changes
+                          Ruaj
                         </button>
                       </form>
                     </td>

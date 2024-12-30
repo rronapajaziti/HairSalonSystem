@@ -109,30 +109,32 @@ const DailyAppointments = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4 text-blue-700">
+    <div className="max-w-6xl mx-auto p-4 bg-white shadow-lg rounded-lg text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+      <h2 className="text-2xl font-semibold mb-4 text-blue-700  dark:text-white dark:border-strokedark dark:bg-boxdark">
         Orari Ditor për {new Date(selectedDate).toLocaleDateString('sq-AL')}
       </h2>
       <div className="flex items-center mb-4">
-        <label className="mr-2 font-medium text-gray-700">Zgjidh Datën:</label>
+        <label className="mr-2 font-medium text-gray-700  dark:text-white dark:border-strokedark dark:bg-boxdark">
+          Zgjidh Datën:
+        </label>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="border px-2 py-1 rounded shadow-sm"
+          className="border px-2 py-1 rounded shadow-sm text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
         />
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border border-gray-300">
+      <div className="overflow-x-auto text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+        <table className="min-w-full border-collapse border border-gray-300 dark:text-white dark:border-strokedark dark:bg-boxdark">
           <thead>
             <tr>
-              <th className="border border-gray-300 px-4 py-2 bg-gray-200 text-left">
+              <th className="border border-gray-300 px-4 py-2 bg-gray-200 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Ora
               </th>
               {services.map((service, index) => (
                 <th
                   key={index}
-                  className="border border-gray-300 px-4 py-2 bg-gray-200 text-left"
+                  className="border border-gray-300 px-4 py-2 bg-gray-200 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 >
                   {service.serviceName}
                 </th>
@@ -142,7 +144,7 @@ const DailyAppointments = () => {
           <tbody>
             {timeSlots.map((timeSlot, index) => (
               <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
+                <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700 dark:text-white">
                   {timeSlot}
                 </td>
                 {services.map((service, serviceIndex) => (
@@ -158,8 +160,8 @@ const DailyAppointments = () => {
                         key={apptIndex}
                         className={`text-sm p-1 rounded shadow-md mb-1 ${
                           appt.status === 'përfunduar'
-                            ? 'bg-red-200'
-                            : 'bg-blue-50'
+                            ? 'bg-red-400 dark:bg-red-500'
+                            : 'bg-blue-400 dark:bg-blue-700'
                         }`}
                       >
                         <span className="font-medium">
@@ -173,7 +175,7 @@ const DailyAppointments = () => {
               </tr>
             ))}
             <tr>
-              <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
+              <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700  dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Totali për Shërbim
               </td>
               {services.map((service, index) => (

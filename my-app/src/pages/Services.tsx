@@ -126,7 +126,7 @@ const Services = () => {
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900 ">
           Shërbimet
         </h1>
         <button
@@ -141,7 +141,7 @@ const Services = () => {
               staffEarningPercentage: '',
             });
           }}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md "
         >
           {showForm ? 'X' : 'Shto Shërbimin'}
         </button>
@@ -151,56 +151,66 @@ const Services = () => {
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium">Shërbimi</label>
+              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shërbimi
+              </label>
               <input
                 type="text"
                 name="serviceName"
                 value={newService.serviceName}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Përshkrimi</label>
+              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Përshkrimi
+              </label>
               <textarea
                 name="description"
                 value={newService.description}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Çmimi</label>
+              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Çmimi
+              </label>
               <input
                 type="number"
                 name="price"
                 value={newService.price}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Kohëzgjatja</label>
+              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Kohëzgjatja
+              </label>
               <input
                 type="number"
                 name="duration"
                 value={newService.duration}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Përqindja</label>
+              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Përqindja
+              </label>
               <input
                 type="number"
                 name="staffEarningPercentage"
                 value={newService.staffEarningPercentage}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
@@ -218,26 +228,46 @@ const Services = () => {
         <table className="w-full table-auto dark:border-strokedark dark:bg-boxdark">
           <thead>
             <tr className="bg-gray-200 text-left">
-              <th className="py-4 px-4">Shërbimi</th>
-              <th className="py-4 px-4">Përshkrimi</th>
-              <th className="py-4 px-4">Çmimi</th>
-              <th className="py-4 px-4">Kohëzgjatja</th>
-              <th className="py-4 px-4">Përqindja</th>
-              <th className="py-4 px-4">Veprimet</th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Shërbimi
+              </th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Përshkrimi
+              </th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Çmimi
+              </th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Kohëzgjatja
+              </th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Përqindja
+              </th>
+              <th className="py-4 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Veprimet
+              </th>
             </tr>
           </thead>
           <tbody>
             {serviceList.map((service) => (
               <React.Fragment key={service.id}>
                 <tr>
-                  <td className="py-4 px-4">{service.serviceName}</td>
-                  <td className="py-4 px-4">{service.description}</td>
-                  <td className="py-4 px-4">{service.price}€</td>
-                  <td className="py-4 px-4">{service.duration} min</td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-4 text-black dark:text-white">
+                    {service.serviceName}
+                  </td>
+                  <td className="py-4 px-4 text-black dark:text-white">
+                    {service.description}
+                  </td>
+                  <td className="py-4 px-4 text-black dark:text-white">
+                    {service.price}€
+                  </td>
+                  <td className="py-4 px-4 text-black dark:text-white">
+                    {service.duration} min
+                  </td>
+                  <td className="py-4 px-4 text-black dark:text-white">
                     {service.staffEarningPercentage}%
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-4 text-black dark:text-white">
                     <button
                       onClick={() => handleEdit(service)}
                       className="px-4 py-2 bg-blue-500 text-white rounded-md"
@@ -254,11 +284,14 @@ const Services = () => {
                 </tr>
                 {editingRowId === service.id && (
                   <tr>
-                    <td colSpan={6} className="py-4 px-4 bg-gray-100">
+                    <td
+                      colSpan={6}
+                      className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                    >
                       <form onSubmit={handleEditSubmit}>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                           <div>
-                            <label className="block text-sm font-medium">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Shërbimi
                             </label>
                             <input
@@ -266,24 +299,24 @@ const Services = () => {
                               name="serviceName"
                               value={editFormData.serviceName}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Përshkrimi
                             </label>
                             <textarea
                               name="description"
                               value={editFormData.description}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Çmimi
                             </label>
                             <input
@@ -291,12 +324,12 @@ const Services = () => {
                               name="price"
                               value={editFormData.price}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Kohëzgjatja
                             </label>
                             <input
@@ -304,12 +337,12 @@ const Services = () => {
                               name="duration"
                               value={editFormData.duration}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Përqindja
                             </label>
                             <input
@@ -317,7 +350,7 @@ const Services = () => {
                               name="staffEarningPercentage"
                               value={editFormData.staffEarningPercentage}
                               onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full"
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             />
                           </div>

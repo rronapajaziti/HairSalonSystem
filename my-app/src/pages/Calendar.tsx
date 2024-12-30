@@ -191,11 +191,13 @@ const Calendar = () => {
                   return (
                     <td
                       key={colIndex}
-                      className="border border-gray-300 p-1 h-40 w-40 overflow-hidden"
+                      className="border border-gray-300 p-1 h-40 w-40 overflow-hidden dark:text-white"
                     >
                       <div className="flex flex-col h-40 mx-auto overflow-hidden">
                         <div className="top h-5 w-full">
-                          <span className="text-gray-900">{day}</span>
+                          <span className="text-gray-900 dark:text-white">
+                            {day}
+                          </span>
                         </div>
                         <div className="bottom flex-grow h-30 py-1 w-full overflow-y-auto">
                           {day && renderEvents(day)}

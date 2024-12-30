@@ -308,9 +308,79 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Pagesa
                 </NavLink>
               </li>
-              {/* <!-- Menu Item Tables --> */}
-
-              {/* <!-- Menu Item Settings --> */}
+              <li>
+                <NavLink
+                  to="/dailyExpensess"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('/dailyExpensess')
+                      ? 'bg-graydark dark:bg-meta-4'
+                      : ''
+                  }`}
+                >
+                  <svg
+                    width="1.5em"
+                    height="1.5em"
+                    fill="currentColor"
+                    viewBox="0 0 64 64"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeMiterlimit={10}
+                      strokeWidth={2}
+                      d="M63 38a19 19 0 0 1-19 19 19 19 0 0 1-19-19 19 19 0 0 1 38 0z"
+                    />
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeMiterlimit={10}
+                      strokeWidth={2}
+                      d="M57 38a13 13 0 0 1-13 13 13 13 0 0 1-13-13 13 13 0 0 1 26 0zM30 51H1v6h37v-1M27 45H3v6h27m-4-12H5v6h22m-1-12H1v6h25m3-12H3v6h23m9-12H1v6h28m11-7v-5H3v6h32M1 9h37v6H1z"
+                    />
+                  </svg>
+                  Shpenzimet Ditore
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/chat"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('/chat')
+                      ? 'bg-graydark dark:bg-meta-4'
+                      : ''
+                  }`}
+                >
+                  <svg
+                    width="1.5em"
+                    height="1.5em"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 12a3 3 0 1 0 3 3 3 3 0 0 0-3-3zm0 4a1 1 0 1 1 1-1 1 1 0 0 1-1 1zm-.71-6.29a1 1 0 0 0 .33.21.94.94 0 0 0 .76 0 1 1 0 0 0 .33-.21L15 7.46A1 1 0 1 0 13.54 6l-.54.59V3a1 1 0 0 0-2 0v3.59L10.46 6A1 1 0 0 0 9 7.46zM19 15a1 1 0 1 0-1 1 1 1 0 0 0 1-1zm1-7h-3a1 1 0 0 0 0 2h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h3a1 1 0 0 0 0-2H4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3zM5 15a1 1 0 1 0 1-1 1 1 0 0 0-1 1z" />
+                  </svg>
+                  Produktet
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/chat"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('/chat')
+                      ? 'bg-graydark dark:bg-meta-4'
+                      : ''
+                  }`}
+                >
+                  <svg
+                    height="1.5em"
+                    width="1.5em"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 3c5.5 0 10 3.58 10 8 0 .58-.08 1.14-.22 1.68-.59-.3-1.23-.52-1.9-.62.08-.34.12-.7.12-1.06 0-3.31-3.58-6-8-6s-8 2.69-8 6 3.58 6 8 6l1.09-.05L13 18l.08.95L12 19c-1.19 0-2.38-.17-3.53-.5C6.64 20 4.37 20.89 2 21c2.33-2.33 2.75-3.9 2.75-4.5A7.218 7.218 0 0 1 2 11c0-4.42 4.5-8 10-8m6 11h2v3h3v2h-3v3h-2v-3h-3v-2h3v-3z" />
+                  </svg>
+                  Chat
+                </NavLink>
+              </li>
               <li>
                 <NavLink
                   to="/settings"
