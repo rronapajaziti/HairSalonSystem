@@ -101,10 +101,25 @@ const Appointments = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const payload = {
+        Client: {
+          FirstName: newAppointment.firstName,
+          LastName: newAppointment.lastName,
+          PhoneNumber: newAppointment.phoneNumber,
+          Email: newAppointment.email,
+        },
+        UserID: newAppointment.userID,
+        ServiceID: newAppointment.serviceID,
+        AppointmentDate: newAppointment.appointmentDate,
+        Status: newAppointment.status,
+        Notes: newAppointment.notes,
+      };
+  
       const response = await axios.post(
         'https://localhost:7158/api/Appointment',
-        newAppointment,
+        payload,
       );
+  
       setAppointments([...appointments, response.data]);
       setShowForm(false);
       setNewAppointment({
@@ -123,19 +138,37 @@ const Appointments = () => {
       console.error('Error adding appointment:', error);
     }
   };
+  
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    const payload = {
+      Client: {
+        FirstName: editFormData.firstName,
+        LastName: editFormData.lastName,
+        PhoneNumber: editFormData.phoneNumber,
+        Email: editFormData.email,
+      },
+      appointmentID: editFormData.appointmentID,
+      UserID: editFormData.userID,
+      ServiceID: editFormData.serviceID,
+      AppointmentDate: editFormData.appointmentDate,
+      Status: editFormData.status,
+      Notes: editFormData.notes,
+    };
+  
+    console.log('Payload being sent:', payload); // Debug payload
+  
     try {
       const response = await axios.put(
         `https://localhost:7158/api/Appointment/${editFormData.appointmentID}`,
-        editFormData,
+        payload,
       );
+  
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt.appointmentID === editFormData.appointmentID
-            ? response.data
-            : appt,
+          appt.appointmentID === editFormData.appointmentID ? response.data : appt,
         ),
       );
       setEditingRowId(null);
@@ -143,6 +176,10 @@ const Appointments = () => {
       console.error('Error editing appointment:', error);
     }
   };
+  
+  
+  
+  
 
   const handleEdit = (appt: any) => {
     if (editingRowId === appt.appointmentID) {
@@ -154,7 +191,10 @@ const Appointments = () => {
       const staff = staffList.find(
         (staff) => `${staff.firstName} ${staff.lastName}` === appt.staffName,
       );
-
+  
+      const isValidDate =
+        appt.appointmentDate && !isNaN(new Date(appt.appointmentDate).getTime());
+  
       setEditingRowId(appt.appointmentID);
       setEditFormData({
         appointmentID: appt.appointmentID,
@@ -164,14 +204,16 @@ const Appointments = () => {
         email: appt.client?.email || '',
         serviceID: service?.serviceID || '',
         userID: staff?.userID || '',
-        appointmentDate: new Date(appt.appointmentDate)
-          .toISOString()
-          .slice(0, 16),
+        appointmentDate: isValidDate
+          ? new Date(appt.appointmentDate).toISOString().slice(0, 16) // ISO for `datetime-local`
+          : '', // Fallback if the date is invalid
         status: appt.status || 'pa përfunduar',
         notes: appt.notes || '',
       });
     }
   };
+  
+  
 
   const handleDelete = async (id: number) => {
     try {
@@ -184,9 +226,14 @@ const Appointments = () => {
     }
   };
 
-  const filteredAppointments = appointments.filter((appt) =>
-    new Date(appt.appointmentDate).toISOString().startsWith(selectedDate),
-  );
+  const filteredAppointments = appointments.filter((appt) => {
+    if (!appt.appointmentDate || isNaN(new Date(appt.appointmentDate).getTime())) {
+      console.warn(`Invalid appointment date for ID: ${appt.appointmentID}`);
+      return false;
+    }
+    return new Date(appt.appointmentDate).toISOString().startsWith(selectedDate);
+  });
+  
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
