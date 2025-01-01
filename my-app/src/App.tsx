@@ -22,6 +22,8 @@ import DailyAppointments from './pages/DailyAppointment';
 import WhatsAppForm from './pages/WhatsAppForm';
 import DailyExpenses from './pages/DailyExpensess';
 import MonthlyExpenses from './pages/MonthlyExpensess';
+import ServiceDiscount from './pages/ServiceDiscount';
+
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -109,6 +111,16 @@ function App() {
             </>
           }
         />
+        <Route
+  path="/serviceDiscount"
+  element={
+    <>
+      <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+      <ServiceDiscount />
+    </>
+  }
+/>
+
         <Route
           path="/chat"
           element={

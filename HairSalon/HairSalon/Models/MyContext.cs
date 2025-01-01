@@ -16,6 +16,7 @@ namespace HairSalon.Models
         public DbSet<ServiceStaff> ServiceStaff { get; set; }
         public DbSet<DailyExpense> DailyExpenses { get; set; }
         public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
+        public DbSet<ServiceDiscount> ServiceDiscounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +47,11 @@ namespace HairSalon.Models
             modelBuilder.Entity<ServiceStaff>()
                 .Property(ss => ss.StaffEarning)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ServiceDiscount>()
+            .HasOne(d => d.Service)
+            .WithMany()
+            .HasForeignKey(d => d.ServiceID);
         }
     }
 }

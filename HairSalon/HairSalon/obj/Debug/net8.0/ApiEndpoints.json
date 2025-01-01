@@ -505,6 +505,69 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "ServiceDiscountController",
+    "Method": "GetDiscounts",
+    "RelativePath": "api/ServiceDiscount",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ServiceDiscountController",
+    "Method": "CreateDiscount",
+    "RelativePath": "api/ServiceDiscount",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "discount",
+        "Type": "HairSalon.Models.ServiceDiscount",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ServiceDiscountController",
+    "Method": "EditDiscount",
+    "RelativePath": "api/ServiceDiscount/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "discount",
+        "Type": "HairSalon.Models.ServiceDiscount",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ServiceDiscountController",
+    "Method": "DeleteDiscount",
+    "RelativePath": "api/ServiceDiscount/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "ServiceStaffController",
     "Method": "GetAllServiceStaff",
     "RelativePath": "api/ServiceStaff",
