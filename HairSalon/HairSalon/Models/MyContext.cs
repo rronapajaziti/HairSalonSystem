@@ -15,6 +15,7 @@ namespace HairSalon.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<ServiceStaff> ServiceStaff { get; set; }
         public DbSet<DailyExpense> DailyExpenses { get; set; }
+        public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -340,3 +340,5 @@ C:\Users\TECHCOM\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Debu
 C:\Users\TECHCOM\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Debug\net8.0\ref\HairSalon.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Debug\net8.0\Twilio.dll
+C:\Users\TECHCOM\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\TECHCOM\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Debug\net8.0\Twilio.dll

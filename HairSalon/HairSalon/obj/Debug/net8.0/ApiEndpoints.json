@@ -80,12 +80,80 @@
   },
   {
     "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetDailySummary",
+    "RelativePath": "api/Appointment/daily-summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetDailySchedule",
+    "RelativePath": "api/Appointment/schedule",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "date",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetTotalCompletedAppointments",
+    "RelativePath": "api/Appointment/total-completed-appointments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
     "Method": "GetTotalPriceForCompletedAppointments",
     "RelativePath": "api/Appointment/total-price",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetTotalRevenueForCompletedAppointments",
+    "RelativePath": "api/Appointment/total-revenue",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetTotalSalesForCompletedAppointments",
+    "RelativePath": "api/Appointment/total-sales",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -171,6 +239,107 @@
     "ContainingType": "HairSalon.Controllers.ClientController",
     "Method": "DeleteClient",
     "RelativePath": "api/Client/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DailyExpensesController",
+    "Method": "GetExpenses",
+    "RelativePath": "api/dailyexpenses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "date",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DailyExpensesController",
+    "Method": "AddExpense",
+    "RelativePath": "api/dailyexpenses",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expense",
+        "Type": "DailyExpense",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DailyExpensesController",
+    "Method": "DeleteExpense",
+    "RelativePath": "api/dailyexpenses/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MonthlyExpensesController",
+    "Method": "GetMonthlyExpenses",
+    "RelativePath": "api/monthlyexpenses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "year",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "month",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MonthlyExpensesController",
+    "Method": "AddMonthlyExpense",
+    "RelativePath": "api/monthlyexpenses",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expense",
+        "Type": "MonthlyExpenses",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MonthlyExpensesController",
+    "Method": "DeleteMonthlyExpense",
+    "RelativePath": "api/monthlyexpenses/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -326,9 +495,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "ServiceStaffController",
-    "Method": "GetAllServiceStaff",
-    "RelativePath": "api/ServiceStaff",
+    "ContainingType": "ServiceController",
+    "Method": "GetTotalServices",
+    "RelativePath": "api/Service/total-services",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -337,18 +506,12 @@
   },
   {
     "ContainingType": "ServiceStaffController",
-    "Method": "CreateServiceStaff",
+    "Method": "GetAllServiceStaff",
     "RelativePath": "api/ServiceStaff",
-    "HttpMethod": "POST",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "serviceStaff",
-        "Type": "HairSalon.Models.ServiceStaff",
-        "IsRequired": true
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -369,12 +532,28 @@
   },
   {
     "ContainingType": "ServiceStaffController",
-    "Method": "GetMonthlyEarnings",
-    "RelativePath": "api/ServiceStaff/monthly-earnings",
+    "Method": "GetDailyEarnings",
+    "RelativePath": "api/ServiceStaff/daily-earnings",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ServiceStaffController",
+    "Method": "SyncServiceStaffFromAppointment",
+    "RelativePath": "api/ServiceStaff/sync-from-appointment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "appointment",
+        "Type": "HairSalon.Models.Appointment",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -490,6 +669,22 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WhatsAppController",
+    "Method": "SendMessage",
+    "RelativePath": "api/whatsapp/send-message",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ClientMessage",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   }
 ]
