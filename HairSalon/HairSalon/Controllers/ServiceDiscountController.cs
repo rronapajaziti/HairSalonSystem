@@ -19,11 +19,14 @@ public class ServiceDiscountController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetDiscounts()
     {
-        var discounts = await _context.ServiceDiscounts
+        var now = DateTime.UtcNow;
+        var activeDiscounts = await _context.ServiceDiscounts
             .Include(d => d.Service)
+            .Where(d => d.StartDate <= now && d.EndDate >= now)
             .ToListAsync();
-        return Ok(discounts);
+        return Ok(activeDiscounts);
     }
+
 
  [HttpPost]
 public async Task<IActionResult> CreateDiscount([FromBody] ServiceDiscount discount)
@@ -79,4 +82,8 @@ public async Task<IActionResult> CreateDiscount([FromBody] ServiceDiscount disco
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
+
+
+
 }

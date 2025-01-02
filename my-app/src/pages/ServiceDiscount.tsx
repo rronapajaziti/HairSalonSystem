@@ -3,16 +3,15 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const ServiceDiscount = () => {
+const ServiceDiscount = ({ updateServiceList }: { updateServiceList: () => void }) => {
   const [discounts, setDiscounts] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [newDiscount, setNewDiscount] = useState({
-    serviceID: '',
+    serviceID: [] as string[],
     discountPercentage: '',
     startDate: '',
     endDate: '',
   });
-  const [selectedServicePrice, setSelectedServicePrice] = useState<number | null>(null);
   const [editingDiscountId, setEditingDiscountId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
     discountID: null,
@@ -45,124 +44,149 @@ const ServiceDiscount = () => {
     }
   };
 
-  const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const serviceID = e.target.value;
-    setNewDiscount({ ...newDiscount, serviceID });
+  // Separate active and inactive discounts
+  const activeDiscounts = discounts.filter(
+    (discount) =>
+      new Date(discount.startDate) <= new Date() &&
+      new Date(discount.endDate) >= new Date()
+  );
 
-    // Find the selected service and update the price
-    const selectedService = services.find((service) => service.serviceID === parseInt(serviceID));
-    if (selectedService) {
-      setSelectedServicePrice(selectedService.price);
-    } else {
-      setSelectedServicePrice(null);
-    }
-  };
+  const inactiveDiscounts = discounts.filter(
+    (discount) =>
+      new Date(discount.endDate) < new Date() || new Date(discount.startDate) > new Date()
+  );
+
   const handleAddDiscount = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate input fields
-    if (!newDiscount.serviceID || !newDiscount.startDate || !newDiscount.endDate || !newDiscount.discountPercentage) {
-        console.error('All fields are required.');
-        return;
+    if (
+      !newDiscount.serviceID.length ||
+      !newDiscount.startDate ||
+      !newDiscount.endDate ||
+      !newDiscount.discountPercentage
+    ) {
+      console.error('All fields are required.');
+      return;
     }
 
     if (new Date(newDiscount.endDate) <= new Date(newDiscount.startDate)) {
-        console.error('End date must be after the start date.');
-        return;
+      console.error('End date must be after the start date.');
+      return;
     }
 
     try {
-        const payload = {
-            serviceDiscountID: 0, // Default for new discounts
-            serviceID: parseInt(newDiscount.serviceID), // Ensure serviceID is valid
-            startDate: new Date(newDiscount.startDate).toISOString(), // Convert to ISO 8601
-            endDate: new Date(newDiscount.endDate).toISOString(), // Convert to ISO 8601
-            discountPercentage: parseFloat(newDiscount.discountPercentage), // Ensure it's a number
-        };
+      const payloads = newDiscount.serviceID.map((serviceID) => ({
+        serviceDiscountID: 0,
+        serviceID: parseInt(serviceID),
+        startDate: new Date(newDiscount.startDate).toISOString(),
+        endDate: new Date(newDiscount.endDate).toISOString(),
+        discountPercentage: parseFloat(newDiscount.discountPercentage),
+      }));
 
-        console.log('Payload:', payload);
+      const responses = await Promise.all(
+        payloads.map((payload) =>
+          axios.post('https://localhost:7158/api/ServiceDiscount', payload)
+        )
+      );
 
-        // Send POST request
-        const response = await axios.post('https://localhost:7158/api/ServiceDiscount', payload);
+      const addedDiscounts = responses.map((response) => response.data);
 
-        // Update state with the new discount
-        setDiscounts([...discounts, response.data]);
-
-        // Reset form
-        setNewDiscount({
-            serviceID: '',
-            discountPercentage: '',
-            startDate: '',
-            endDate: '',
-        });
-        setSelectedServicePrice(null);
-    } catch (error: any) {
-        console.error('Error adding discount:', error.response?.data || error.message);
-    }
-};
-
-  
-  const handleEdit = (discount: any) => {
-    if (editingDiscountId === discount.discountID) {
-      setEditingDiscountId(null);
-    } else {
-      setEditingDiscountId(discount.discountID);
-      setEditFormData({
-        discountID: discount.discountID,
-        serviceID: discount.serviceID,
-        discountPercentage: discount.discountPercentage,
-        startDate: discount.startDate,
-        endDate: discount.endDate,
+      setDiscounts([...discounts, ...addedDiscounts]);
+      setNewDiscount({
+        serviceID: [],
+        discountPercentage: '',
+        startDate: '',
+        endDate: '',
       });
+      updateServiceList();
+    } catch (error: any) {
+      console.error('Error adding discount:', error.response?.data || error.message);
     }
+  };
+
+  const handleEdit = (discount: any) => {
+    setEditingDiscountId(discount.discountID);
+    setEditFormData({
+      ...discount,
+      serviceID: discount.serviceID.toString(),
+    });
+  };
+
+  const handleEditInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        `https://localhost:7158/api/ServiceDiscount/${editFormData.discountID}`,
-        editFormData,
+      const updatedDiscount = {
+        serviceDiscountID: editingDiscountId,
+        serviceID: parseInt(editFormData.serviceID),
+        startDate: new Date(editFormData.startDate).toISOString(),
+        endDate: new Date(editFormData.endDate).toISOString(),
+        discountPercentage: parseFloat(editFormData.discountPercentage),
+      };
+
+      await axios.put(
+        `https://localhost:7158/api/ServiceDiscount/${editingDiscountId}`,
+        updatedDiscount
       );
+
       setDiscounts((prev) =>
         prev.map((discount) =>
-          discount.discountID === editFormData.discountID ? response.data : discount,
-        ),
+          discount.discountID === editingDiscountId ? updatedDiscount : discount
+        )
       );
       setEditingDiscountId(null);
     } catch (error) {
-      console.error('Error editing discount:', error);
+      console.error('Error updating discount:', error);
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDiscountId(null);
   };
 
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://localhost:7158/api/ServiceDiscount/${id}`);
       setDiscounts((prev) => prev.filter((discount) => discount.discountID !== id));
+      updateServiceList();
     } catch (error) {
       console.error('Error deleting discount:', error);
     }
   };
 
-  
-  
-  
+  const calculateDiscountedPrice = (serviceID: number, discountPercentage: number) => {
+    const service = services.find((service) => service.serviceID === serviceID);
+    return service ? (service.price * (1 - discountPercentage / 100)).toFixed(2) : null;
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Manage Service Discounts</h1>
-  
-      {/* Add Discount Form */}
+      <h1 className="text-2xl font-bold mb-4">Menaxhimi i Zbritjeve</h1>
       <form onSubmit={handleAddDiscount} className="mb-6">
+        {/* Add Discount Form */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block font-medium">Service</label>
+            <label className="block font-medium">Shërbimet</label>
             <select
+              multiple
               value={newDiscount.serviceID}
-              onChange={handleServiceChange}
+              onChange={(e) =>
+                setNewDiscount({
+                  ...newDiscount,
+                  serviceID: Array.from(e.target.selectedOptions).map((opt) => opt.value),
+                })
+              }
               className="border rounded px-2 py-1 w-full"
-              required
             >
-              <option value="">Select a Service</option>
               {services.map((service) => (
                 <option key={service.serviceID} value={service.serviceID}>
                   {service.serviceName}
@@ -170,19 +194,8 @@ const ServiceDiscount = () => {
               ))}
             </select>
           </div>
-  
-          {/* Display Service Price */}
-          {selectedServicePrice !== null && (
-            <div>
-              <label className="block font-medium">Service Price</label>
-              <p className="border rounded px-2 py-1 w-full bg-gray-100">
-                {selectedServicePrice.toFixed(2)}€
-              </p>
-            </div>
-          )}
-  
           <div>
-            <label className="block font-medium">Discount Percentage (%)</label>
+            <label className="block font-medium">Zbritja (%)</label>
             <input
               type="number"
               value={newDiscount.discountPercentage}
@@ -190,11 +203,10 @@ const ServiceDiscount = () => {
                 setNewDiscount({ ...newDiscount, discountPercentage: e.target.value })
               }
               className="border rounded px-2 py-1 w-full"
-              required
             />
           </div>
           <div>
-            <label className="block font-medium">Start Date</label>
+            <label className="block font-medium">Data e Fillimit</label>
             <input
               type="date"
               value={newDiscount.startDate}
@@ -202,11 +214,10 @@ const ServiceDiscount = () => {
                 setNewDiscount({ ...newDiscount, startDate: e.target.value })
               }
               className="border rounded px-2 py-1 w-full"
-              required
             />
           </div>
           <div>
-            <label className="block font-medium">End Date</label>
+            <label className="block font-medium">Data e Mbarimit</label>
             <input
               type="date"
               value={newDiscount.endDate}
@@ -214,7 +225,6 @@ const ServiceDiscount = () => {
                 setNewDiscount({ ...newDiscount, endDate: e.target.value })
               }
               className="border rounded px-2 py-1 w-full"
-              required
             />
           </div>
         </div>
@@ -222,67 +232,83 @@ const ServiceDiscount = () => {
           Add Discount
         </button>
       </form>
-  
-      {/* Discounts Table */}
-      <table className="w-full border-collapse border">
+
+      {/* Active Discounts */}
+      <h2 className="text-xl font-semibold mb-2">Zbritjet Aktive</h2>
+      <table className="w-full border-collapse border mb-6">
         <thead>
           <tr>
-            <th className="border px-4 py-2">Service</th>
-            <th className="border px-4 py-2">Original Price</th>
-            <th className="border px-4 py-2">Discount (%)</th>
-            <th className="border px-4 py-2">Discounted Price</th>
-            <th className="border px-4 py-2">Start Date</th>
-            <th className="border px-4 py-2">End Date</th>
+            <th className="border px-4 py-2">Shërbimi</th>
+            <th className="border px-4 py-2">Zbritja (%)</th>
+            <th className="border px-4 py-2">Data e Fillimit</th>
+            <th className="border px-4 py-2">Data e Mbarimit</th>
+            <th className="border px-4 py-2">Cmimi me Zbritje</th>
             <th className="border px-4 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {discounts.map((discount) => {
+          {activeDiscounts.map((discount) => {
             const service = services.find((s) => s.serviceID === discount.serviceID);
-            const discountedPrice = service
-              ? service.price - (service.price * discount.discountPercentage) / 100
-              : null;
-  
+            const discountedPrice = calculateDiscountedPrice(
+              discount.serviceID,
+              discount.discountPercentage
+            );
             return (
-              <React.Fragment key={discount.discountID}>
-                <tr>
-                  <td className="border px-4 py-2">{service?.serviceName || 'Unknown'}</td>
-                  <td className="border px-4 py-2">
-                    {service ? `${service.price.toFixed(2)}€` : 'N/A'}
-                  </td>
-                  <td className="border px-4 py-2">{discount.discountPercentage}%</td>
-                  <td className="border px-4 py-2">
-                    {discountedPrice !== null ? `${discountedPrice.toFixed(2)}€` : 'N/A'}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {new Date(discount.startDate).toLocaleDateString()}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {new Date(discount.endDate).toLocaleDateString()}
-                  </td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() => handleEdit(discount)}
-                      className="text-blue-500 mr-2"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(discount.discountID)}
-                      className="text-red-500"
-                    >
-                      <MdOutlineDelete />
-                    </button>
-                  </td>
-                </tr>
-              </React.Fragment>
+              <tr key={discount.discountID}>
+                <td className="border px-4 py-2">{service?.serviceName || 'Unknown'}</td>
+                <td className="border px-4 py-2">{discount.discountPercentage}%</td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.startDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.endDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">{discountedPrice || 'N/A'}</td>
+                <td className="border px-4 py-2">
+                  <button onClick={() => handleEdit(discount)}>
+                    <FaEdit />
+                  </button>
+                  <button onClick={() => handleDelete(discount.discountID)}>
+                    <MdOutlineDelete />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* Inactive Discounts */}
+      <h2 className="text-xl font-semibold mb-2">Zbritjet Joaktive</h2>
+      <table className="w-full border-collapse border">
+        <thead>
+          <tr>
+            <th className="border px-4 py-2">Shërbimi</th>
+            <th className="border px-4 py-2">Zbritja (%)</th>
+            <th className="border px-4 py-2">Data e Fillimit</th>
+            <th className="border px-4 py-2">Data e Mbarimit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {inactiveDiscounts.map((discount) => {
+            const service = services.find((s) => s.serviceID === discount.serviceID);
+            return (
+              <tr key={discount.discountID}>
+                <td className="border px-4 py-2">{service?.serviceName || 'Unknown'}</td>
+                <td className="border px-4 py-2">{discount.discountPercentage}%</td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.startDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.endDate).toLocaleDateString()}
+                </td>
+              </tr>
             );
           })}
         </tbody>
       </table>
     </div>
   );
-  
 };
 
 export default ServiceDiscount;
