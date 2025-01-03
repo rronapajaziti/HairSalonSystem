@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairSalon.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20250103203722_services")]
-    partial class services
+    [Migration("20250103211940_discountprice")]
+    partial class discountprice
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

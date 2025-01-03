@@ -5,7 +5,7 @@
 namespace HairSalon.Migrations
 {
     /// <inheritdoc />
-    public partial class serviceid : Migration
+    public partial class discountprice : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,12 @@ namespace HairSalon.Migrations
             migrationBuilder.DropColumn(
                 name: "ServiceID1",
                 table: "ServiceDiscounts");
+
+            migrationBuilder.AddColumn<decimal>(
+                name: "DiscountPrice",
+                table: "Services",
+                type: "decimal(18,2)",
+                nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ServiceIDs",
@@ -76,6 +82,10 @@ namespace HairSalon.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ServiceServiceDiscount");
+
+            migrationBuilder.DropColumn(
+                name: "DiscountPrice",
+                table: "Services");
 
             migrationBuilder.DropColumn(
                 name: "ServiceIDs",

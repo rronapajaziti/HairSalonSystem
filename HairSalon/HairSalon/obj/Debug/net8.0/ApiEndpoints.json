@@ -495,16 +495,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "ServiceController",
-    "Method": "GetTotalServices",
-    "RelativePath": "api/Service/total-services",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "ServiceDiscountController",
     "Method": "GetDiscounts",
     "RelativePath": "api/ServiceDiscount",
