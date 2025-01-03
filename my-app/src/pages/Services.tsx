@@ -304,18 +304,20 @@ const Service = () => {
                     {service.staffEarningPercentage}%
                   </td>
                   <td className="py-4 px-4">
-                    <button
-                      onClick={() => handleEdit(service)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(service.serviceID)}
-                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                    >
-                      <MdOutlineDelete />
-                    </button>
+                    <div className="flex space-x-2 sm:justify-center">
+                      <button
+                        onClick={() => handleEdit(service)}
+                        className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(service.serviceID)}
+                        className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <MdOutlineDelete />
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 {editingRowId === service.serviceID && (

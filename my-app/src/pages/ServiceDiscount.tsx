@@ -79,26 +79,28 @@ const ServiceDiscount = ({
       updateServiceList();
     } catch (error) {
       console.error('Error adding discount:', error);
-      alert('Error adding discount. Please try again.');
     }
   };
 
   const handleEdit = (discount: any) => {
-    setEditingServiceDiscountID(discount.serviceDiscountID);
-    setEditFormData({
-      serviceDiscountID: discount.serviceDiscountID,
-      serviceID: discount.serviceIDs.map((id: number) => id.toString()), // Convert to string array for select input
-      discountPercentage: discount.discountPercentage.toString(),
-      startDate: discount.startDate.split('T')[0], // Extract date portion
-      endDate: discount.endDate.split('T')[0], // Extract date portion
-    });
+    if (editingServiceDiscountID === discount.serviceDiscountID) {
+      setEditingServiceDiscountID(null);
+    } else {
+      setEditingServiceDiscountID(discount.serviceDiscountID);
+      setEditFormData({
+        serviceDiscountID: discount.serviceDiscountID,
+        serviceID: discount.serviceIDs.map((id: number) => id.toString()),
+        discountPercentage: discount.discountPercentage.toString(),
+        startDate: discount.startDate.split('T')[0],
+        endDate: discount.endDate.split('T')[0],
+      });
+    }
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Validate inputs
       if (!editFormData.startDate || !editFormData.endDate) {
         alert('Dates cannot be empty.');
         return;
@@ -117,22 +119,19 @@ const ServiceDiscount = ({
         return;
       }
 
-      // Prepare updated discount object
       const updatedDiscount = {
         serviceDiscountID: editingServiceDiscountID,
-        serviceIDs: editFormData.serviceID.map((id) => parseInt(id, 10)), // Convert back to number array
+        serviceIDs: editFormData.serviceID.map((id) => parseInt(id, 10)),
         discountPercentage: parseFloat(editFormData.discountPercentage),
         startDate: parsedStartDate.toISOString(),
         endDate: parsedEndDate.toISOString(),
       };
 
-      // API call to update the discount
       await axios.put(
         `https://localhost:7158/api/ServiceDiscount/${editingServiceDiscountID}`,
         updatedDiscount,
       );
 
-      // Update local state
       setDiscounts((prev) =>
         prev.map((discount) =>
           discount.serviceDiscountID === editingServiceDiscountID
@@ -141,8 +140,8 @@ const ServiceDiscount = ({
         ),
       );
 
-      setEditingServiceDiscountID(null); // Exit edit mode
-      updateServiceList(); // Update services
+      setEditingServiceDiscountID(null);
+      updateServiceList();
     } catch (error) {
       console.error('Error updating discount:', error);
       alert('Error updating discount. Please try again.');
@@ -171,6 +170,181 @@ const ServiceDiscount = ({
     (discount) =>
       new Date(discount.endDate) < new Date() ||
       new Date(discount.startDate) > new Date(),
+  );
+
+  const renderTable = (discounts: any[], title: string) => (
+    <>
+      <h2 className="text-xl font-semibold mb-2">{title}</h2>
+      <table className="w-full border-collapse border mb-6">
+        <thead>
+          <tr>
+            <th className="border px-4 py-2">Shërbimi</th>
+            <th className="border px-4 py-2">Çmimi Aktual</th>
+            <th className="border px-4 py-2">Zbritja (%)</th>
+            <th className="border px-4 py-2">Data e Fillimit</th>
+            <th className="border px-4 py-2">Data e Mbarimit</th>
+            <th className="border px-4 py-2">Veprimet</th>
+          </tr>
+        </thead>
+        <tbody>
+          {discounts.map((discount) => (
+            <>
+              <tr key={discount.serviceDiscountID}>
+                <td className="border px-4 py-2">
+                  {discount.serviceIDs
+                    ?.map((id: number) => {
+                      const service = services.find((s) => s.serviceID === id);
+                      return service?.serviceName || 'I panjohur';
+                    })
+                    .join(', ') || 'I panjohur'}
+                </td>
+                <td className="border px-4 py-2">
+                  {discount.serviceIDs
+                    ?.map((id: number) => {
+                      const service = services.find((s) => s.serviceID === id);
+                      return service?.price || 'I panjohur';
+                    })
+                    .join(', ') || 'I panjohur'}
+                </td>
+                <td className="border px-4 py-2">
+                  {discount.discountPercentage}%
+                </td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.startDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  {new Date(discount.endDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleEdit(discount)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(discount.serviceDiscountID)}
+                    className="px-4 py-2 bg-red-500 text-white rounded-md"
+                  >
+                    <MdOutlineDelete />
+                  </button>
+                </td>
+              </tr>
+              {editingServiceDiscountID === discount.serviceDiscountID && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="py-4 px-4 bg-gray-100 dark:bg-boxdark"
+                  >
+                    <form onSubmit={handleEditSubmit}>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                            Shërbimet
+                          </label>
+                          <select
+                            name="serviceID"
+                            value={editFormData.serviceID}
+                            onChange={(e) =>
+                              setEditFormData({
+                                ...editFormData,
+                                serviceID: Array.from(
+                                  e.target.selectedOptions,
+                                ).map((opt) => opt.value),
+                              })
+                            }
+                            multiple
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                          >
+                            {services.map((service) => (
+                              <option
+                                key={service.serviceID}
+                                value={service.serviceID}
+                              >
+                                {service.serviceName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                            Zbritja (%)
+                          </label>
+                          <input
+                            type="number"
+                            name="discountPercentage"
+                            value={editFormData.discountPercentage}
+                            onChange={(e) =>
+                              setEditFormData({
+                                ...editFormData,
+                                discountPercentage: e.target.value,
+                              })
+                            }
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                            Data e Fillimit
+                          </label>
+                          <input
+                            type="date"
+                            name="startDate"
+                            value={editFormData.startDate}
+                            onChange={(e) =>
+                              setEditFormData({
+                                ...editFormData,
+                                startDate: e.target.value,
+                              })
+                            }
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                            Data e Mbarimit
+                          </label>
+                          <input
+                            type="date"
+                            name="endDate"
+                            value={editFormData.endDate}
+                            onChange={(e) =>
+                              setEditFormData({
+                                ...editFormData,
+                                endDate: e.target.value,
+                              })
+                            }
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end space-x-2 mt-4">
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                        >
+                          Ruaj
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingServiceDiscountID(null)}
+                          className="px-4 py-2 bg-gray-400 text-white rounded-md"
+                        >
+                          Anulo
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              )}
+            </>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 
   return (
@@ -254,181 +428,8 @@ const ServiceDiscount = ({
           </button>
         </form>
       )}
-
-      <h2 className="text-xl font-semibold mb-2">Zbritjet Aktive</h2>
-      <table className="w-full border-collapse border mb-6">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Shërbimi</th>
-            <th className="border px-4 py-2">Çmimi Aktual</th>
-            <th className="border px-4 py-2">Zbritja (%)</th>
-            <th className="border px-4 py-2">Data e Fillimit</th>
-            <th className="border px-4 py-2">Data e Mbarimit</th>
-            <th className="border px-4 py-2">Veprimet</th>
-          </tr>
-        </thead>
-        <tbody>
-          {activeDiscounts.map((discount) => (
-            <tr key={discount.serviceDiscountID}>
-              <td className="border px-4 py-2">
-                {discount.serviceIDs
-                  ?.map((id: number) => {
-                    const service = services.find((s) => s.serviceID === id);
-                    return service?.serviceName || 'I panjohur';
-                  })
-                  .join(', ') || 'I panjohur'}
-              </td>
-              <td className="border px-4 py-2">
-                {discount.serviceIDs
-                  ?.map((id: number) => {
-                    const service = services.find((s) => s.serviceID === id);
-                    return service?.price || 'I panjohur';
-                  })
-                  .join(', ') || 'I panjohur'}
-              </td>
-              <td className="border px-4 py-2">
-                {discount.discountPercentage}%
-              </td>
-              <td className="border px-4 py-2">
-                {new Date(discount.startDate).toLocaleDateString()}
-              </td>
-              <td className="border px-4 py-2">
-                {new Date(discount.endDate).toLocaleDateString()}
-              </td>
-              <td className="border px-4 py-2">
-                <button onClick={() => handleEdit(discount)}>
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDelete(discount.serviceDiscountID)}
-                >
-                  <MdOutlineDelete />
-                </button>
-              </td>
-              {editingServiceDiscountID === discount.serviceDiscountID && (
-                <tr>
-                  <td colSpan={6} className="bg-gray-100 p-4">
-                    <form
-                      onSubmit={handleEditSubmit}
-                      className="flex flex-col space-y-4"
-                      style={{ position: 'relative', zIndex: 10 }}
-                    >
-                      <div className="grid grid-cols-4 gap-4">
-                        <select
-                          name="serviceID"
-                          value={editFormData.serviceID}
-                          onChange={(e) =>
-                            setEditFormData({
-                              ...editFormData,
-                              serviceID: Array.from(
-                                e.target.selectedOptions,
-                              ).map((opt) => opt.value),
-                            })
-                          }
-                          multiple
-                          className="border rounded px-2 py-1 w-full"
-                        >
-                          {services.map((service) => (
-                            <option
-                              key={service.serviceID}
-                              value={service.serviceID}
-                            >
-                              {service.serviceName}
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="number"
-                          name="discountPercentage"
-                          value={editFormData.discountPercentage}
-                          onChange={(e) =>
-                            setEditFormData({
-                              ...editFormData,
-                              discountPercentage: e.target.value,
-                            })
-                          }
-                          className="border rounded px-2 py-1"
-                        />
-                        <input
-                          type="date"
-                          name="startDate"
-                          value={editFormData.startDate}
-                          onChange={(e) =>
-                            setEditFormData({
-                              ...editFormData,
-                              startDate: e.target.value,
-                            })
-                          }
-                          className="border rounded px-2 py-1"
-                        />
-                        <input
-                          type="date"
-                          name="endDate"
-                          value={editFormData.endDate}
-                          onChange={(e) =>
-                            setEditFormData({
-                              ...editFormData,
-                              endDate: e.target.value,
-                            })
-                          }
-                          className="border rounded px-2 py-1"
-                        />
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          type="submit"
-                          className="bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                          Save
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditingServiceDiscountID(null)}
-                          className="bg-gray-400 text-white px-4 py-2 rounded"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </td>
-                </tr>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Inactive Discounts */}
-      <h2 className="text-xl font-semibold mb-2">Zbritjet Joaktive</h2>
-      <table className="w-full border-collapse border">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Shërbimi</th>
-            <th className="border px-4 py-2">Zbritja (%)</th>
-            <th className="border px-4 py-2">Data e Fillimit</th>
-            <th className="border px-4 py-2">Data e Mbarimit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {inactiveDiscounts.map((discount) => (
-            <tr key={discount.serviceDiscountID}>
-              <td className="border px-4 py-2">
-                {services.find((s) => s.serviceID === discount.serviceID)
-                  ?.serviceName || 'I panjohur'}
-              </td>
-              <td className="border px-4 py-2">
-                {discount.discountPercentage}%
-              </td>
-              <td className="border px-4 py-2">
-                {new Date(discount.startDate).toLocaleDateString()}
-              </td>
-              <td className="border px-4 py-2">
-                {new Date(discount.endDate).toLocaleDateString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {renderTable(activeDiscounts, 'Zbritjet Aktive')}
+      {renderTable(inactiveDiscounts, 'Zbritjet Joaktive')}
     </div>
   );
 };

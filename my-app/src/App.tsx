@@ -23,7 +23,7 @@ import WhatsAppForm from './pages/WhatsAppForm';
 import DailyExpenses from './pages/DailyExpensess';
 import MonthlyExpenses from './pages/MonthlyExpensess';
 import ServiceDiscount from './pages/ServiceDiscount';
-
+import ClientTable from './pages/UiElements/Client';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -94,6 +94,15 @@ function App() {
           }
         />
         <Route
+          path="/clients"
+          element={
+            <>
+              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ClientTable />
+            </>
+          }
+        />
+        <Route
           path="/dailyExpensess"
           element={
             <>
@@ -112,14 +121,14 @@ function App() {
           }
         />
         <Route
-  path="/serviceDiscount"
-  element={
-    <>
-      <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-      <ServiceDiscount />
-    </>
-  }
-/>
+          path="/serviceDiscount"
+          element={
+            <>
+              <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ServiceDiscount />
+            </>
+          }
+        />
 
         <Route
           path="/chat"
