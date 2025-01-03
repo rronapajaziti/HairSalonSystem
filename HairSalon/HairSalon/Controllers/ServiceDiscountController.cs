@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Mvc; // For IActionResult, FromBody, HttpDelete, etc.
-using Microsoft.EntityFrameworkCore; // For EF Core functionalities
-using HairSalon.Models; // Ensure it includes the ServiceDiscount model
-using System.Threading.Tasks; // For async methods
-using System.Linq; // For LINQ queries
-
+using HairSalon.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -19,71 +16,110 @@ public class ServiceDiscountController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetDiscounts()
     {
-        var now = DateTime.UtcNow;
-        var activeDiscounts = await _context.ServiceDiscounts
-            .Include(d => d.Service)
-            .Where(d => d.StartDate <= now && d.EndDate >= now)
+        var discounts = await _context.ServiceDiscounts
+            .Include(d => d.Services)
             .ToListAsync();
-        return Ok(activeDiscounts);
+
+        return Ok(discounts.Select(d => new
+        {
+            d.ServiceDiscountID,
+            ServiceIDs = d.Services.Select(s => s.ServiceID).ToList(),
+            d.StartDate,
+            d.EndDate,
+            d.DiscountPercentage
+        }));
     }
 
-
- [HttpPost]
-public async Task<IActionResult> CreateDiscount([FromBody] ServiceDiscount discount)
-{
-    try
+    [HttpPost]
+    public async Task<IActionResult> CreateDiscount([FromBody] ServiceDiscount discount)
     {
-        // Ensure the service exists
-        var serviceExists = await _context.Services.AnyAsync(s => s.ServiceID == discount.ServiceID);
-        if (!serviceExists)
-            return BadRequest($"ServiceID {discount.ServiceID} does not exist.");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Add the discount to the database
+        var services = await _context.Services
+            .Where(s => discount.ServiceIDs.Contains(s.ServiceID))
+            .ToListAsync();
+
+        if (!services.Any()) return BadRequest("Invalid services specified.");
+
+        discount.Services = services;
+
         _context.ServiceDiscounts.Add(discount);
         await _context.SaveChangesAsync();
 
+        UpdateDiscountedPrices(discount.ServiceIDs);
+
         return CreatedAtAction(nameof(GetDiscounts), new { id = discount.ServiceDiscountID }, discount);
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error: {ex.Message}");
-        return StatusCode(500, $"Internal Server Error: {ex.Message}");
-    }
-}
-
-
-
-
 
     [HttpPut("{id}")]
     public async Task<IActionResult> EditDiscount(int id, [FromBody] ServiceDiscount discount)
     {
         if (id != discount.ServiceDiscountID) return BadRequest("ID mismatch.");
 
-        var existingDiscount = await _context.ServiceDiscounts.FindAsync(id);
-        if (existingDiscount == null) return NotFound("Discount not found.");
+        var existingDiscount = await _context.ServiceDiscounts
+            .Include(d => d.Services)
+            .FirstOrDefaultAsync(d => d.ServiceDiscountID == id);
+
+        if (existingDiscount == null) return NotFound();
 
         existingDiscount.StartDate = discount.StartDate;
         existingDiscount.EndDate = discount.EndDate;
         existingDiscount.DiscountPercentage = discount.DiscountPercentage;
-        existingDiscount.ServiceID = discount.ServiceID;
+
+        var services = await _context.Services
+            .Where(s => discount.ServiceIDs.Contains(s.ServiceID))
+            .ToListAsync();
+
+        if (!services.Any()) return BadRequest("Invalid services specified.");
+
+        existingDiscount.Services = services;
 
         await _context.SaveChangesAsync();
+
+        UpdateDiscountedPrices(discount.ServiceIDs);
+
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDiscount(int id)
     {
-        var discount = await _context.ServiceDiscounts.FindAsync(id);
+        var discount = await _context.ServiceDiscounts
+            .Include(d => d.Services)
+            .FirstOrDefaultAsync(d => d.ServiceDiscountID == id);
+
         if (discount == null) return NotFound();
+
+        var serviceIDs = discount.Services.Select(s => s.ServiceID).ToList();
 
         _context.ServiceDiscounts.Remove(discount);
         await _context.SaveChangesAsync();
+
+        UpdateDiscountedPrices(serviceIDs);
+
         return NoContent();
     }
 
+    private void UpdateDiscountedPrices(IEnumerable<int> serviceIDs)
+    {
+        var now = DateTime.UtcNow;
+        var services = _context.Services
+            .Include(s => s.ServiceDiscounts)
+            .Where(s => serviceIDs.Contains(s.ServiceID))
+            .ToList();
 
+        foreach (var service in services)
+        {
+            var activeDiscount = service.ServiceDiscounts
+                .FirstOrDefault(d => d.StartDate <= now && d.EndDate >= now);
 
+            service.DiscountPrice = activeDiscount != null
+                ? service.Price - (service.Price * activeDiscount.DiscountPercentage / 100)
+                : 0;
 
+            _context.Entry(service).State = EntityState.Modified;
+        }
+
+        _context.SaveChanges();
+    }
 }

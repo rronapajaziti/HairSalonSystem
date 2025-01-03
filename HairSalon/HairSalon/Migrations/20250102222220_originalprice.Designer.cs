@@ -4,6 +4,7 @@ using HairSalon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairSalon.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20250102222220_originalprice")]
+    partial class originalprice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,11 +159,11 @@ namespace HairSalon.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("DiscountPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int?>("Duration")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -191,14 +194,20 @@ namespace HairSalon.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.PrimitiveCollection<string>("ServiceIDs")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceID1")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ServiceDiscountID");
+
+                    b.HasIndex("ServiceID");
+
+                    b.HasIndex("ServiceID1");
 
                     b.ToTable("ServiceDiscounts");
                 });
@@ -310,21 +319,6 @@ namespace HairSalon.Migrations
                     b.ToTable("MonthlyExpenses");
                 });
 
-            modelBuilder.Entity("ServiceServiceDiscount", b =>
-                {
-                    b.Property<int>("ServiceDiscountID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ServiceDiscountID", "ServiceID");
-
-                    b.HasIndex("ServiceID");
-
-                    b.ToTable("ServiceServiceDiscount");
-                });
-
             modelBuilder.Entity("HairSalon.Models.Appointment", b =>
                 {
                     b.HasOne("HairSalon.Models.Client", "Client")
@@ -348,6 +342,21 @@ namespace HairSalon.Migrations
                     b.Navigation("Service");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HairSalon.Models.ServiceDiscount", b =>
+                {
+                    b.HasOne("HairSalon.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HairSalon.Models.Service", null)
+                        .WithMany("ServiceDiscounts")
+                        .HasForeignKey("ServiceID1");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("HairSalon.Models.ServiceStaff", b =>
@@ -382,21 +391,6 @@ namespace HairSalon.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ServiceServiceDiscount", b =>
-                {
-                    b.HasOne("HairSalon.Models.ServiceDiscount", null)
-                        .WithMany()
-                        .HasForeignKey("ServiceDiscountID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HairSalon.Models.Service", null)
-                        .WithMany()
-                        .HasForeignKey("ServiceID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HairSalon.Models.Appointment", b =>
                 {
                     b.Navigation("ServiceStaff");
@@ -414,6 +408,8 @@ namespace HairSalon.Migrations
 
             modelBuilder.Entity("HairSalon.Models.Service", b =>
                 {
+                    b.Navigation("ServiceDiscounts");
+
                     b.Navigation("ServiceStaff");
                 });
 

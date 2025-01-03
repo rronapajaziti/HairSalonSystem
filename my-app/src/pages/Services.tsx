@@ -3,12 +3,12 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const Services = () => {
+const Service = () => {
   const [serviceList, setServiceList] = useState<any[]>([]);
-  const [discounts, setDiscounts] = useState<any[]>([]); // State to store discounts
+  const [discounts, setDiscounts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newService, setNewService] = useState({
-    id: null,
+    serviceID: null,
     serviceName: '',
     description: '',
     price: '',
@@ -17,7 +17,7 @@ const Services = () => {
   });
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
-    id: null,
+    serviceID: null,
     serviceName: '',
     description: '',
     price: '',
@@ -33,11 +33,7 @@ const Services = () => {
   const fetchServices = async () => {
     try {
       const response = await axios.get('https://localhost:7158/api/Service');
-      const formattedServices = response.data.map((service: any) => ({
-        ...service,
-        id: service.serviceID,
-      }));
-      setServiceList(formattedServices);
+      setServiceList(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
     }
@@ -45,7 +41,9 @@ const Services = () => {
 
   const fetchDiscounts = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/ServiceDiscount');
+      const response = await axios.get(
+        'https://localhost:7158/api/ServiceDiscount',
+      );
       setDiscounts(response.data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
@@ -53,17 +51,17 @@ const Services = () => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setNewService((prev) => ({
-      ...prev,
+    setNewService({
+      ...newService,
       [name]: value,
-    }));
+    });
   };
 
   const handleEditInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setEditFormData((prev) => ({
@@ -74,15 +72,25 @@ const Services = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const payload = {
+      serviceID: 0,
+      serviceName: newService.serviceName,
+      description: newService.description,
+      price: parseFloat(newService.price),
+      duration: parseInt(newService.duration, 10),
+      staffEarningPercentage: parseFloat(newService.staffEarningPercentage),
+    };
+
     try {
       const response = await axios.post(
         'https://localhost:7158/api/Service',
-        newService
+        payload,
       );
       setServiceList([...serviceList, response.data]);
       setShowForm(false);
       setNewService({
-        id: null,
+        serviceID: null,
         serviceName: '',
         description: '',
         price: '',
@@ -96,15 +104,27 @@ const Services = () => {
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const payload = {
+      serviceID: editFormData.serviceID,
+      serviceName: editFormData.serviceName,
+      description: editFormData.description,
+      price: parseFloat(editFormData.price),
+      duration: parseInt(editFormData.duration, 10),
+      staffEarningPercentage: parseFloat(editFormData.staffEarningPercentage),
+    };
+
     try {
-      const response = await axios.put(
-        `https://localhost:7158/api/Service/${editFormData.id}`,
-        editFormData
+      await axios.put(
+        `https://localhost:7158/api/Service/${payload.serviceID}`,
+        payload,
       );
       setServiceList((prev) =>
         prev.map((service) =>
-          service.id === editFormData.id ? { ...service, ...response.data } : service
-        )
+          service.serviceID === payload.serviceID
+            ? { ...service, ...payload }
+            : service,
+        ),
       );
       setEditingRowId(null);
     } catch (error) {
@@ -115,158 +135,266 @@ const Services = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://localhost:7158/api/Service/${id}`);
-      setServiceList((prev) => prev.filter((service) => service.id !== id));
+      setServiceList((prev) =>
+        prev.filter((service) => service.serviceID !== id),
+      );
     } catch (error) {
       console.error('Error deleting service:', error);
     }
   };
 
   const handleEdit = (service: any) => {
-    setEditingRowId(service.id);
-    setEditFormData(service);
-  };
-
-  const calculateDiscountedPrice = (service: any) => {
-    const applicableDiscount = discounts.find(
-      (discount) =>
-        discount.serviceID === service.id &&
-        new Date(discount.startDate) <= new Date() &&
-        new Date(discount.endDate) >= new Date()
-    );
-
-    if (!applicableDiscount) {
-      return { discountedPrice: null, discountDetails: null };
+    if (editingRowId === service.serviceID) {
+      setEditingRowId(null);
+    } else {
+      setEditingRowId(service.serviceID);
+      setEditFormData(service);
     }
-
-    const discountedPrice =
-      service.price - (service.price * applicableDiscount.discountPercentage) / 100;
-
-    return {
-      discountedPrice: discountedPrice.toFixed(2),
-      discountDetails: applicableDiscount,
-    };
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Services</h1>
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
+          Shërbimet
+        </h1>
         <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            setShowForm(!showForm);
+            setNewService({
+              serviceID: null,
+              serviceName: '',
+              description: '',
+              price: '',
+              duration: '',
+              staffEarningPercentage: '',
+            });
+          }}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
         >
-          {showForm ? 'Close Form' : 'Add Service'}
+          {showForm ? 'Mbyll' : 'Shto Shërbim'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mt-4">
           <div className="grid grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="serviceName"
-              placeholder="Service Name"
-              value={newService.serviceName}
-              onChange={handleInputChange}
-              className="border px-4 py-2"
-              required
-            />
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={newService.description}
-              onChange={handleInputChange}
-              className="border px-4 py-2"
-              required
-            />
-            <input
-              type="number"
-              name="price"
-              placeholder="Price"
-              value={newService.price}
-              onChange={handleInputChange}
-              className="border px-4 py-2"
-              required
-            />
-            <input
-              type="number"
-              name="duration"
-              placeholder="Duration (mins)"
-              value={newService.duration}
-              onChange={handleInputChange}
-              className="border px-4 py-2"
-              required
-            />
-            <input
-              type="number"
-              name="staffEarningPercentage"
-              placeholder="Staff Earning (%)"
-              value={newService.staffEarningPercentage}
-              onChange={handleInputChange}
-              className="border px-4 py-2"
-              required
-            />
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                Emri i Shërbimit
+              </label>
+              <input
+                type="text"
+                name="serviceName"
+                placeholder="Emri i Shërbimit"
+                value={newService.serviceName}
+                onChange={handleInputChange}
+                required
+                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                Përshkrimi
+              </label>
+              <textarea
+                name="description"
+                placeholder="Përshkrimi"
+                value={newService.description}
+                onChange={handleInputChange}
+                required
+                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                Çmimi
+              </label>
+              <input
+                type="number"
+                name="price"
+                placeholder="Çmimi"
+                value={newService.price}
+                onChange={handleInputChange}
+                required
+                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                Kohëzgjatja (min)
+              </label>
+              <input
+                type="number"
+                name="duration"
+                placeholder="Kohëzgjatja"
+                value={newService.duration}
+                onChange={handleInputChange}
+                required
+                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                Paga e Stafit (%)
+              </label>
+              <input
+                type="number"
+                name="staffEarningPercentage"
+                placeholder="Paga e Stafit"
+                value={newService.staffEarningPercentage}
+                onChange={handleInputChange}
+                required
+                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+              />
+            </div>
           </div>
-          <button type="submit" className="bg-green-500 text-white px-4 py-2 mt-4 rounded">
-            Submit
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-500 text-white rounded-md mt-4"
+          >
+            Shto
           </button>
         </form>
       )}
 
-      <table className="w-full border-collapse border">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Shërbimi</th>
-            <th className="border px-4 py-2">Përshkrimi</th>
-            <th className="border px-4 py-2">Cmimi</th>
-            <th className="border px-4 py-2">Zbritja (%)</th>
-            <th className="border px-4 py-2">Cmimi me Zbritje</th>
-            <th className="border px-4 py-2">Kohëzgjatja e Zbritjës</th>
-            <th className="border px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {serviceList.map((service) => {
-            const { discountedPrice, discountDetails } = calculateDiscountedPrice(service);
-            return (
-              <tr key={service.id}>
-                <td className="border px-4 py-2">{service.serviceName}</td>
-                <td className="border px-4 py-2">{service.description}</td>
-                <td className="border px-4 py-2">{service.price}€</td>
-                <td className="border px-4 py-2">
-                  {discountDetails ? `${discountDetails.discountPercentage}%` : 'N/A'}
-                </td>
-                <td className="border px-4 py-2">
-                  {discountedPrice ? `${discountedPrice}€` : 'N/A'}
-                </td>
-                <td className="border px-4 py-2">
-                  {discountDetails
-                    ? `${new Date(discountDetails.startDate).toLocaleDateString()} - ${new Date(
-                        discountDetails.endDate
-                      ).toLocaleDateString()}`
-                    : 'N/A'}
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(service)}
-                    className="text-blue-500 px-2"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(service.id)}
-                    className="text-red-500 px-2"
-                  >
-                    <MdOutlineDelete />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className="max-w-full overflow-x-auto mt-6">
+        <table className="w-full table-auto dark:border-strokedark dark:bg-boxdark">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Emri i Shërbimit
+              </th>
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Përshkrimi
+              </th>
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Çmimi (Aktual)
+              </th>
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Kohëzgjatja
+              </th>
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Paga e Stafit (%)
+              </th>
+              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Veprime
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {serviceList.map((service) => (
+              <React.Fragment key={service.serviceID}>
+                <tr>
+                  <td className="py-4 px-4 dark:text-white text-black">
+                    {service.serviceName}
+                  </td>
+                  <td className="py-4 px-4 dark:text-white text-black">
+                    {service.description}
+                  </td>
+                  <td className="py-4 px-4 dark:text-white text-black">
+                    {service.discountPrice > 0
+                      ? `${service.discountPrice}€`
+                      : `${service.price}€`}
+                  </td>
+                  <td className="py-4 px-4 dark:text-white text-black">
+                    {service.duration} min
+                  </td>
+                  <td className="py-4 px-4 dark:text-white text-black">
+                    {service.staffEarningPercentage}%
+                  </td>
+                  <td className="py-4 px-4">
+                    <button
+                      onClick={() => handleEdit(service)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(service.serviceID)}
+                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </td>
+                </tr>
+                {editingRowId === service.serviceID && (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                    >
+                      <form onSubmit={handleEditSubmit}>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Emri i Shërbimit
+                            </label>
+                            <input
+                              type="text"
+                              name="serviceName"
+                              value={editFormData.serviceName}
+                              onChange={handleEditInputChange}
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                              required
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Përshkrimi
+                            </label>
+                            <textarea
+                              name="description"
+                              value={editFormData.description}
+                              onChange={handleEditInputChange}
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                              required
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Çmimi
+                            </label>
+                            <input
+                              type="number"
+                              name="price"
+                              value={editFormData.price}
+                              onChange={handleEditInputChange}
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                              required
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                              Kohëzgjatja (min)
+                            </label>
+                            <input
+                              type="number"
+                              name="duration"
+                              value={editFormData.duration}
+                              onChange={handleEditInputChange}
+                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="submit"
+                          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md"
+                        >
+                          Ruaj
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default Services;
+export default Service;

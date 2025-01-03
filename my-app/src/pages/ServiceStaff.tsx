@@ -4,6 +4,7 @@ import axios from 'axios';
 const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
   const [dailyEarnings, setDailyEarnings] = useState<any[]>([]);
+  const [discounts, setDiscounts] = useState<any[]>([]);
   const [filterDate, setFilterDate] = useState<string>(
     new Date().toISOString().split('T')[0],
   );
@@ -11,11 +12,13 @@ const ServiceStaff = () => {
   useEffect(() => {
     fetchServiceStaff();
     fetchDailyEarnings();
+    fetchDiscounts();
 
     const handleDataUpdate = () => {
       console.log('Data update detected, refreshing ServiceStaff data...');
       fetchServiceStaff();
       fetchDailyEarnings();
+      fetchDiscounts();
     };
 
     window.addEventListener('dataUpdated', handleDataUpdate);
@@ -45,6 +48,39 @@ const ServiceStaff = () => {
     } catch (error) {
       console.error('Error fetching daily earnings:', error);
     }
+  };
+
+  const fetchDiscounts = async () => {
+    try {
+      const response = await axios.get(
+        'https://localhost:7158/api/ServiceDiscount',
+      );
+      setDiscounts(response.data);
+    } catch (error) {
+      console.error('Error fetching discounts:', error);
+    }
+  };
+
+  const calculateDiscountedPrice = (
+    servicePrice: number,
+    serviceID: number,
+  ) => {
+    const now = new Date();
+    const applicableDiscount = discounts.find(
+      (discount) =>
+        discount.serviceID === serviceID &&
+        new Date(discount.startDate) <= now &&
+        new Date(discount.endDate) >= now,
+    );
+
+    if (applicableDiscount) {
+      return (
+        servicePrice -
+        (servicePrice * applicableDiscount.discountPercentage) / 100
+      ).toFixed(2);
+    }
+
+    return servicePrice.toFixed(2);
   };
 
   const filteredDailyEarnings = dailyEarnings.filter((item) => {
@@ -86,30 +122,37 @@ const ServiceStaff = () => {
             </tr>
           </thead>
           <tbody>
-            {serviceStaffList.map((item) => (
-              <tr key={item.serviceStaffID}>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.staffName}
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.serviceName}
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.servicePrice.toFixed(2)}€
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.percentage.toFixed(2)}%
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.staffEarning.toFixed(2)}€
-                </td>
-                <td className="py-2 px-4 text-black dark:text-white">
-                  {item.dateCompleted
-                    ? new Date(item.dateCompleted).toLocaleString()
-                    : 'N/A'}
-                </td>
-              </tr>
-            ))}
+            {serviceStaffList.map((item) => {
+              const discountedPrice = parseFloat(
+                calculateDiscountedPrice(item.servicePrice, item.serviceID),
+              );
+              const staffEarning = (discountedPrice * item.percentage) / 100;
+
+              return (
+                <tr key={item.serviceStaffID}>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.staffName}
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.serviceName}
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {discountedPrice.toFixed(2)}€
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.percentage.toFixed(2)}%
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {staffEarning.toFixed(2)}€
+                  </td>
+                  <td className="py-2 px-4 text-black dark:text-white">
+                    {item.dateCompleted
+                      ? new Date(item.dateCompleted).toLocaleString()
+                      : 'N/A'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

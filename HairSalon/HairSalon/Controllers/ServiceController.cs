@@ -16,17 +16,33 @@ public class ServiceController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetServices()
     {
-        var services = await _context.Services.ToListAsync();
-        return Ok(services);
+        var services = await _context.Services
+            .Include(s => s.ServiceDiscounts)
+            .ToListAsync();
+
+        var response = services.Select(s => new
+        {
+            s.ServiceID,
+            s.ServiceName,
+            s.Description,
+            s.Price,
+            s.DiscountPrice,
+            s.Duration,
+            s.StaffEarningPercentage
+        });
+
+        return Ok(response);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateService([FromBody] Service service)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
         _context.Services.Add(service);
         await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(GetServices), new { id = service.ServiceID }, service);
     }
 
@@ -38,67 +54,31 @@ public class ServiceController : ControllerBase
 
         var existingService = await _context.Services.FindAsync(id);
         if (existingService == null)
-            return NotFound("Service not found.");
+            return NotFound();
 
-        try
-        {
-            // Update the service details
-            existingService.ServiceName = service.ServiceName;
-            existingService.Description = service.Description;
-            existingService.Price = service.Price;
-            existingService.Duration = service.Duration;
-            existingService.StaffEarningPercentage = service.StaffEarningPercentage;
+        existingService.ServiceName = service.ServiceName;
+        existingService.Description = service.Description;
+        existingService.Price = service.Price;
+        existingService.DiscountPrice = service.DiscountPrice;
+        existingService.Duration = service.Duration;
+        existingService.StaffEarningPercentage = service.StaffEarningPercentage;
 
-            _context.Entry(existingService).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+        _context.Entry(existingService).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
 
-            // Update related ServiceStaff records
-            var relatedServiceStaff = await _context.ServiceStaff
-                .Where(ss => ss.ServiceID == id)
-                .ToListAsync();
-
-            foreach (var staff in relatedServiceStaff)
-            {
-                staff.Price = existingService.Price; // Ensure Price is in sync
-                staff.StaffEarning = existingService.Price * (existingService.StaffEarningPercentage / 100);
-                _context.ServiceStaff.Update(staff);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating service: {ex.Message}");
-            return StatusCode(500, "An error occurred while updating the service.");
-        }
+        return NoContent();
     }
-
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteService(int id)
     {
         var service = await _context.Services.FindAsync(id);
-        if (service == null) return NotFound();
+        if (service == null)
+            return NotFound();
 
         _context.Services.Remove(service);
         await _context.SaveChangesAsync();
+
         return NoContent();
     }
-    [HttpGet("total-services")]
-    public IActionResult GetTotalServices()
-    {
-        try
-        {
-            var totalServices = _context.Services.Count();  
-            return Ok(new { totalServices });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching total services: {ex.Message}");
-            return StatusCode(500, "An error occurred while fetching the total services.");
-        }
-    }
-
 }

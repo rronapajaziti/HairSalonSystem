@@ -114,12 +114,12 @@ const Appointments = () => {
         Status: newAppointment.status,
         Notes: newAppointment.notes,
       };
-  
+
       const response = await axios.post(
         'https://localhost:7158/api/Appointment',
         payload,
       );
-  
+
       setAppointments([...appointments, response.data]);
       setShowForm(false);
       setNewAppointment({
@@ -138,11 +138,10 @@ const Appointments = () => {
       console.error('Error adding appointment:', error);
     }
   };
-  
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const payload = {
       Client: {
         FirstName: editFormData.firstName,
@@ -157,18 +156,20 @@ const Appointments = () => {
       Status: editFormData.status,
       Notes: editFormData.notes,
     };
-  
+
     console.log('Payload being sent:', payload); // Debug payload
-  
+
     try {
       const response = await axios.put(
         `https://localhost:7158/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
-  
+
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt.appointmentID === editFormData.appointmentID ? response.data : appt,
+          appt.appointmentID === editFormData.appointmentID
+            ? response.data
+            : appt,
         ),
       );
       setEditingRowId(null);
@@ -176,10 +177,6 @@ const Appointments = () => {
       console.error('Error editing appointment:', error);
     }
   };
-  
-  
-  
-  
 
   const handleEdit = (appt: any) => {
     if (editingRowId === appt.appointmentID) {
@@ -191,10 +188,11 @@ const Appointments = () => {
       const staff = staffList.find(
         (staff) => `${staff.firstName} ${staff.lastName}` === appt.staffName,
       );
-  
+
       const isValidDate =
-        appt.appointmentDate && !isNaN(new Date(appt.appointmentDate).getTime());
-  
+        appt.appointmentDate &&
+        !isNaN(new Date(appt.appointmentDate).getTime());
+
       setEditingRowId(appt.appointmentID);
       setEditFormData({
         appointmentID: appt.appointmentID,
@@ -212,8 +210,6 @@ const Appointments = () => {
       });
     }
   };
-  
-  
 
   const handleDelete = async (id: number) => {
     try {
@@ -227,13 +223,17 @@ const Appointments = () => {
   };
 
   const filteredAppointments = appointments.filter((appt) => {
-    if (!appt.appointmentDate || isNaN(new Date(appt.appointmentDate).getTime())) {
+    if (
+      !appt.appointmentDate ||
+      isNaN(new Date(appt.appointmentDate).getTime())
+    ) {
       console.warn(`Invalid appointment date for ID: ${appt.appointmentID}`);
       return false;
     }
-    return new Date(appt.appointmentDate).toISOString().startsWith(selectedDate);
+    return new Date(appt.appointmentDate)
+      .toISOString()
+      .startsWith(selectedDate);
   });
-  
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">

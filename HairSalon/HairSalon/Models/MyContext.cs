@@ -49,9 +49,13 @@ namespace HairSalon.Models
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<ServiceDiscount>()
-            .HasOne(d => d.Service)
-            .WithMany()
-            .HasForeignKey(d => d.ServiceID);
+       .HasMany(sd => sd.Services)
+       .WithMany(s => s.ServiceDiscounts)
+       .UsingEntity<Dictionary<string, object>>(
+           "ServiceServiceDiscount",
+           ss => ss.HasOne<Service>().WithMany().HasForeignKey("ServiceID"),
+           ss => ss.HasOne<ServiceDiscount>().WithMany().HasForeignKey("ServiceDiscountID")
+       );
         }
     }
 }

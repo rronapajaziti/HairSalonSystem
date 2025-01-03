@@ -318,24 +318,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                   <svg
-                    width="1.5em"
-                    height="1.5em"
-                    fill="currentColor"
-                    viewBox="0 0 64 64"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="size-6"
                   >
                     <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeMiterlimit={10}
-                      strokeWidth={2}
-                      d="M63 38a19 19 0 0 1-19 19 19 19 0 0 1-19-19 19 19 0 0 1 38 0z"
-                    />
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeMiterlimit={10}
-                      strokeWidth={2}
-                      d="M57 38a13 13 0 0 1-13 13 13 13 0 0 1-13-13 13 13 0 0 1 26 0zM30 51H1v6h37v-1M27 45H3v6h27m-4-12H5v6h22m-1-12H1v6h25m3-12H3v6h23m9-12H1v6h28m11-7v-5H3v6h32M1 9h37v6H1z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14.25 7.756a4.5 4.5 0 1 0 0 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                     />
                   </svg>
                   Shpenzimet Ditore
@@ -350,32 +343,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       : ''
                   }`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                  </svg>
-                
-                  Shpenzimet Mujore
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/chat"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('/chat')
-                      ? 'bg-graydark dark:bg-meta-4'
-                      : ''
-                  }`}
-                >
                   <svg
-                    width="1.5em"
-                    height="1.5em"
-                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
                     viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="size-6"
                   >
-                    <path d="M12 12a3 3 0 1 0 3 3 3 3 0 0 0-3-3zm0 4a1 1 0 1 1 1-1 1 1 0 0 1-1 1zm-.71-6.29a1 1 0 0 0 .33.21.94.94 0 0 0 .76 0 1 1 0 0 0 .33-.21L15 7.46A1 1 0 1 0 13.54 6l-.54.59V3a1 1 0 0 0-2 0v3.59L10.46 6A1 1 0 0 0 9 7.46zM19 15a1 1 0 1 0-1 1 1 1 0 0 0 1-1zm1-7h-3a1 1 0 0 0 0 2h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h3a1 1 0 0 0 0-2H4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3zM5 15a1 1 0 1 0 1-1 1 1 0 0 0-1 1z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"
+                    />
                   </svg>
-                  Produktet
+                  Shpenzimet Mujore
                 </NavLink>
               </li>
               <li>
@@ -388,12 +370,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                   <svg
-                    height="1.5em"
                     width="1.5em"
-                    fill="currentColor"
+                    height="1.5em"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
                     viewBox="0 0 24 24"
                   >
-                    <path d="M12 3c5.5 0 10 3.58 10 8 0 .58-.08 1.14-.22 1.68-.59-.3-1.23-.52-1.9-.62.08-.34.12-.7.12-1.06 0-3.31-3.58-6-8-6s-8 2.69-8 6 3.58 6 8 6l1.09-.05L13 18l.08.95L12 19c-1.19 0-2.38-.17-3.53-.5C6.64 20 4.37 20.89 2 21c2.33-2.33 2.75-3.9 2.75-4.5A7.218 7.218 0 0 1 2 11c0-4.42 4.5-8 10-8m6 11h2v3h3v2h-3v3h-2v-3h-3v-2h3v-3z" />
+                    <path d="M19 5 5 19M9 6.5A2.5 2.5 0 0 1 6.5 9 2.5 2.5 0 0 1 4 6.5a2.5 2.5 0 0 1 5 0zM20 17.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 5 0z" />
                   </svg>
                   Zbritjet
                 </NavLink>
