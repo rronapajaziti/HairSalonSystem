@@ -90,6 +90,16 @@
   },
   {
     "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetRevenueMonthly",
+    "RelativePath": "api/Appointment/revenue-monthly",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
     "Method": "GetDailySchedule",
     "RelativePath": "api/Appointment/schedule",
     "HttpMethod": "GET",

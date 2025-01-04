@@ -446,6 +446,38 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching daily summary.");
             }
         }
+
+
+
+[HttpGet("revenue-monthly")]
+public async Task<IActionResult> GetRevenueMonthly()
+{
+    try
+    {
+        var monthlyRevenues = await _context.Appointments
+            .Where(a => a.Status.ToLower() == "përfunduar")
+            .GroupBy(a => new { a.AppointmentDate.Year, a.AppointmentDate.Month })
+            .Select(group => new
+            {
+                Month = group.Key.Month,
+                Year = group.Key.Year,
+                TotalRevenue = group.Sum(a => a.Service.Price)
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToListAsync();
+
+        return Ok(monthlyRevenues);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error fetching monthly revenue: {ex.Message}");
+        return StatusCode(500, "An error occurred while fetching monthly revenue.");
+    }
+}
+
+
+
         [HttpGet("schedule")]
         public async Task<IActionResult> GetDailySchedule([FromQuery] DateTime date)
         {

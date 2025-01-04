@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
-import axios from 'axios';
-import { startOfWeek, endOfWeek } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import ReactApexChart from "react-apexcharts";
+import axios from "axios";
+import { startOfWeek, endOfWeek } from "date-fns";
 
 const ChartTwo: React.FC = () => {
   const [currentWeekProfit, setCurrentWeekProfit] = useState<number>(0);
@@ -17,7 +17,7 @@ const ChartTwo: React.FC = () => {
 
       setCurrentWeekProfit(response.data.totalRevenue || 0);
     } catch (error) {
-      console.error('Error fetching weekly profit data:', error);
+      console.error("Error fetching weekly profit data:", error);
     }
   };
 
@@ -27,84 +27,49 @@ const ChartTwo: React.FC = () => {
 
   const options = {
     chart: {
-      type: 'bar',
-      height: 400,
-      toolbar: {
-        show: false,
-      },
+      type: "bar",
+      height: 250,
+      toolbar: { show: false },
     },
     plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '50%',
-        borderRadius: 6,
-      },
-    },
-    grid: {
-      borderColor: '#D1D5DB', 
-      strokeDashArray: 4, 
-      xaxis: {
-        lines: {
-          show: false, 
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true, 
-        },
-      },
+      bar: { columnWidth: "50%", borderRadius: 4 },
     },
     xaxis: {
-      categories: ['Current Week'], 
-      labels: {
-        style: {
-          fontSize: '14px',
-          colors: ['#6B7280'],
-        },
-      },
+      categories: ["Current Week"],
     },
     yaxis: {
-      title: {
-        text: 'Profit (€)',
-        style: {
-          fontSize: '14px',
-          color: '#374151', 
-        },
-      },
-      labels: {
-        formatter: (value: number) => `${value.toFixed(2)}€`,
-        style: {
-          fontSize: '12px',
-          colors: ['#374151'],
-        },
-      },
+      title: { text: "Profit (€)" },
     },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ['#2563EB'], 
+    dataLabels: { enabled: false },
+    colors: ["#2563EB"],
   };
 
-  const series = [
-    {
-      name: 'Profit',
-      data: [currentWeekProfit],
-    },
-  ];
+  const series = [{ name: "Profit", data: [currentWeekProfit] }];
 
   return (
-    <div className="p-6 rounded-lg border border-gray-300 bg-white shadow-lg max-w-lg mx-auto">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-700">Weekly Profit</h2>
-      <p className="text-gray-600 mb-6">
-        <strong>Current Week Profit:</strong> {currentWeekProfit.toFixed(2)}€
-      </p>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="bar"
-        height={400}
-        width="100%" 
-      />
+    <div
+      style={{
+        backgroundColor: "#ffffff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "8px",
+        padding: "20px",
+        maxWidth: "450px",
+        margin: "16px auto",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h2
+        style={{
+          fontSize: "1.25rem",
+          fontWeight: 600,
+          color: "#374151",
+          textAlign: "center",
+          marginBottom: "12px",
+        }}
+      >
+        Weekly Profit
+      </h2>
+      <ReactApexChart options={options} series={series} type="bar" height={250} />
     </div>
   );
 };
