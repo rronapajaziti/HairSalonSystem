@@ -1,110 +1,99 @@
-import { Link } from 'react-router-dom';
-import { Chat } from '../../types/chat';
-import UserOne from '../../images/user/user-01.png';
-import UserTwo from '../../images/user/user-02.png';
-import UserThree from '../../images/user/user-03.png';
-import UserFour from '../../images/user/user-04.png';
-import UserFive from '../../images/user/user-05.png';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const chatData: Chat[] = [
-  {
-    avatar: UserOne,
-    name: 'Devid Heilo',
-    text: 'How are you?',
-    time: 12,
-    textCount: 3,
-    color: '#10B981',
-  },
-  {
-    avatar: UserTwo,
-    name: 'Henry Fisher',
-    text: 'Waiting for you!',
-    time: 12,
-    textCount: 0,
-    color: '#DC3545',
-  },
-  {
-    avatar: UserFour,
-    name: 'Jhon Doe',
-    text: "What's up?",
-    time: 32,
-    textCount: 0,
-    color: '#10B981',
-  },
-  {
-    avatar: UserFive,
-    name: 'Jane Doe',
-    text: 'Great',
-    time: 32,
-    textCount: 2,
-    color: '#FFBA00',
-  },
-  {
-    avatar: UserOne,
-    name: 'Jhon Doe',
-    text: 'How are you?',
-    time: 32,
-    textCount: 0,
-    color: '#10B981',
-  },
-  {
-    avatar: UserThree,
-    name: 'Jhon Doe',
-    text: 'How are you?',
-    time: 32,
-    textCount: 3,
-    color: '#FFBA00',
-  },
-];
+interface Customer {
+  name: string;
+  completedAppointments: number;
+}
 
-const ChatCard = () => {
+const BestCustomersCard = () => {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const colors = [
+    '#3C50E0',
+    '#6577F3',
+    '#8FD0EF',
+    '#0FADCF',
+    '#6A5ACD',
+    '#7B68EE',
+    '#8A2BE2',
+    '#9370DB',
+    '#483D8B',
+    '#4169E1',
+  ];
+
+  const fetchBestCustomers = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(
+        'https://localhost:7158/api/Appointment/top-customers',
+      );
+
+      if (response?.data && Array.isArray(response.data)) {
+        setCustomers(response.data);
+      } else {
+        setError('Formati i përgjigjes API është i papritur.');
+      }
+    } catch (err) {
+      setError('Dështoi ngarkimi i klientëve më të mirë.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBestCustomers();
+  }, []);
+
+  if (loading) {
+    return <p>Po ngarkohet...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white py-6 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
+    <div className="col-span-12 rounded-sm border border-stroke m-7 p-5 bg-white py-6 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
       <h4 className="mb-6 px-7.5 text-xl font-semibold text-black dark:text-white">
-        Chats
+        10 Klientët më të rregullt
       </h4>
 
       <div>
-        {chatData.map((chat, key) => (
-          <Link
-            to="/"
+        {customers.map((customer, key) => (
+          <div
             className="flex items-center gap-5 py-3 px-7.5 hover:bg-gray-3 dark:hover:bg-meta-4"
             key={key}
           >
-            <div className="relative h-14 w-14 rounded-full">
-              <img src={chat.avatar} alt="User" />
-              <span
-                className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 border-white"
-                style={{backgroundColor: chat.color}}
-              ></span>
+            <div
+              className="relative h-14 w-14 flex items-center justify-center font-bold text-white"
+              style={{
+                backgroundColor: colors[key % colors.length],
+                borderRadius: '5px',
+              }}
+            >
+              {customer.name.charAt(0).toUpperCase()}
             </div>
 
             <div className="flex flex-1 items-center justify-between">
               <div>
                 <h5 className="font-medium text-black dark:text-white">
-                  {chat.name}
+                  {customer.name}
                 </h5>
-                <p>
-                  <span className="text-sm text-black dark:text-white">
-                    {chat.text}
-                  </span>
-                  <span className="text-xs"> . {chat.time} min</span>
+                <p className="text-sm text-black dark:text-white">
+                  {customer.completedAppointments} Takime të Përfunduara
                 </p>
               </div>
-              {chat.textCount !== 0 && (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
-                  <span className="text-sm font-medium text-white">
-                    {' '}
-                    {chat.textCount}
-                  </span>
-                </div>
-              )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
   );
 };
 
-export default ChatCard;
+export default BestCustomersCard;

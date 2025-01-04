@@ -1,8 +1,8 @@
-import React from "react";
-import Breadcrumb from "../components/Breadcrumbs/Breadcrumb";
-import ChartOne from "../components/Charts/ChartOne";
-import ChartTwo from "../components/Charts/ChartTwo";
-import ChartThree from "../components/Charts/ChartThree";
+import React from 'react';
+import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
+import ChartOne from '../components/Charts/ChartOne';
+import ChartTwo from '../components/Charts/ChartTwo';
+import ChartThree from '../components/Charts/ChartThree';
 
 const Chart: React.FC = () => {
   return (
@@ -12,10 +12,10 @@ const Chart: React.FC = () => {
       {/* Grid layout for charts */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "20px", // Add spacing between charts
-          margin: "20px",
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '20px', // Add spacing between charts
+          margin: '20px',
         }}
       >
         {/* Chart One */}

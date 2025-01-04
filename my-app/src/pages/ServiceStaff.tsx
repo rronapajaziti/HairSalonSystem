@@ -49,6 +49,10 @@ const ServiceStaff = () => {
       console.error('Error fetching daily earnings:', error);
     }
   };
+  const filteredServiceStaff = serviceStaffList.filter((item) => {
+    const itemDate = new Date(item.dateCompleted).toISOString().split('T')[0];
+    return itemDate === filterDate;
+  });
 
   const fetchDiscounts = async () => {
     try {
@@ -92,10 +96,20 @@ const ServiceStaff = () => {
 
   return (
     <div className="rounded-sm border border-stroke text-black bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 dark:text-white dark:border-strokedark dark:bg-boxdark">
+      <div className="flex items-center mb-4">
+        <label className="mr-4 text-black dark:text-white">
+          Filtro sipas datës:
+        </label>
+        <input
+          type="date"
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
+          className="px-4 py-2 border rounded-md text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+        />
+      </div>{' '}
       <h1 className="text-xl font-semibold text-blue-900 dark:text-white ">
         Pagesa sipas Shërbimit
       </h1>
-
       {/* Service Staff Table */}
       <div className="overflow-x-auto mt-6">
         <table className="w-full text-left border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
@@ -122,7 +136,7 @@ const ServiceStaff = () => {
             </tr>
           </thead>
           <tbody>
-            {serviceStaffList.map((item) => {
+            {filteredServiceStaff.map((item) => {
               const discountedPrice = parseFloat(
                 calculateDiscountedPrice(item.servicePrice, item.serviceID),
               );
@@ -156,23 +170,11 @@ const ServiceStaff = () => {
           </tbody>
         </table>
       </div>
-
       {/* Daily Earnings Table */}
       <div className="mt-10">
         <h2 className="text-xl font-semibold text-blue-900 dark:text-white ">
           Pagesat Ditore
         </h2>
-        <div className="flex items-center mb-4">
-          <label className="mr-4 text-black dark:text-white">
-            Filtro sipas datës:
-          </label>
-          <input
-            type="date"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-            className="px-4 py-2 border rounded-md text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-          />
-        </div>
         <div className="overflow-x-auto mt-6">
           <table className="w-full text-left border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
             <thead>

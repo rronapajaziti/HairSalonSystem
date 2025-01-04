@@ -23,7 +23,7 @@ import WhatsAppForm from './pages/WhatsAppForm';
 import DailyExpenses from './pages/DailyExpensess';
 import MonthlyExpenses from './pages/MonthlyExpensess';
 import ServiceDiscount from './pages/ServiceDiscount';
-import ClientTable from './pages/UiElements/Client';
+import ClientTable from './pages/Client';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -125,7 +125,11 @@ function App() {
           element={
             <>
               <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ServiceDiscount />
+              <ServiceDiscount
+                updateServiceList={function (): void {
+                  throw new Error('Function not implemented.');
+                }}
+              />
             </>
           }
         />

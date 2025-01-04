@@ -528,8 +528,58 @@ public async Task<IActionResult> GetRevenueMonthly()
 
             return timeSlots;
         }
+        [HttpGet("services-completed")]
+        public IActionResult GetMostCompletedServices(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                if (startDate == default || endDate == default || startDate > endDate)
+                {
+                    return BadRequest("Invalid date range provided.");
+                }
 
+                var completedServices = _context.Appointments
+                    .Where(a => a.Status == "përfunduar" && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                    .GroupBy(a => a.Service.ServiceName)
+                    .Select(g => new { ServiceName = g.Key, Count = g.Count() })
+                    .OrderByDescending(g => g.Count)
+                    .ToList();
 
+                return Ok(completedServices);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching completed services: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching completed services.");
+            }
+        }
+
+        [HttpGet("top-customers")]
+        public IActionResult GetTopCustomers()
+        {
+            try
+            {
+                var topCustomers = _context.Appointments
+                    .Where(a => a.Status.ToLower() == "përfunduar") // Only completed appointments
+                    .GroupBy(a => new { a.Client.ClientID, a.Client.FirstName, a.Client.LastName, a.Client.PhoneNumber })
+                    .Select(group => new
+                    {
+                        ClientID = group.Key.ClientID,
+                        Name = $"{group.Key.FirstName} {group.Key.LastName} - {group.Key.PhoneNumber}",
+                        CompletedAppointments = group.Count()
+                    })
+                    .OrderByDescending(x => x.CompletedAppointments)
+                    .Take(10) 
+                    .ToList();
+
+                return Ok(topCustomers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching top customers: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching top customers.");
+            }
+        }
 
 
     }
@@ -545,6 +595,8 @@ public async Task<IActionResult> GetRevenueMonthly()
             }
             return dateTime.AddDays(-diff).Date;
         }
+       
+
     }
 
 

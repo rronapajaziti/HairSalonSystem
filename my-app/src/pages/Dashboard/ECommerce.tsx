@@ -117,7 +117,7 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
 
         <CardDataStats
-          title="Total Services"
+          title="Numri i Shërbimeve"
           total={`${totalServices}`}
           rate="0.43%"
           levelUp
@@ -140,7 +140,7 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
 
         <CardDataStats
-          title="Completed Appointments"
+          title="Terminet e Përfunduara"
           total={`${completedAppointments}`}
           rate="0.95%"
           levelDown
@@ -163,15 +163,19 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
       </div>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne />
-        <ChartTwo />
-        <ChartThree />
-        <MapOne />
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 2xl:gap-7.5">
+        <div className="col-span-1">
+          <ChartOne />
         </div>
-        <ChatCard />
+        <div className="col-span-1">
+          <ChartTwo />
+        </div>
+        <div className="col-span-1">
+          <ChartThree />
+        </div>
+        <div className="col-span-1">
+          <ChatCard />
+        </div>
       </div>
     </>
   );
