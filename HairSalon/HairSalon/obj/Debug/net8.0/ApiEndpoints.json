@@ -116,6 +116,37 @@
   },
   {
     "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetMostCompletedServices",
+    "RelativePath": "api/Appointment/services-completed",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "startDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "endDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "GetTopCustomers",
+    "RelativePath": "api/Appointment/top-customers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
     "Method": "GetTotalCompletedAppointments",
     "RelativePath": "api/Appointment/total-completed-appointments",
     "HttpMethod": "GET",
@@ -502,6 +533,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ServiceController",
+    "Method": "GetTotalServices",
+    "RelativePath": "api/Service/total-services",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

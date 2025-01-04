@@ -5,6 +5,20 @@ import { startOfWeek, endOfWeek } from "date-fns";
 
 const ChartTwo: React.FC = () => {
   const [currentWeekProfit, setCurrentWeekProfit] = useState<number>(0);
+  const [colorMode, setColorMode] = useState<string>(
+    localStorage.getItem("colorMode") || "light"
+  );
+
+  // Watch for changes in dark mode
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.body.classList.contains("dark");
+      setColorMode(isDark ? "dark" : "light");
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
 
   const fetchWeeklyData = async () => {
     try {
@@ -30,15 +44,34 @@ const ChartTwo: React.FC = () => {
       type: "bar",
       height: 250,
       toolbar: { show: false },
+      background: "transparent",
     },
     plotOptions: {
       bar: { columnWidth: "50%", borderRadius: 4 },
     },
     xaxis: {
       categories: ["Current Week"],
+      labels: {
+        style: {
+          colors: colorMode === "dark" ? "#FFFFFF" : "#374151", 
+        },
+      },
     },
     yaxis: {
-      title: { text: "Profit (€)" },
+      title: {
+        text: "Profit (€)",
+        style: {
+          color: colorMode === "dark" ? "#FFFFFF" : "#374151", 
+        },
+      },
+      labels: {
+        style: {
+          colors: colorMode === "dark" ? "#FFFFFF" : "#374151", 
+        },
+      },
+    },
+    grid: {
+      borderColor: colorMode === "dark" ? "#2D3748" : "#E5E7EB", 
     },
     dataLabels: { enabled: false },
     colors: ["#2563EB"],
@@ -48,23 +81,15 @@ const ChartTwo: React.FC = () => {
 
   return (
     <div
+      className="p-6 rounded-lg max-w-lg mx-auto border border-gray-300 dark:border-gray-700"
       style={{
-        backgroundColor: "#ffffff",
-        border: "1px solid #e5e7eb",
-        borderRadius: "8px",
-        padding: "20px",
-        maxWidth: "450px",
-        margin: "16px auto",
-        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: colorMode === "dark" ? "transparent" : "#FFFFFF", 
       }}
     >
       <h2
+        className="text-xl font-semibold text-center mb-4"
         style={{
-          fontSize: "1.25rem",
-          fontWeight: 600,
-          color: "#374151",
-          textAlign: "center",
-          marginBottom: "12px",
+          color: colorMode === "dark" ? "#FFFFFF" : "#374151", 
         }}
       >
         Weekly Profit

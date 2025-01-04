@@ -9,6 +9,20 @@ const ChartOne: React.FC = () => {
     { name: "Sales", data: [] },
   ]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [colorMode, setColorMode] = useState<string>(
+    localStorage.getItem("colorMode") || "light"
+  );
+
+  // Watch for changes in dark mode
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.body.classList.contains("dark");
+      setColorMode(isDark ? "dark" : "light");
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     fetchMonthlyData();
@@ -38,8 +52,9 @@ const ChartOne: React.FC = () => {
   const options: ApexOptions = {
     chart: {
       type: "area",
-      height: 250,
+      height: 350,
       toolbar: { show: false },
+      background: "transparent",
     },
     colors: ["#3C50E0", "#80CAEE"],
     stroke: {
@@ -56,12 +71,13 @@ const ChartOne: React.FC = () => {
       },
     },
     grid: {
+      borderColor: colorMode === "dark" ? "#2D3748" : "#E5E7EB", // Dark gray in dark mode, light gray in light mode
       xaxis: { lines: { show: true } },
       yaxis: { lines: { show: true } },
     },
     dataLabels: { enabled: false },
     markers: {
-      size: 3,
+      size: 4,
       colors: "#fff",
       strokeColors: ["#3056D3", "#80CAEE"],
       strokeWidth: 2,
@@ -69,34 +85,41 @@ const ChartOne: React.FC = () => {
     xaxis: {
       type: "category",
       categories,
+      labels: {
+        style: {
+          colors: colorMode === "dark" ? "#FFFFFF" : "#374151", // White in dark mode, dark gray in light mode
+        },
+      },
     },
     yaxis: {
       title: { text: "" },
-      min: 0,
+      labels: {
+        style: {
+          colors: colorMode === "dark" ? "#FFFFFF" : "#374151", // White in dark mode, dark gray in light mode
+        },
+      },
     },
     legend: {
       position: "top",
       horizontalAlign: "right",
+      labels: {
+        colors: colorMode === "dark" ? "#FFFFFF" : "#374151", // Legend text color
+      },
     },
   };
 
   return (
     <div
-  style={{
-    backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    padding: "20px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-  }}
->
+      className="p-6 rounded-lg max-w-lg mx-auto border border-gray-300 dark:border-gray-700"
+      style={{
+        backgroundColor: colorMode === "dark" ? "transparent" : "#FFFFFF", // Transparent in dark mode, white in light mode
+        maxWidth: "900px"
+      }}
+    >
       <h2
+        className="text-xl font-semibold text-center mb-4"
         style={{
-          fontSize: "1.25rem",
-          fontWeight: 600,
-          color: "#374151",
-          textAlign: "center",
-          marginBottom: "12px",
+          color: colorMode === "dark" ? "#FFFFFF" : "#374151", // Adapt heading color to mode
         }}
       >
         Monthly Revenue and Sales
