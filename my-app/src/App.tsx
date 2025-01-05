@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -29,7 +30,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
-
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -39,6 +40,28 @@ function App() {
   }, []);
 
   const isLoginPage = pathname === '/signin';
+
+  const handleLogin = () => setLoggedIn(true);
+  if (!loggedIn && !isLoginPage) {
+    return <Navigate to="/signin" />;
+  }
+
+  // If the user is not logged in, only show the SignIn page
+  if (!loggedIn) {
+    return (
+      <Routes>
+        <Route
+          path="/signin"
+          element={
+            <>
+              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <SignIn onLogin={handleLogin} />{' '}
+            </>
+          }
+        />
+      </Routes>
+    );
+  }
 
   return loading ? (
     <Loader />
@@ -125,10 +148,16 @@ function App() {
           element={
             <>
               <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ServiceDiscount searchQuery={searchQuery} />
+              <ServiceDiscount
+                updateServiceList={function (): void {
+                  throw new Error('Function not implemented.');
+                }}
+              />
             </>
           }
         />
+
+<Route path="/appointments" element={<Appointments />} />
         <Route
           path="/chat"
           element={
