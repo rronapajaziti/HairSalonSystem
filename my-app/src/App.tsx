@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -27,6 +27,7 @@ import ClientTable from './pages/Client';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false); // Track login status
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -39,20 +40,31 @@ function App() {
 
   const isLoginPage = pathname === '/signin';
 
+  // Login handler to update the login state
+  const handleLogin = () => setLoggedIn(true);
+  if (!loggedIn && !isLoginPage) {
+    return <Navigate to="/signin" />;
+  }
+
+  // If the user is not logged in, only show the SignIn page
+  if (!loggedIn) {
+    return (
+      <Routes>
+        <Route
+          path="/signin"
+          element={
+            <>
+              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <SignIn onLogin={handleLogin} />{' '}
+            </>
+          }
+        />
+      </Routes>
+    );
+  }
+
   return loading ? (
     <Loader />
-  ) : isLoginPage ? (
-    <Routes>
-      <Route
-        path="/signin"
-        element={
-          <>
-            <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <SignIn />
-          </>
-        }
-      />
-    </Routes>
   ) : (
     <DefaultLayout>
       <Routes>
@@ -65,7 +77,6 @@ function App() {
             </>
           }
         />
-
         <Route
           path="/calendar"
           element={
@@ -79,7 +90,7 @@ function App() {
           path="/terminet-Ditore"
           element={
             <>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Daily Appointments | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <DailyAppointments />
             </>
           }
@@ -97,7 +108,7 @@ function App() {
           path="/clients"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Clients | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <ClientTable />
             </>
           }
@@ -106,7 +117,7 @@ function App() {
           path="/dailyExpensess"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Daily Expenses | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <DailyExpenses />
             </>
           }
@@ -115,7 +126,7 @@ function App() {
           path="/monthlyExpensess"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Monthly Expenses | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <MonthlyExpenses />
             </>
           }
@@ -133,12 +144,11 @@ function App() {
             </>
           }
         />
-
         <Route
           path="/chat"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="WhatsApp Form | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <WhatsAppForm />
             </>
           }
@@ -166,7 +176,7 @@ function App() {
           path="/terminet"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Appointments | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Appointments />
             </>
           }
@@ -175,7 +185,7 @@ function App() {
           path="/sherbimet"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Services | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Services />
             </>
           }
@@ -184,7 +194,7 @@ function App() {
           path="/serviceStaff"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Service Staff | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <ServiceStaff />
             </>
           }
@@ -193,7 +203,7 @@ function App() {
           path="/stafi"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Staff | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Staff />
             </>
           }

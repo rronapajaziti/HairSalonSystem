@@ -52,11 +52,12 @@ namespace HairSalon.Controllers
         }
 
 
+        // Login user
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _context.Users
-                .Include(u => u.Appointments) // Include related appointments
+                .Include(u => u.Appointments)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
@@ -68,10 +69,10 @@ namespace HairSalon.Controllers
 
             return Ok(new
             {
-                Token = token,
+                Token = token,  // Send the token in the response
                 User = new
                 {
-                    UserID = user.UserID, // Ensure this matches the expected property name
+                    UserID = user.UserID,
                     user.FirstName,
                     user.LastName,
                     user.PhoneNumber,
@@ -86,6 +87,7 @@ namespace HairSalon.Controllers
                 }
             });
         }
+
 
         [HttpGet("staff")]
 public async Task<IActionResult> GetStaff()

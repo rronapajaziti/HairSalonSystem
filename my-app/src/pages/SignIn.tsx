@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ExtraStyle.css';
 
-const SignIn = () => {
+const SignIn = ({ onLogin }: { onLogin: () => void }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -11,7 +11,7 @@ const SignIn = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage('');
-  
+
     try {
       const response = await fetch('https://localhost:7158/api/User/login', {
         method: 'POST',
@@ -20,38 +20,27 @@ const SignIn = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Login failed');
       }
-  
+
       const data = await response.json();
-  
-      console.log('Login response:', data); 
-  
+
       if (!data.user || !data.user.userID) {
         throw new Error('User data is missing in the response.');
       }
-  
-      // Store token and userId in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.userID);
 
+      sessionStorage.setItem('token', data.token); // Store the token in sessionStorage
+      sessionStorage.setItem('userId', data.user.userID); // Store user ID in sessionStorage
 
-      console.log(localStorage.getItem('token'));  
-      console.log(localStorage.getItem('userId'));  
-
-
-  
+      onLogin();
       navigate('/');
     } catch (error) {
-      console.error('Login error occurred:', error);
       setErrorMessage('An error occurred. Please try again.');
     }
   };
-  
-  
 
   return (
     <div className="login-container">
@@ -94,7 +83,7 @@ const SignIn = () => {
         </form>
         {errorMessage && (
           <div className="error-message-container">
-            <p className="error-message">{'Email or Password is incorrect'}</p>
+            <p className="error-message">{errorMessage}</p>
           </div>
         )}
       </div>
