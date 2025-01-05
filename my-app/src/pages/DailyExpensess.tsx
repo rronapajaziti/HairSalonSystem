@@ -3,11 +3,9 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const DailyExpenses = () => {
+const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const [expenses, setExpenses] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  );
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [totalCost, setTotalCost] = useState<number>(0);
   const [showForm, setShowForm] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
@@ -26,12 +24,9 @@ const DailyExpenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get(
-        'https://localhost:7158/api/dailyexpenses',
-        {
-          params: { date: selectedDate },
-        },
-      );
+      const response = await axios.get('https://localhost:7158/api/dailyexpenses', {
+        params: { date: selectedDate },
+      });
       setExpenses(response.data.expenses || []);
       setTotalCost(response.data.totalCost || 0);
     } catch (error) {
@@ -49,10 +44,7 @@ const DailyExpenses = () => {
         date: new Date().toISOString().split('T')[0],
       };
 
-      const response = await axios.post(
-        'https://localhost:7158/api/dailyexpenses',
-        payload,
-      );
+      const response = await axios.post('https://localhost:7158/api/dailyexpenses', payload);
       setExpenses([...expenses, response.data]);
       setNewExpense({ name: '', amount: '' });
       setShowForm(false);
@@ -112,6 +104,11 @@ const DailyExpenses = () => {
       console.error('Error deleting expense:', error);
     }
   };
+
+  // Filter expenses based on search query
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -195,7 +192,7 @@ const DailyExpenses = () => {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense) => (
+          {filteredExpenses.map((expense) => (
             <React.Fragment key={expense.id}>
               <tr className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const Service = () => {
+const Service = ({ searchQuery }: { searchQuery: string }) => { // Accept searchQuery prop
   const [serviceList, setServiceList] = useState<any[]>([]);
   const [discounts, setDiscounts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -41,9 +41,7 @@ const Service = () => {
 
   const fetchDiscounts = async () => {
     try {
-      const response = await axios.get(
-        'https://localhost:7158/api/ServiceDiscount',
-      );
+      const response = await axios.get('https://localhost:7158/api/ServiceDiscount');
       setDiscounts(response.data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
@@ -51,7 +49,7 @@ const Service = () => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setNewService({
@@ -61,7 +59,7 @@ const Service = () => {
   };
 
   const handleEditInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setEditFormData((prev) => ({
@@ -83,10 +81,7 @@ const Service = () => {
     };
 
     try {
-      const response = await axios.post(
-        'https://localhost:7158/api/Service',
-        payload,
-      );
+      const response = await axios.post('https://localhost:7158/api/Service', payload);
       setServiceList([...serviceList, response.data]);
       setShowForm(false);
       setNewService({
@@ -115,16 +110,11 @@ const Service = () => {
     };
 
     try {
-      await axios.put(
-        `https://localhost:7158/api/Service/${payload.serviceID}`,
-        payload,
-      );
+      await axios.put(`https://localhost:7158/api/Service/${payload.serviceID}`, payload);
       setServiceList((prev) =>
         prev.map((service) =>
-          service.serviceID === payload.serviceID
-            ? { ...service, ...payload }
-            : service,
-        ),
+          service.serviceID === payload.serviceID ? { ...service, ...payload } : service
+        )
       );
       setEditingRowId(null);
     } catch (error) {
@@ -135,9 +125,7 @@ const Service = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://localhost:7158/api/Service/${id}`);
-      setServiceList((prev) =>
-        prev.filter((service) => service.serviceID !== id),
-      );
+      setServiceList((prev) => prev.filter((service) => service.serviceID !== id));
     } catch (error) {
       console.error('Error deleting service:', error);
     }
@@ -152,12 +140,15 @@ const Service = () => {
     }
   };
 
+  // Filter the service list based on searchQuery (case-insensitive)
+  const filteredServices = serviceList.filter((service) =>
+    service.serviceName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
-          Shërbimet
-        </h1>
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">Shërbimet</h1>
         <button
           onClick={() => {
             setShowForm(!showForm);
@@ -249,10 +240,7 @@ const Service = () => {
               />
             </div>
           </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded-md mt-4"
-          >
+          <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-md mt-4">
             Shto
           </button>
         </form>
@@ -283,26 +271,16 @@ const Service = () => {
             </tr>
           </thead>
           <tbody>
-            {serviceList.map((service) => (
+            {filteredServices.map((service) => (
               <React.Fragment key={service.serviceID}>
                 <tr>
+                  <td className="py-4 px-4 dark:text-white text-black">{service.serviceName}</td>
+                  <td className="py-4 px-4 dark:text-white text-black">{service.description}</td>
                   <td className="py-4 px-4 dark:text-white text-black">
-                    {service.serviceName}
+                    {service.discountPrice > 0 ? `${service.discountPrice}€` : `${service.price}€`}
                   </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {service.description}
-                  </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {service.discountPrice > 0
-                      ? `${service.discountPrice}€`
-                      : `${service.price}€`}
-                  </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {service.duration} min
-                  </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {service.staffEarningPercentage}%
-                  </td>
+                  <td className="py-4 px-4 dark:text-white text-black">{service.duration} min</td>
+                  <td className="py-4 px-4 dark:text-white text-black">{service.staffEarningPercentage}%</td>
                   <td className="py-4 px-4">
                     <div className="flex space-x-2 sm:justify-center">
                       <button
@@ -380,10 +358,7 @@ const Service = () => {
                             />
                           </div>
                         </div>
-                        <button
-                          type="submit"
-                          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md"
-                        >
+                        <button type="submit" className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md">
                           Ruaj
                         </button>
                       </form>

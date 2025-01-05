@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const MonthlyExpenses = () => {
+const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const [expenses, setExpenses] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     new Date().toISOString().slice(0, 7), // Default to current year and month
@@ -43,7 +43,7 @@ const MonthlyExpenses = () => {
       const payload = {
         name: newExpense.name,
         amount: parseFloat(newExpense.amount),
-        date: `${selectedMonth}-01`, // Ensure the date is for the selected month
+        date: `${selectedMonth}-01`, 
       };
 
       const response = await axios.post('https://localhost:7158/api/monthlyexpenses', payload);
@@ -105,6 +105,11 @@ const MonthlyExpenses = () => {
       console.error('Error deleting monthly expense:', error);
     }
   };
+
+  // Filter expenses based on search query
+  const filteredExpenses = expenses.filter((expense) => 
+    expense.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -177,7 +182,7 @@ const MonthlyExpenses = () => {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense) => (
+          {filteredExpenses.map((expense) => (
             <React.Fragment key={expense.id}>
               <tr>
                 <td>{expense.name}</td>

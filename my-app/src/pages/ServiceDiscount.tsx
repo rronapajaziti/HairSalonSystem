@@ -5,8 +5,10 @@ import { MdOutlineDelete } from 'react-icons/md';
 
 const ServiceDiscount = ({
   updateServiceList,
+  searchQuery,
 }: {
   updateServiceList: () => void;
+  searchQuery: string;
 }) => {
   const [discounts, setDiscounts] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
@@ -35,9 +37,7 @@ const ServiceDiscount = ({
 
   const fetchDiscounts = async () => {
     try {
-      const response = await axios.get(
-        'https://localhost:7158/api/ServiceDiscount',
-      );
+      const response = await axios.get('https://localhost:7158/api/ServiceDiscount');
       setDiscounts(response.data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
@@ -160,13 +160,24 @@ const ServiceDiscount = ({
     }
   };
 
-  const activeDiscounts = discounts.filter(
+  // Filter discounts based on search query
+  const filteredDiscounts = discounts.filter((discount) => {
+    const serviceNames = discount.serviceIDs
+      .map((id: number) => {
+        const service = services.find((s) => s.serviceID === id);
+        return service?.serviceName.toLowerCase() || '';
+      })
+      .join(', ');
+    return serviceNames.includes(searchQuery.toLowerCase());
+  });
+
+  const activeDiscounts = filteredDiscounts.filter(
     (discount) =>
       new Date(discount.startDate) <= new Date() &&
       new Date(discount.endDate) >= new Date(),
   );
 
-  const inactiveDiscounts = discounts.filter(
+  const inactiveDiscounts = filteredDiscounts.filter(
     (discount) =>
       new Date(discount.endDate) < new Date() ||
       new Date(discount.startDate) > new Date(),
@@ -188,8 +199,8 @@ const ServiceDiscount = ({
         </thead>
         <tbody>
           {discounts.map((discount) => (
-            <>
-              <tr key={discount.serviceDiscountID}>
+            <React.Fragment key={discount.serviceDiscountID}>
+              <tr>
                 <td className="border px-4 py-2">
                   {discount.serviceIDs
                     ?.map((id: number) => {
@@ -340,7 +351,7 @@ const ServiceDiscount = ({
                   </td>
                 </tr>
               )}
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>

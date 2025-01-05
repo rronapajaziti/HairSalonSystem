@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import DropdownMessage from './DropdownMessage';
 import DropdownNotification from './DropdownNotification';
@@ -8,12 +9,21 @@ import DarkModeSwitcher from './DarkModeSwitcher';
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
+  setSearchQuery: (query: string) => void; // Add a prop for managing search query
 }) => {
+  const [searchQuery, setSearchQueryState] = useState(''); // Local state for search query
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQueryState(query); // Update local search state
+    props.setSearchQuery(query); // Pass search query to parent component or global state
+  };
+
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
+          {/* Hamburger Toggle Button */}
           <button
             aria-controls="sidebar"
             onClick={(e) => {
@@ -27,57 +37,52 @@ const Header = (props: {
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && '!w-full delay-300'
-                  }`}
-                ></span>
+                  }`}></span>
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && 'delay-400 !w-full'
-                  }`}
-                ></span>
+                  }`}></span>
                 <span
                   className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && '!w-full delay-500'
-                  }`}
-                ></span>
+                  }`}></span>
               </span>
               <span className="absolute right-0 h-full w-full rotate-45">
                 <span
                   className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && '!h-0 !delay-[0]'
-                  }`}
-                ></span>
+                  }`}></span>
                 <span
                   className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && '!h-0 !delay-200'
-                  }`}
-                ></span>
+                  }`}></span>
               </span>
             </span>
           </button>
-          {/* <!-- Hamburger Toggle BTN --> */}
 
+          {/* Logo */}
           <Link className="block flex-shrink-0 lg:hidden" to="/">
             <img src={LogoIcon} alt="Logo" />
           </Link>
         </div>
 
         <div className="hidden sm:block">
-          <form action="https://formbold.com/s/unique_form_id" method="POST">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
-              />
-            </div>
-          </form>
+          {/* Search Box */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Type to search..."
+              value={searchQuery}
+              onChange={handleSearchChange} // Update search query
+              className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">
-            {/* <!-- Dark Mode Toggler --> */}
+            {/* Dark Mode Toggler */}
             <DarkModeSwitcher />
-            {/* <!-- Dark Mode Toggler --> */}
           </ul>
         </div>
       </div>

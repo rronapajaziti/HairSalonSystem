@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -27,8 +27,8 @@ import ClientTable from './pages/Client';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false); // Track login status
   const { pathname } = useLocation();
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,40 +40,29 @@ function App() {
 
   const isLoginPage = pathname === '/signin';
 
-  // Login handler to update the login state
-  const handleLogin = () => setLoggedIn(true);
-  if (!loggedIn && !isLoginPage) {
-    return <Navigate to="/signin" />;
-  }
-
-  // If the user is not logged in, only show the SignIn page
-  if (!loggedIn) {
-    return (
-      <Routes>
-        <Route
-          path="/signin"
-          element={
-            <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignIn onLogin={handleLogin} />{' '}
-            </>
-          }
-        />
-      </Routes>
-    );
-  }
-
   return loading ? (
     <Loader />
+  ) : isLoginPage ? (
+    <Routes>
+      <Route
+        path="/signin"
+        element={
+          <>
+            <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <SignIn />
+          </>
+        }
+      />
+    </Routes>
   ) : (
-    <DefaultLayout>
+    <DefaultLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery}> {/* Pass searchQuery and setSearchQuery to DefaultLayout */}
       <Routes>
         <Route
           index
           element={
             <>
               <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
+              <ECommerce  />
             </>
           }
         />
@@ -82,7 +71,7 @@ function App() {
           element={
             <>
               <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Calendar />
+              <Calendar searchQuery={searchQuery} />
             </>
           }
         />
@@ -91,7 +80,7 @@ function App() {
           element={
             <>
               <PageTitle title="Daily Appointments | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <DailyAppointments />
+              <DailyAppointments searchQuery={searchQuery} />
             </>
           }
         />
@@ -100,7 +89,7 @@ function App() {
           element={
             <>
               <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Profile />
+              <Profile  />
             </>
           }
         />
@@ -109,7 +98,7 @@ function App() {
           element={
             <>
               <PageTitle title="Clients | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ClientTable />
+              <ClientTable searchQuery={searchQuery} />
             </>
           }
         />
@@ -118,7 +107,7 @@ function App() {
           element={
             <>
               <PageTitle title="Daily Expenses | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <DailyExpenses />
+              <DailyExpenses searchQuery={searchQuery} />
             </>
           }
         />
@@ -127,7 +116,7 @@ function App() {
           element={
             <>
               <PageTitle title="Monthly Expenses | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <MonthlyExpenses />
+              <MonthlyExpenses searchQuery={searchQuery} />
             </>
           }
         />
@@ -136,11 +125,7 @@ function App() {
           element={
             <>
               <PageTitle title="Service Discount | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ServiceDiscount
-                updateServiceList={function (): void {
-                  throw new Error('Function not implemented.');
-                }}
-              />
+              <ServiceDiscount searchQuery={searchQuery} />
             </>
           }
         />
@@ -149,17 +134,17 @@ function App() {
           element={
             <>
               <PageTitle title="WhatsApp Form | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <WhatsAppForm />
+              <WhatsAppForm  />
             </>
           }
         />
-        <Route path="/appointments" element={<Appointments />} />
+        
         <Route
           path="/forms/form-elements"
           element={
             <>
               <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormElements />
+              <FormElements  />
             </>
           }
         />
@@ -168,7 +153,7 @@ function App() {
           element={
             <>
               <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormLayout />
+              <FormLayout  />
             </>
           }
         />
@@ -177,7 +162,7 @@ function App() {
           element={
             <>
               <PageTitle title="Appointments | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Appointments />
+              <Appointments  />
             </>
           }
         />
@@ -186,7 +171,7 @@ function App() {
           element={
             <>
               <PageTitle title="Services | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Services />
+              <Services searchQuery={searchQuery} />
             </>
           }
         />
@@ -204,7 +189,7 @@ function App() {
           element={
             <>
               <PageTitle title="Staff | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Staff />
+              <Staff searchQuery={searchQuery} />
             </>
           }
         />
@@ -213,7 +198,7 @@ function App() {
           element={
             <>
               <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Settings />
+              <Settings  />
             </>
           }
         />
@@ -222,7 +207,7 @@ function App() {
           element={
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Chart />
+              <Chart  />
             </>
           }
         />
@@ -231,7 +216,7 @@ function App() {
           element={
             <>
               <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Alerts />
+              <Alerts  />
             </>
           }
         />
@@ -240,7 +225,7 @@ function App() {
           element={
             <>
               <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Buttons />
+              <Buttons  />
             </>
           }
         />

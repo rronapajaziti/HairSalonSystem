@@ -23,7 +23,7 @@ const Calendar = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/Appointment',
+        'https://localhost:7158/api/Appointment'
       );
       const appointments = response.data;
 
@@ -97,7 +97,9 @@ const Calendar = () => {
   const calendarData = getCalendarData();
 
   const renderEvents = (date: number) => {
-    const eventKey = `${year}-${month < 10 ? `0${month}` : month}-${date < 10 ? `0${date}` : date}`;
+    const eventKey = `${year}-${month < 10 ? `0${month}` : month}-${
+      date < 10 ? `0${date}` : date
+    }`;
     return events
       .filter((event) => event.date === eventKey)
       .map((event, index) => (

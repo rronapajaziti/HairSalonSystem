@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ClientTable = () => {
+const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
   const [clientList, setClientList] = useState<any[]>([]);
 
   useEffect(() => {
@@ -20,6 +20,11 @@ const ClientTable = () => {
       console.error('Error fetching clients:', error);
     }
   };
+
+  // Filter clients based on search query
+  const filteredClients = clientList.filter((client) =>
+    `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -43,7 +48,7 @@ const ClientTable = () => {
             </tr>
           </thead>
           <tbody>
-            {clientList.map((client) => (
+            {filteredClients.map((client) => (
               <tr key={client.id}>
                 <td className="py-4 px-4 dark:text-white text-black">
                   {client.firstName} {client.lastName}

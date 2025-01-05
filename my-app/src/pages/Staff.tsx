@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const Staff = () => {
+const Staff = ({ searchQuery }: { searchQuery: string }) => { 
   const [staffList, setStaffList] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newStaff, setNewStaff] = useState({
@@ -153,6 +153,7 @@ const Staff = () => {
         console.log('Validation errors:', error.response?.data?.errors || {});
       });
   };
+
   const handleDelete = (id: number) => {
     if (!id) return;
     axios
@@ -169,12 +170,14 @@ const Staff = () => {
       });
   };
 
+  const filteredStaff = staffList.filter((staff) =>
+    `${staff.firstName} ${staff.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
-          Staff
-        </h1>
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">Staff</h1>
         <button
           onClick={() => {
             setShowForm(!showForm);
@@ -297,7 +300,7 @@ const Staff = () => {
             </tr>
           </thead>
           <tbody>
-            {staffList.map((staff) => (
+            {filteredStaff.map((staff) => (
               <React.Fragment key={staff.id}>
                 <tr>
                   <td className="py-4 px-4 dark:text-white text-black">
