@@ -38,13 +38,15 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
 
       const data = await response.json();
 
-      if (!data.user || !data.user.userID) {
-        throw new Error('User data is missing in the response.');
+      if (!data.user || !data.token) {
+        throw new Error('User or token data is missing in the response.');
       }
 
-      // Store token and userId in localStorage (no sessionStorage needed)
+      // Store tokens and user information
+      localStorage.setItem('adminToken', data.token); // Admin token
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.userID);
+      localStorage.setItem('userId', data.user.userID); // User ID
+      localStorage.setItem('roleID', data.user.roleID); // User Role (Admin, Staff, etc.)
 
       // Trigger onLogin callback
       onLogin();
@@ -52,7 +54,6 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
       // Redirect to home page
       navigate('/');
     } catch (error: any) {
-      // Display error message if login fails
       setErrorMessage(error.message || 'An error occurred. Please try again.');
     }
   };

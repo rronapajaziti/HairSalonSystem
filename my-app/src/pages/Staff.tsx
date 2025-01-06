@@ -26,40 +26,35 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     password: '',
     roleID: 3,
   });
+  const adminToken = localStorage.getItem('adminToken'); // Retrieve token
 
   useEffect(() => {
     axios
-      .get('https://localhost:7158/api/User')
+      .get('https://localhost:7158/api/User', {
+        headers: {
+          Authorization: `Bearer ${adminToken}`, // Add token to headers
+        },
+      })
       .then((response) => {
         const filteredStaff = response.data.map((staff: any) => ({
           ...staff,
           id: staff.userID,
         }));
         setStaffList(filteredStaff);
+        console.log('Admin Token:', adminToken);
       })
       .catch((error) => {
-        console.error('There was an error fetching staff!', error);
+        console.error('There was an error fetching staff!', error.message);
       });
-  }, []);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewStaff({
-      ...newStaff,
-      [name]: value,
-    });
-  };
-
-  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditFormData((prev) => ({
-      ...prev,
-      [name]: name === 'roleID' ? parseInt(value, 10) : value, // Parse roleID as number
-    }));
-  };
+  }, [adminToken]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!adminToken) {
+      console.error('Unauthorized: Admin token is required.');
+      return;
+    }
 
     const payload = {
       userID: 0,
@@ -73,9 +68,13 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     };
 
     axios
-      .post('https://localhost:7158/api/User/register', payload)
+      .post('https://localhost:7158/api/User/register', payload, {
+        headers: {
+          Authorization: `Bearer ${adminToken}`, // Add token to headers
+        },
+      })
       .then((response) => {
-        setStaffList((prev) => [...prev, response.data]); // Update state to include new staff member
+        setStaffList((prev) => [...prev, response.data]);
         setShowForm(false);
         setNewStaff({
           id: null,
@@ -88,10 +87,9 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
         });
       })
       .catch((error) => {
-        console.error(error.response?.data || error.message);
+        console.error('Failed to add staff:', error.message);
       });
   };
-
   const handleEdit = (staff: any) => {
     if (editingRowId === staff.id) {
       setEditingRowId(null);
@@ -108,9 +106,32 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       });
     }
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewStaff({
+      ...newStaff,
+      [name]: value,
+    });
+  };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: name === 'roleID' ? parseInt(value, 10) : value, // Parse roleID as number
+    }));
+  };
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const token =
+      localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+    console.log('Token sent in header:', token); // Debugging
+
+    if (!token) {
+      console.error('Unauthorized: Token is missing.');
+      return;
+    }
 
     const payload = {
       userID: editFormData.id,
@@ -119,49 +140,52 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       phoneNumber: editFormData.phoneNumber,
       email: editFormData.email,
       roleID: editFormData.roleID,
-      passwordHash: editFormData.password
-        ? editFormData.password
-        : 'defaultPasswordHash',
-      passwordSalt: editFormData.password
-        ? editFormData.password
-        : 'defaultPasswordSalt',
+      passwordHash: editFormData.password || 'defaultPasswordHash',
+      passwordSalt: editFormData.password || 'defaultPasswordSalt',
     };
 
-    axios
-      .put(`https://localhost:7158/api/User/${payload.userID}`, payload)
-      .then((response) => {
-        // Update the staff list in the state to reflect the changes
-        setStaffList((prev) =>
-          prev.map((staff) =>
-            staff.id === payload.userID
-              ? { ...staff, ...response.data }
-              : staff,
-          ),
-        );
-        setEditingRowId(null);
-      })
-      .catch((error) => {
-        console.error(
-          'There was an error updating the staff!',
-          error.response?.data || error.message,
-        );
-      });
+    try {
+      await axios.put(
+        `https://localhost:7158/api/User/${payload.userID}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the correct token
+          },
+        },
+      );
+      setStaffList((prev) =>
+        prev.map((staff) =>
+          staff.id === payload.userID ? { ...staff, ...payload } : staff,
+        ),
+      );
+      setEditingRowId(null);
+      console.log('Staff member updated successfully.');
+    } catch (error: any) {
+      console.error(
+        'Failed to update staff:',
+        error.response?.status,
+        error.message,
+      );
+    }
   };
 
-  const handleDelete = (id: number) => {
-    if (!id) return;
-    axios
-      .delete(`https://localhost:7158/api/User/${id}`)
-      .then(() => {
-        // Remove the deleted staff from the list without needing to refresh
-        setStaffList((prev) => prev.filter((staff) => staff.id !== id));
-      })
-      .catch((error) => {
-        console.error(
-          'There was an error deleting the staff!',
-          error.response?.data || error.message,
-        );
+  const handleDelete = async (id: number) => {
+    if (!adminToken) {
+      console.error('Unauthorized: Admin token is required.');
+      return;
+    }
+
+    try {
+      await axios.delete(`https://localhost:7158/api/User/${id}`, {
+        headers: {
+          Authorization: `Bearer ${adminToken}`, // Add token to headers
+        },
       });
+      setStaffList((prev) => prev.filter((staff) => staff.id !== id));
+    } catch (error) {
+      console.error('Failed to delete staff:', error.message);
+    }
   };
 
   const filteredStaff = staffList.filter((staff) =>

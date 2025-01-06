@@ -65,7 +65,7 @@ namespace HairSalon.Controllers
         }
 
 
-        
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
@@ -83,7 +83,7 @@ namespace HairSalon.Controllers
             {
                 user.PasswordSalt = Convert.ToBase64String(hmac.Key);
                 user.PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(user.PasswordHash)));
-                user.RoleID = 3;
+                user.RoleID = user.RoleID != 0 ? user.RoleID : 3;
             }
 
             user.Appointments = user.Appointments ?? new List<Appointment>();
@@ -95,6 +95,7 @@ namespace HairSalon.Controllers
         }
 
         // Login user
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -181,10 +182,10 @@ namespace HairSalon.Controllers
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.RoleID.ToString())
-            };
+        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim("RolesID", user.RoleID.ToString()) // Include RolesID claim
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -193,12 +194,13 @@ namespace HairSalon.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),  // Access token expiry time
+                expires: DateTime.Now.AddMinutes(30), // Adjust expiration as needed
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         private string GenerateRefreshToken()
         {
@@ -241,7 +243,7 @@ namespace HairSalon.Controllers
             var totalStaff = _context.Users.Count(u => u.RoleID == 3); 
             return Ok(new { totalStaff });
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -256,7 +258,7 @@ namespace HairSalon.Controllers
 
             return NoContent();  // 204 No Content response
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
         {
