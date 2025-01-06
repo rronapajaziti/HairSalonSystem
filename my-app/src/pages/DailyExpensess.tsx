@@ -5,7 +5,9 @@ import { MdOutlineDelete } from 'react-icons/md';
 
 const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const [expenses, setExpenses] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split('T')[0],
+  );
   const [totalCost, setTotalCost] = useState<number>(0);
   const [showForm, setShowForm] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
@@ -24,9 +26,12 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/dailyexpenses', {
-        params: { date: selectedDate },
-      });
+      const response = await axios.get(
+        'https://localhost:7158/api/dailyexpenses',
+        {
+          params: { date: selectedDate },
+        },
+      );
       setExpenses(response.data.expenses || []);
       setTotalCost(response.data.totalCost || 0);
     } catch (error) {
@@ -44,7 +49,10 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
         date: new Date().toISOString().split('T')[0],
       };
 
-      const response = await axios.post('https://localhost:7158/api/dailyexpenses', payload);
+      const response = await axios.post(
+        'https://localhost:7158/api/dailyexpenses',
+        payload,
+      );
       setExpenses([...expenses, response.data]);
       setNewExpense({ name: '', amount: '' });
       setShowForm(false);
@@ -107,7 +115,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
 
   // Filter expenses based on search query
   const filteredExpenses = expenses.filter((expense) =>
-    expense.name.toLowerCase().includes(searchQuery.toLowerCase())
+    expense.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -204,19 +212,21 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                 <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                   {new Date(expense.date).toLocaleDateString()}
                 </td>
-                <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                  <button
-                    onClick={() => handleEdit(expense)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(expense.id)}
-                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                  >
-                    <MdOutlineDelete />
-                  </button>
+                <td className="py-4 px-4">
+                  <div className="flex space-x-2 sm:justify-center">
+                    <button
+                      onClick={() => handleEdit(expense)}
+                      className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(expense.id)}
+                      className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </div>
                 </td>
               </tr>
               {editingExpenseId === expense.id && (

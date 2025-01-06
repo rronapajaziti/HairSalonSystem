@@ -21,6 +21,47 @@ namespace HairSalon.Controllers
             _context = context;
             _configuration = configuration;
         }
+        [HttpGet("")]
+        public async Task<IActionResult> GetUsers()
+        {
+            try
+            {
+                var users = await _context.Users
+                    .Select(u => new
+                    {
+                        u.UserID,
+                        u.FirstName,
+                        u.LastName,
+                        u.Email,
+                        u.PhoneNumber,
+                        u.RoleID,
+                        Appointments = u.Appointments.Select(a => new
+                        {
+                            a.AppointmentID,
+                            a.AppointmentDate,
+                            a.Status
+                        }).ToList()
+                    })
+                    .ToListAsync();
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while fetching users." });
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(); // If the user is not found, it will return a 404
+            }
+            return Ok(user);
+        }
 
         // Register a new user
         [HttpPost("register")]
@@ -51,7 +92,6 @@ namespace HairSalon.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
-
         // Login user
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -65,11 +105,14 @@ namespace HairSalon.Controllers
                 return Unauthorized(new { error = "Invalid credentials." });
             }
 
-            var token = GenerateJwtToken(user);
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshTokenCookie(refreshToken);
 
             return Ok(new
             {
-                Token = token,  // Send the token in the response
+                Token = accessToken,  // Access token
+                RefreshToken = refreshToken,
                 User = new
                 {
                     UserID = user.UserID,
@@ -88,127 +131,50 @@ namespace HairSalon.Controllers
             });
         }
 
-
         [HttpGet("staff")]
-public async Task<IActionResult> GetStaff()
-{
-    var staff = await _context.Users
-        .Where(u => u.RoleID == 3)  // Ensure we filter only staff with RoleID = 3
-        .Select(u => new
+        public async Task<IActionResult> GetStaff()
         {
-            u.UserID,
-            u.FirstName,
-            u.LastName
-        })
-        .ToListAsync();
-
-    return Ok(staff);
-}
-
-
-
-
-
-        // Get all users
-        [HttpGet]
-        public async Task<IActionResult> GetUsers()
-        {
-            var users = await _context.Users
+            var staff = await _context.Users
+                .Where(u => u.RoleID == 3)
                 .Select(u => new
                 {
                     u.UserID,
                     u.FirstName,
-                    u.LastName,
-                    u.PhoneNumber,
-                    u.Email,
-                    u.RoleID,
-                    Appointments = u.Appointments.Select(a => new
-                    {
-                        a.AppointmentID,
-                        a.AppointmentDate,
-                        a.Status
-                    }).ToList()
+                    u.LastName
                 })
                 .ToListAsync();
 
-            return Ok(users);
+            return Ok(staff);
         }
 
-        // Get a single user by ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        // Refresh the access token
+        [HttpPost("refresh-token")]
+        public IActionResult RefreshToken()
         {
-            var user = await _context.Users
-                .Where(u => u.UserID == id)
-                .Select(u => new
-                {
-                    u.UserID,
-                    u.FirstName,
-                    u.LastName,
-                    u.PhoneNumber,
-                    u.Email,
-                    u.RoleID,
-                    Appointments = u.Appointments.Select(a => new
-                    {
-                        a.AppointmentID,
-                        a.AppointmentDate,
-                        a.Status
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(new { error = "No refresh token provided." });
+            }
 
+            var user = ValidateRefreshToken(refreshToken);
             if (user == null)
             {
-                return NotFound();
+                return Unauthorized(new { error = "Invalid refresh token." });
             }
 
-            return Ok(user);
+            var newAccessToken = GenerateJwtToken(user);
+            return Ok(new { Token = newAccessToken });
         }
 
-        // Update user information
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditUser(int id, [FromBody] User updatedUser)
+        // Logout the user
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-            if (id != updatedUser.UserID)
-            {
-                return BadRequest("User ID mismatch.");
-            }
-
-            var existingUser = await _context.Users.FindAsync(id);
-            if (existingUser == null)
-            {
-                return NotFound();
-            }
-
-            existingUser.FirstName = updatedUser.FirstName;
-            existingUser.LastName = updatedUser.LastName;
-            existingUser.PhoneNumber = updatedUser.PhoneNumber;
-            existingUser.Email = updatedUser.Email;
-            existingUser.RoleID = updatedUser.RoleID;
-
-            _context.Users.Update(existingUser);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            Response.Cookies.Delete("refresh_token");
+            return Ok(new { message = "Logged out successfully." });
         }
 
-        // Delete a user
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // Generate JWT Token
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
@@ -225,14 +191,39 @@ public async Task<IActionResult> GetStaff()
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddMinutes(30),  // Access token expiry time
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // Verify password with hash and salt
+        private string GenerateRefreshToken()
+        {
+            var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            return refreshToken;
+        }
+
+        private void SetRefreshTokenCookie(string refreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,  // Secure the cookie from JavaScript access
+                Secure = true,    // Ensures cookies are only sent over HTTPS
+                SameSite = SameSiteMode.Strict,  // Prevents cross-site request forgery
+                Expires = DateTime.UtcNow.AddDays(7)  // Set the expiration of the refresh token
+            };
+
+            Response.Cookies.Append("refresh_token", refreshToken, cookieOptions);
+        }
+
+        private User ValidateRefreshToken(string refreshToken)
+        {
+            // You should implement this to check the refresh token from the database
+            var user = _context.Users.FirstOrDefault(u => u.RefreshToken == refreshToken);
+            return user;
+        }
+
         private bool VerifyPassword(string password, string storedHash, string storedSalt)
         {
             using (var hmac = new HMACSHA512(Convert.FromBase64String(storedSalt)))
@@ -241,14 +232,28 @@ public async Task<IActionResult> GetStaff()
                 return Convert.ToBase64String(computedHash) == storedHash;
             }
         }
+
         [HttpGet("total-staff")]
         public IActionResult GetTotalStaff()
         {
-            var totalStaff = _context.Users.Count(u => u.RoleID == 3); // Assuming RoleID 3 is for staff
+            var totalStaff = _context.Users.Count(u => u.RoleID == 3); 
             return Ok(new { totalStaff });
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();  // 204 No Content response
+        }
     }
- 
 
     // Login Request DTO
     public class LoginRequest

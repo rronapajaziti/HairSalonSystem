@@ -31,14 +31,21 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
       if (!data.user || !data.user.userID) {
         throw new Error('User data is missing in the response.');
       }
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.user.userID);
 
-      sessionStorage.setItem('token', data.token); // Store the token in sessionStorage
-      sessionStorage.setItem('userId', data.user.userID); // Store user ID in sessionStorage
+      // Store token and userId in sessionStorage
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('userId', data.user.userID.toString());
 
+      // Trigger onLogin callback
       onLogin();
+
+      // Redirect to home page
       navigate('/');
-    } catch (error) {
-      setErrorMessage('An error occurred. Please try again.');
+    } catch (error: any) {
+      // Display error message if login fails
+      setErrorMessage(error.message || 'An error occurred. Please try again.');
     }
   };
 

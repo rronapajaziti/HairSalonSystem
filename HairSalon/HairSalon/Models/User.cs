@@ -43,6 +43,7 @@ namespace HairSalon.Models
 
         [NotMapped]
         public bool IsStaff => RoleID == 3;
+        public string? RefreshToken { get; set; }
 
     }
 }

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
 
-const Staff = ({ searchQuery }: { searchQuery: string }) => { 
+const Staff = ({ searchQuery }: { searchQuery: string }) => {
   const [staffList, setStaffList] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newStaff, setNewStaff] = useState({
@@ -35,7 +35,6 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           ...staff,
           id: staff.userID,
         }));
-        console.log('Filtered Staff:', filteredStaff);
         setStaffList(filteredStaff);
       })
       .catch((error) => {
@@ -76,7 +75,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     axios
       .post('https://localhost:7158/api/User/register', payload)
       .then((response) => {
-        setStaffList([...staffList, response.data]);
+        setStaffList((prev) => [...prev, response.data]); // Update state to include new staff member
         setShowForm(false);
         setNewStaff({
           id: null,
@@ -87,10 +86,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           password: '',
           roleID: 3,
         });
-
-        window.dispatchEvent(new CustomEvent('staffListUpdated'));
       })
-
       .catch((error) => {
         console.error(error.response?.data || error.message);
       });
@@ -131,11 +127,10 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
         : 'defaultPasswordSalt',
     };
 
-    console.log('Submitting payload to backend:', payload);
-
     axios
       .put(`https://localhost:7158/api/User/${payload.userID}`, payload)
       .then((response) => {
+        // Update the staff list in the state to reflect the changes
         setStaffList((prev) =>
           prev.map((staff) =>
             staff.id === payload.userID
@@ -150,7 +145,6 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           'There was an error updating the staff!',
           error.response?.data || error.message,
         );
-        console.log('Validation errors:', error.response?.data?.errors || {});
       });
   };
 
@@ -159,8 +153,8 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     axios
       .delete(`https://localhost:7158/api/User/${id}`)
       .then(() => {
+        // Remove the deleted staff from the list without needing to refresh
         setStaffList((prev) => prev.filter((staff) => staff.id !== id));
-        console.log(`Deleted user with ID: ${id}`);
       })
       .catch((error) => {
         console.error(
@@ -171,13 +165,17 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
   };
 
   const filteredStaff = staffList.filter((staff) =>
-    `${staff.firstName} ${staff.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+    `${staff.firstName} ${staff.lastName}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()),
   );
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold dark:text-white text-blue-900">Staff</h1>
+        <h1 className="text-xl font-semibold dark:text-white text-blue-900">
+          Staff
+        </h1>
         <button
           onClick={() => {
             setShowForm(!showForm);
@@ -313,18 +311,20 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                     {staff.email}
                   </td>
                   <td className="py-4 px-4">
-                    <button
-                      onClick={() => handleEdit(staff)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(staff.id)}
-                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                    >
-                      <MdOutlineDelete />
-                    </button>
+                    <div className="flex space-x-2 sm:justify-center">
+                      <button
+                        onClick={() => handleEdit(staff)}
+                        className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(staff.id)}
+                        className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <MdOutlineDelete />
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 {editingRowId === staff.id && (

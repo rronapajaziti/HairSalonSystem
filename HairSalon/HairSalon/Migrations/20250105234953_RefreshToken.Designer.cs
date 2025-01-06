@@ -4,6 +4,7 @@ using HairSalon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairSalon.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20250105234953_RefreshToken")]
+    partial class RefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,9 +234,6 @@ namespace HairSalon.Migrations
                     b.Property<int>("StaffID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("ServiceStaffID");
 
                     b.HasIndex("AppointmentID");
@@ -241,8 +241,6 @@ namespace HairSalon.Migrations
                     b.HasIndex("ServiceID");
 
                     b.HasIndex("StaffID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("ServiceStaff");
                 });
@@ -371,14 +369,10 @@ namespace HairSalon.Migrations
                         .IsRequired();
 
                     b.HasOne("HairSalon.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("StaffID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HairSalon.Models.User", null)
                         .WithMany("ServiceStaff")
-                        .HasForeignKey("UserID");
+                        .HasForeignKey("StaffID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Service");
 

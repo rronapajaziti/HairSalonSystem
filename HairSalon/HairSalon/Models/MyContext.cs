@@ -47,6 +47,11 @@ namespace HairSalon.Models
             modelBuilder.Entity<ServiceStaff>()
                 .Property(ss => ss.StaffEarning)
                 .HasPrecision(18, 2);
+            modelBuilder.Entity<ServiceStaff>()
+            .HasOne(ss => ss.User)
+            .WithMany() 
+            .HasForeignKey(ss => ss.StaffID)
+            .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<ServiceDiscount>()
        .HasMany(sd => sd.Services)

@@ -37,7 +37,9 @@ const ServiceDiscount = ({
 
   const fetchDiscounts = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/ServiceDiscount');
+      const response = await axios.get(
+        'https://localhost:7158/api/ServiceDiscount',
+      );
       setDiscounts(response.data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
@@ -185,16 +187,30 @@ const ServiceDiscount = ({
 
   const renderTable = (discounts: any[], title: string) => (
     <>
-      <h2 className="text-xl font-semibold mb-2">{title}</h2>
-      <table className="w-full border-collapse border mb-6">
+      <h2 className="text-xl font-semibold mb-2 dark:text-white text-blue-900">
+        {title}
+      </h2>
+      <table className="w-full border-collapse border mb-6 text-black dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark">
         <thead>
           <tr>
-            <th className="border px-4 py-2">Shërbimi</th>
-            <th className="border px-4 py-2">Çmimi Aktual</th>
-            <th className="border px-4 py-2">Zbritja (%)</th>
-            <th className="border px-4 py-2">Data e Fillimit</th>
-            <th className="border px-4 py-2">Data e Mbarimit</th>
-            <th className="border px-4 py-2">Veprimet</th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Shërbimi
+            </th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Çmimi Aktual
+            </th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Zbritja (%)
+            </th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Data e Fillimit
+            </th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Data e Mbarimit
+            </th>
+            <th className="border px-4 py-2 dark:border-strokedark dark:bg-boxdark text-black dark:text-white">
+              Veprimet
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -226,19 +242,21 @@ const ServiceDiscount = ({
                 <td className="border px-4 py-2">
                   {new Date(discount.endDate).toLocaleDateString()}
                 </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(discount)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(discount.serviceDiscountID)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-md"
-                  >
-                    <MdOutlineDelete />
-                  </button>
+                <td className="py-4 px-4">
+                  <div className="flex space-x-2 sm:justify-center">
+                    <button
+                      onClick={() => handleEdit(discount)}
+                      className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(discount.serviceDiscountID)}
+                      className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </div>
                 </td>
               </tr>
               {editingServiceDiscountID === discount.serviceDiscountID && (
@@ -359,19 +377,21 @@ const ServiceDiscount = ({
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Menaxhimi i Zbritjeve</h1>
+    <div className="container mx-auto p-4 dark:text-white text-blue-900">
+      <div className="flex justify-between items-center mb-4 ">
+        <h1 className="text-2xl font-bold dark:text-white text-blue-900">
+          Menaxhimi i Zbritjeve
+        </h1>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          {showAddForm ? 'Mbyll' : 'Shto Zbritje'}
+          {showAddForm ? 'X' : 'Shto Zbritje'}
         </button>
       </div>
       {showAddForm && (
         <form onSubmit={handleAddSubmit} className="mb-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 ">
             <div>
               <label className="block font-medium">Shërbimet</label>
               <select
@@ -385,7 +405,7 @@ const ServiceDiscount = ({
                     ),
                   })
                 }
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark "
               >
                 {services.map((service) => (
                   <option key={service.serviceID} value={service.serviceID}>
@@ -405,7 +425,7 @@ const ServiceDiscount = ({
                     discountPercentage: e.target.value,
                   })
                 }
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
               />
             </div>
             <div>
@@ -416,7 +436,7 @@ const ServiceDiscount = ({
                 onChange={(e) =>
                   setNewDiscount({ ...newDiscount, startDate: e.target.value })
                 }
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
               />
             </div>
             <div>
@@ -427,7 +447,7 @@ const ServiceDiscount = ({
                 onChange={(e) =>
                   setNewDiscount({ ...newDiscount, endDate: e.target.value })
                 }
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
               />
             </div>
           </div>

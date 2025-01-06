@@ -27,9 +27,12 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const fetchMonthlyExpenses = async () => {
     const [year, month] = selectedMonth.split('-');
     try {
-      const response = await axios.get('https://localhost:7158/api/monthlyexpenses', {
-        params: { year, month },
-      });
+      const response = await axios.get(
+        'https://localhost:7158/api/monthlyexpenses',
+        {
+          params: { year, month },
+        },
+      );
       setExpenses(response.data.expenses || []);
       setTotalCost(response.data.totalCost || 0);
     } catch (error) {
@@ -43,10 +46,13 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       const payload = {
         name: newExpense.name,
         amount: parseFloat(newExpense.amount),
-        date: `${selectedMonth}-01`, 
+        date: `${selectedMonth}-01`,
       };
 
-      const response = await axios.post('https://localhost:7158/api/monthlyexpenses', payload);
+      const response = await axios.post(
+        'https://localhost:7158/api/monthlyexpenses',
+        payload,
+      );
       setExpenses((prev) => [...prev, response.data]);
       setNewExpense({ name: '', amount: '' });
       setShowForm(false);
@@ -107,8 +113,8 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   };
 
   // Filter expenses based on search query
-  const filteredExpenses = expenses.filter((expense) => 
-    expense.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -122,7 +128,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
             type="month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-4 py-2 border rounded-md mr-4 text-black dark:text-white"
+            className="px-4 py-2 border rounded-md mr-4 text-black dark:text-white  dark:border-strokedark dark:bg-boxdark"
           />
           <button
             onClick={() => setShowForm(!showForm)}
@@ -135,9 +141,11 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
 
       {showForm && (
         <form onSubmit={handleAddExpense} className="mb-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 ">
             <div>
-              <label className="block font-medium">Emri i Shpenzimit</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Emri i Shpenzimit
+              </label>
               <input
                 type="text"
                 name="name"
@@ -145,12 +153,14 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                 onChange={(e) =>
                   setNewExpense({ ...newExpense, name: e.target.value })
                 }
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium">Çmimi (€)</label>
+              <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Çmimi (€)
+              </label>
               <input
                 type="number"
                 name="amount"
@@ -158,7 +168,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                 onChange={(e) =>
                   setNewExpense({ ...newExpense, amount: e.target.value })
                 }
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               />
             </div>
@@ -172,13 +182,21 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
         </form>
       )}
 
-      <table className="w-full table-auto border-collapse">
+      <table className="w-full table-auto border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
         <thead>
           <tr className="bg-gray-200">
-            <th className="py-2 px-4 text-left">Emri i Shpenzimit</th>
-            <th className="py-2 px-4 text-left">Çmimi (€)</th>
-            <th className="py-2 px-4 text-left">Data</th>
-            <th className="py-2 px-4 text-left">Veprimet</th>
+            <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              Emri i Shpenzimit
+            </th>
+            <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              Çmimi (€)
+            </th>
+            <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              Data
+            </th>
+            <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+              Veprimet
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -188,19 +206,21 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                 <td>{expense.name}</td>
                 <td>{expense.amount.toFixed(2)}€</td>
                 <td>{new Date(expense.date).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    onClick={() => handleEdit(expense)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(expense.id)}
-                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                  >
-                    <MdOutlineDelete />
-                  </button>
+                <td className="py-4 px-4">
+                  <div className="flex space-x-2 sm:justify-center">
+                    <button
+                      onClick={() => handleEdit(expense)}
+                      className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(expense.id)}
+                      className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <MdOutlineDelete />
+                    </button>
+                  </div>
                 </td>
               </tr>
               {editingExpenseId === expense.id && (
@@ -220,7 +240,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                                 name: e.target.value,
                               })
                             }
-                            className="px-4 py-2 border rounded-md w-full"
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                             required
                           />
                         </div>
@@ -236,7 +256,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
                                 amount: e.target.value,
                               })
                             }
-                            className="px-4 py-2 border rounded-md w-full"
+                            className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                             required
                           />
                         </div>

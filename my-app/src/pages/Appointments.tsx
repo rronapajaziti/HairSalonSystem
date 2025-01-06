@@ -448,19 +448,21 @@ const Appointments = () => {
                   </td>
                   <td className="py-3 px-4">{appt.status}</td>
                   <td className="py-3 px-4">{appt.notes}</td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => handleEdit(appt)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(appt.appointmentID)}
-                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                    >
-                      <MdOutlineDelete />
-                    </button>
+                  <td className="py-4 px-4">
+                    <div className="flex space-x-2 sm:justify-center">
+                      <button
+                        onClick={() => handleEdit(appt)}
+                        className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(appt.appointmentID)}
+                        className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                      >
+                        <MdOutlineDelete />
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 {editingRowId === appt.appointmentID && (
