@@ -26,13 +26,33 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     password: '',
     roleID: 3,
   });
-  const adminToken = localStorage.getItem('adminToken'); // Retrieve token
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        // Decoding the token to get role or user details
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.roleID === 1 || decodedToken.roleID === 2) {
+          setIsAuthorized(true); // Authorized if role is Admin or Owner
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (error) {
+        console.error('Error decoding token', error);
+        setIsAuthorized(false);
+      }
+    } else {
+      setIsAuthorized(false);
+    }
+
+    // Fetch staff data
     axios
       .get('https://localhost:7158/api/User', {
         headers: {
-          Authorization: `Bearer ${adminToken}`, // Add token to headers
+          Authorization: `Bearer ${token}`, // Add the token to the header for authorization
         },
       })
       .then((response) => {
@@ -41,20 +61,35 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           id: staff.userID,
         }));
         setStaffList(filteredStaff);
-        console.log('Admin Token:', adminToken);
       })
       .catch((error) => {
-        console.error('There was an error fetching staff!', error.message);
+        console.error('There was an error fetching staff!', error);
+        if (error.response && error.response.status === 401) {
+          setErrorMessage(
+            'Ju nuk jeni të autorizuar për të kryer këtë veprim.',
+          );
+        }
       });
-  }, [adminToken]);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewStaff({
+      ...newStaff,
+      [name]: value,
+    });
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: name === 'roleID' ? parseInt(value, 10) : value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!adminToken) {
-      console.error('Unauthorized: Admin token is required.');
-      return;
-    }
 
     const payload = {
       userID: 0,
@@ -70,11 +105,11 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     axios
       .post('https://localhost:7158/api/User/register', payload, {
         headers: {
-          Authorization: `Bearer ${adminToken}`, // Add token to headers
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       })
       .then((response) => {
-        setStaffList((prev) => [...prev, response.data]);
+        setStaffList((prev) => [...prev, response.data]); // Update state to include new staff member
         setShowForm(false);
         setNewStaff({
           id: null,
@@ -87,9 +122,10 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
         });
       })
       .catch((error) => {
-        console.error('Failed to add staff:', error.message);
+        console.error(error.response?.data || error.message);
       });
   };
+
   const handleEdit = (staff: any) => {
     if (editingRowId === staff.id) {
       setEditingRowId(null);
@@ -106,32 +142,9 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       });
     }
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewStaff({
-      ...newStaff,
-      [name]: value,
-    });
-  };
 
-  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditFormData((prev) => ({
-      ...prev,
-      [name]: name === 'roleID' ? parseInt(value, 10) : value, // Parse roleID as number
-    }));
-  };
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const token =
-      localStorage.getItem('adminToken') || localStorage.getItem('userToken');
-    console.log('Token sent in header:', token); // Debugging
-
-    if (!token) {
-      console.error('Unauthorized: Token is missing.');
-      return;
-    }
 
     const payload = {
       userID: editFormData.id,
@@ -140,52 +153,52 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       phoneNumber: editFormData.phoneNumber,
       email: editFormData.email,
       roleID: editFormData.roleID,
-      passwordHash: editFormData.password || 'defaultPasswordHash',
-      passwordSalt: editFormData.password || 'defaultPasswordSalt',
+      passwordHash: editFormData.password
+        ? editFormData.password
+        : 'defaultPasswordHash',
+      passwordSalt: editFormData.password
+        ? editFormData.password
+        : 'defaultPasswordSalt',
     };
 
-    try {
-      await axios.put(
-        `https://localhost:7158/api/User/${payload.userID}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the correct token
-          },
+    axios
+      .put(`https://localhost:7158/api/User/${payload.userID}`, payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-      );
-      setStaffList((prev) =>
-        prev.map((staff) =>
-          staff.id === payload.userID ? { ...staff, ...payload } : staff,
-        ),
-      );
-      setEditingRowId(null);
-      console.log('Staff member updated successfully.');
-    } catch (error: any) {
-      console.error(
-        'Failed to update staff:',
-        error.response?.status,
-        error.message,
-      );
-    }
+      })
+      .then((response) => {
+        setStaffList((prev) =>
+          prev.map((staff) =>
+            staff.id === payload.userID
+              ? { ...staff, ...response.data }
+              : staff,
+          ),
+        );
+        setEditingRowId(null);
+      })
+      .catch((error) => {
+        console.error(
+          'There was an error updating the staff!',
+          error.response?.data || error.message,
+        );
+      });
   };
 
-  const handleDelete = async (id: number) => {
-    if (!adminToken) {
-      console.error('Unauthorized: Admin token is required.');
-      return;
-    }
-
-    try {
-      await axios.delete(`https://localhost:7158/api/User/${id}`, {
+  const handleDelete = (id: number) => {
+    if (!id) return;
+    axios
+      .delete(`https://localhost:7158/api/User/${id}`, {
         headers: {
-          Authorization: `Bearer ${adminToken}`, // Add token to headers
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+      })
+      .then(() => {
+        setStaffList((prev) => prev.filter((staff) => staff.id !== id));
+      })
+      .catch((error) => {
+        console.error('There was an error deleting the staff!', error);
       });
-      setStaffList((prev) => prev.filter((staff) => staff.id !== id));
-    } catch (error) {
-      console.error('Failed to delete staff:', error.message);
-    }
   };
 
   const filteredStaff = staffList.filter((staff) =>
@@ -219,6 +232,10 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           {showForm ? 'X' : 'Shto Stafin'}
         </button>
       </div>
+
+      {errorMessage && (
+        <div className="text-red-500 text-center">{errorMessage}</div>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mt-4">
@@ -297,6 +314,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4"
+            disabled={!isAuthorized} // Disable button if user is not authorized
           >
             {isEditing ? 'Update Staff' : 'Shto '}
           </button>
@@ -339,12 +357,14 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                       <button
                         onClick={() => handleEdit(staff)}
                         className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                        disabled={!isAuthorized}
                       >
                         <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDelete(staff.id)}
                         className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                        disabled={!isAuthorized}
                       >
                         <MdOutlineDelete />
                       </button>
@@ -425,7 +445,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                             />
                           </div>
                           <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700  text-black dark:text-white">
+                            <label className="block text-sm font-medium text-gray-700 text-black dark:text-white">
                               Roli
                             </label>
                             <select
@@ -449,6 +469,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                         <button
                           type="submit"
                           className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md"
+                          disabled={!isAuthorized}
                         >
                           Ruaj
                         </button>
