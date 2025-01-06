@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ExtraStyle.css';
 
@@ -7,6 +7,16 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+
+  // Check if user is already logged in when the component mounts
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    if (token && userId) {
+      // User is already logged in, redirect to home
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,12 +41,10 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
       if (!data.user || !data.user.userID) {
         throw new Error('User data is missing in the response.');
       }
+
+      // Store token and userId in localStorage (no sessionStorage needed)
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.user.userID);
-
-      // Store token and userId in sessionStorage
-      sessionStorage.setItem('token', data.token);
-      sessionStorage.setItem('userId', data.user.userID.toString());
 
       // Trigger onLogin callback
       onLogin();

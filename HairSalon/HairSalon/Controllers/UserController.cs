@@ -63,7 +63,9 @@ namespace HairSalon.Controllers
             }
             return Ok(user);
         }
-        [Authorize(Roles = "Admin")]
+
+
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
