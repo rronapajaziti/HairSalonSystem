@@ -1,4 +1,5 @@
 ﻿using HairSalon.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -62,8 +63,7 @@ namespace HairSalon.Controllers
             }
             return Ok(user);
         }
-
-        // Register a new user
+        [Authorize(Roles = "Admin")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
@@ -239,6 +239,7 @@ namespace HairSalon.Controllers
             var totalStaff = _context.Users.Count(u => u.RoleID == 3); 
             return Ok(new { totalStaff });
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -253,7 +254,45 @@ namespace HairSalon.Controllers
 
             return NoContent();  // 204 No Content response
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        {
+            if (id != updatedUser.UserID)
+            {
+                return BadRequest("User ID mismatch.");
+            }
+
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            existingUser.FirstName = updatedUser.FirstName;
+            existingUser.LastName = updatedUser.LastName;
+            existingUser.PhoneNumber = updatedUser.PhoneNumber;
+            existingUser.Email = updatedUser.Email;
+
+            // You can update the password only if it's provided
+            if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            {
+                using (var hmac = new HMACSHA512())
+                {
+                    existingUser.PasswordSalt = Convert.ToBase64String(hmac.Key);
+                    existingUser.PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(updatedUser.PasswordHash)));
+                }
+            }
+
+            existingUser.RoleID = updatedUser.RoleID; // Ensure you are not changing the user's role incorrectly
+
+            _context.Users.Update(existingUser);
+            await _context.SaveChangesAsync();
+
+            return NoContent(); // Success, no content returned
+        }
     }
+
 
     // Login Request DTO
     public class LoginRequest
