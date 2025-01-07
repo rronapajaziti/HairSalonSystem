@@ -48,7 +48,7 @@ const Appointments = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/Appointment',
+        'https://innovocode-hairsalon.com/api/Appointment',
       );
       setAppointments(response.data);
     } catch (error) {
@@ -58,7 +58,9 @@ const Appointments = () => {
 
   const fetchServicesList = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/Service');
+      const response = await axios.get(
+        'https://innovocode-hairsalon.com/api/Service',
+      );
       setServicesList(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -67,7 +69,9 @@ const Appointments = () => {
 
   const fetchStaffList = async () => {
     try {
-      const response = await axios.get('https://localhost:7158/api/User/staff');
+      const response = await axios.get(
+        'https://innovocode-hairsalon.com/api/User/staff',
+      );
       setStaffList(response.data);
     } catch (error) {
       console.error('Error fetching staff:', error);
@@ -116,7 +120,7 @@ const Appointments = () => {
       };
 
       const response = await axios.post(
-        'https://localhost:7158/api/Appointment',
+        'https://innovocode-hairsalon.com/api/Appointment',
         payload,
       );
 
@@ -161,7 +165,7 @@ const Appointments = () => {
 
     try {
       const response = await axios.put(
-        `https://localhost:7158/api/Appointment/${editFormData.appointmentID}`,
+        `https://innovocode-hairsalon.com/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
 
@@ -213,7 +217,9 @@ const Appointments = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`https://localhost:7158/api/Appointment/${id}`);
+      await axios.delete(
+        `https://innovocode-hairsalon.com/api/Appointment/${id}`,
+      );
       setAppointments((prev) =>
         prev.filter((appt) => appt.appointmentID !== id),
       );

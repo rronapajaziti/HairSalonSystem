@@ -50,7 +50,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
 
     // Fetch staff data
     axios
-      .get('https://localhost:7158/api/User', {
+      .get('https://innovocode-hairsalon.com/api/User', {
         headers: {
           Authorization: `Bearer ${token}`, // Add the token to the header for authorization
         },
@@ -103,7 +103,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     };
 
     axios
-      .post('https://localhost:7158/api/User/register', payload, {
+      .post('https://innovocode-hairsalon.com/api/User/register', payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -162,11 +162,15 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     };
 
     axios
-      .put(`https://localhost:7158/api/User/${payload.userID}`, payload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+      .put(
+        `https://innovocode-hairsalon.com/api/User/${payload.userID}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         },
-      })
+      )
       .then((response) => {
         setStaffList((prev) =>
           prev.map((staff) =>
@@ -188,7 +192,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
   const handleDelete = (id: number) => {
     if (!id) return;
     axios
-      .delete(`https://localhost:7158/api/User/${id}`, {
+      .delete(`https://innovocode-hairsalon.com/api/User/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

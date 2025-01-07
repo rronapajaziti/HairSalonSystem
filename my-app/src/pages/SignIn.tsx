@@ -23,13 +23,16 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('https://localhost:7158/api/User/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://innovocode-hairsalon.com/api/User/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
