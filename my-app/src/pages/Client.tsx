@@ -10,9 +10,7 @@ const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(
-        'https://innovocode-hairsalon.com/api/Client',
-      );
+      const response = await axios.get('https://localhost:7158/api/Client');
       const filteredClients = response.data.map((client: any) => ({
         ...client,
         id: client.clientID,
@@ -25,9 +23,7 @@ const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
 
   // Filter clients based on search query
   const filteredClients = clientList.filter((client) =>
-    `${client.firstName} ${client.lastName}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()),
+    `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

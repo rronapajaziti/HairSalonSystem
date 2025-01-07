@@ -61,7 +61,7 @@ const ChartThree: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `https://innovocode-hairsalon.com/api/Appointment/services-completed`,
+        `https://localhost:7158/api/Appointment/services-completed`,
         { params: { startDate, endDate } },
       );
 

@@ -30,7 +30,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `https://innovocode-hairsalon.com/api/User/${userId}`,
+          `https://localhost:7158/api/User/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const Profile = () => {
 
     try {
       const response = await axios.get(
-        `https://innovocode-hairsalon.com/api/Appointment/user/${userId}`,
+        `https://localhost:7158/api/Appointment/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ const Profile = () => {
       };
 
       const response = await axios.put(
-        `https://innovocode-hairsalon.com/api/User/${userId}`,
+        `https://localhost:7158/api/User/${userId}`,
         payload,
         {
           headers: {

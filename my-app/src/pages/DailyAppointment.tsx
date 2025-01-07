@@ -4,30 +4,13 @@ import axios from 'axios';
 const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
+    new Date().toISOString().split('T')[0]
   );
   const [services, setServices] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState([
-    '09:00',
-    '09:30',
-    '10:00',
-    '10:30',
-    '11:00',
-    '11:30',
-    '12:00',
-    '12:30',
-    '13:00',
-    '13:30',
-    '14:00',
-    '14:30',
-    '15:00',
-    '15:30',
-    '16:00',
-    '16:30',
-    '17:00',
-    '17:30',
-    '18:00',
-    '18:30',
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
+    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+    '17:00', '17:30', '18:00', '18:30'
   ]);
 
   useEffect(() => {
@@ -38,7 +21,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        `https://innovocode-hairsalon.com/api/Appointment/schedule?date=${selectedDate}`,
+        `https://localhost:7158/api/Appointment/schedule?date=${selectedDate}`
       );
       const fetchedAppointments = response.data.appointments || [];
       setAppointments(fetchedAppointments);
@@ -51,7 +34,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
             minute: '2-digit',
             hour12: false,
           })
-          .slice(0, 5),
+          .slice(0, 5)
       );
 
       setTimeSlots((prevTimeSlots) => {
@@ -66,19 +49,14 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get(
-        'https://innovocode-hairsalon.com/api/Service',
-      );
+      const response = await axios.get('https://localhost:7158/api/Service');
       setServices(response.data || []);
     } catch (error) {
       console.error('Error fetching services:', error);
     }
   };
 
-  const getAppointmentsForTimeAndService = (
-    timeSlot: string,
-    serviceName: string,
-  ) => {
+  const getAppointmentsForTimeAndService = (timeSlot: string, serviceName: string) => {
     return appointments.filter((appt) => {
       const appointmentTime = new Date(appt.appointmentDate)
         .toLocaleTimeString('en-US', {
@@ -96,7 +74,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
     const serviceAppointments = appointments.filter(
       (appt) =>
         appt.serviceName === service.serviceName &&
-        appt.status.toLowerCase() === 'përfunduar',
+        appt.status.toLowerCase() === 'përfunduar'
     );
 
     return serviceAppointments.reduce((total: number, appt: any) => {
@@ -115,12 +93,8 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
 
   // Filter appointments based on search query
   const filteredAppointments = appointments.filter((appt) => {
-    const clientMatches = appt.clientName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const staffMatches = appt.staffName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const clientMatches = appt.clientName.toLowerCase().includes(searchQuery.toLowerCase());
+    const staffMatches = appt.staffName.toLowerCase().includes(searchQuery.toLowerCase());
     return clientMatches || staffMatches;
   });
 
@@ -164,28 +138,22 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
                   {timeSlot}
                 </td>
                 {services.map((service, serviceIndex) => (
-                  <td
-                    key={serviceIndex}
-                    className="border border-gray-300 px-4 py-2"
-                  >
-                    {getAppointmentsForTimeAndService(
-                      timeSlot,
-                      service.serviceName,
-                    ).map((appt, apptIndex) => (
-                      <div
-                        key={apptIndex}
-                        className={`text-sm p-1 rounded shadow-md mb-1 ${
-                          appt.status === 'përfunduar'
-                            ? 'bg-red-400 dark:bg-red-500'
-                            : 'bg-blue-400 dark:bg-blue-700'
-                        }`}
-                      >
-                        <span className="font-medium">
-                          {appt.clientName || 'Pa Klient'}
-                        </span>{' '}
-                        - <span>{appt.staffName || 'Pa Staf'}</span>
-                      </div>
-                    ))}
+                  <td key={serviceIndex} className="border border-gray-300 px-4 py-2">
+                    {getAppointmentsForTimeAndService(timeSlot, service.serviceName).map(
+                      (appt, apptIndex) => (
+                        <div
+                          key={apptIndex}
+                          className={`text-sm p-1 rounded shadow-md mb-1 ${
+                            appt.status === 'përfunduar'
+                              ? 'bg-red-400 dark:bg-red-500'
+                              : 'bg-blue-400 dark:bg-blue-700'
+                          }`}
+                        >
+                          <span className="font-medium">{appt.clientName || 'Pa Klient'}</span> -{' '}
+                          <span>{appt.staffName || 'Pa Staf'}</span>
+                        </div>
+                      )
+                    )}
                   </td>
                 ))}
               </tr>
@@ -195,10 +163,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
                 Totali për Shërbim
               </td>
               {services.map((service, index) => (
-                <td
-                  key={index}
-                  className="border border-gray-300 px-4 py-2 font-medium text-green-600"
-                >
+                <td key={index} className="border border-gray-300 px-4 py-2 font-medium text-green-600">
                   {calculateRemainingRevenue(service).toFixed(2)}€
                 </td>
               ))}

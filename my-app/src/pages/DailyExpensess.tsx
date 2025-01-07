@@ -27,7 +27,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const fetchExpenses = async () => {
     try {
       const response = await axios.get(
-        'https://innovocode-hairsalon.com/api/dailyexpenses',
+        'https://localhost:7158/api/dailyexpenses',
         {
           params: { date: selectedDate },
         },
@@ -50,7 +50,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.post(
-        'https://innovocode-hairsalon.com/api/dailyexpenses',
+        'https://localhost:7158/api/dailyexpenses',
         payload,
       );
       setExpenses([...expenses, response.data]);
@@ -88,7 +88,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.put(
-        `https://innovocode-hairsalon.com/api/dailyexpenses/${editFormData.id}`,
+        `https://localhost:7158/api/dailyexpenses/${editFormData.id}`,
         payload,
       );
       setExpenses((prev) =>
@@ -105,9 +105,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(
-        `https://innovocode-hairsalon.com/api/dailyexpenses/${id}`,
-      );
+      await axios.delete(`https://localhost:7158/api/dailyexpenses/${id}`);
       setExpenses((prev) => prev.filter((expense) => expense.id !== id));
       fetchExpenses();
     } catch (error) {

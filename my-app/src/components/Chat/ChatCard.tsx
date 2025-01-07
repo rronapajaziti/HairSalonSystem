@@ -30,7 +30,7 @@ const BestCustomersCard = () => {
 
     try {
       const response = await axios.get(
-        'https://innovocode-hairsalon.com/api/Appointment/top-customers',
+        'https://localhost:7158/api/Appointment/top-customers',
       );
 
       if (response?.data && Array.isArray(response.data)) {

@@ -65,7 +65,7 @@
               "RelativeDocumentMoniker": "HairSalon\\appsettings.json",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\appsettings.json",
               "RelativeToolTip": "HairSalon\\appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAVAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-01-06T12:33:34.189Z",
               "EditorCaption": ""
@@ -104,7 +104,8 @@
               "RelativeToolTip": "HairSalon\\Program.cs",
               "ViewState": "AQIAAD0AAAAAAAAAAAAuwE8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T08:55:04.851Z"
+              "WhenOpened": "2025-01-06T08:55:04.851Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
