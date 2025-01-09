@@ -42,16 +42,13 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
         throw new Error('User or token data is missing in the response.');
       }
 
-      // Store tokens and user information
-      localStorage.setItem('adminToken', data.token); // Admin token
+      localStorage.setItem('adminToken', data.token);
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.userID); // User ID
-      localStorage.setItem('roleID', data.user.roleID); // User Role (Admin, Staff, etc.)
+      localStorage.setItem('userId', data.user.userID);
+      localStorage.setItem('roleID', data.user.roleID);
 
-      // Trigger onLogin callback
       onLogin();
 
-      // Redirect to home page
       navigate('/');
     } catch (error: any) {
       setErrorMessage(error.message || 'An error occurred. Please try again.');

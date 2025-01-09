@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdOutlineDelete } from 'react-icons/md';
+import { jwtDecode } from 'jwt-decode';
 
 const Staff = ({ searchQuery }: { searchQuery: string }) => {
   const [staffList, setStaffList] = useState<any[]>([]);
@@ -30,29 +31,30 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const adminToken = localStorage.getItem('adminToken');
+    console.log('Admin Token:', adminToken);
+
+    if (adminToken) {
       try {
-        // Decoding the token to get role or user details
-        const decodedToken = jwtDecode(token);
-        if (decodedToken.roleID === 1 || decodedToken.roleID === 2) {
-          setIsAuthorized(true); // Authorized if role is Admin or Owner
-        } else {
-          setIsAuthorized(false);
-        }
+        const decodedToken: any = jwtDecode(adminToken);
+        console.log('Decoded Token:', decodedToken);
+
+        const authorized =
+          decodedToken.RolesID === '1' || decodedToken.RolesID === '2';
+        setIsAuthorized(authorized);
+        console.log('Is Authorized:', authorized);
       } catch (error) {
-        console.error('Error decoding token', error);
+        console.error('Error decoding token:', error);
         setIsAuthorized(false);
       }
     } else {
       setIsAuthorized(false);
     }
 
-    // Fetch staff data
     axios
       .get('https://localhost:7158/api/User', {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the header for authorization
+          Authorization: `Bearer ${adminToken}`,
         },
       })
       .then((response) => {
@@ -63,8 +65,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
         setStaffList(filteredStaff);
       })
       .catch((error) => {
-        console.error('There was an error fetching staff!', error);
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
           setErrorMessage(
             'Ju nuk jeni të autorizuar për të kryer këtë veprim.',
           );
@@ -74,10 +75,10 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewStaff({
-      ...newStaff,
+    setNewStaff((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +91,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const adminToken = localStorage.getItem('adminToken');
 
     const payload = {
       userID: 0,
@@ -105,11 +107,11 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     axios
       .post('https://localhost:7158/api/User/register', payload, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       })
       .then((response) => {
-        setStaffList((prev) => [...prev, response.data]); // Update state to include new staff member
+        setStaffList((prev) => [...prev, response.data]);
         setShowForm(false);
         setNewStaff({
           id: null,
@@ -120,9 +122,6 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           password: '',
           roleID: 3,
         });
-      })
-      .catch((error) => {
-        console.error(error.response?.data || error.message);
       });
   };
 
@@ -131,6 +130,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       setEditingRowId(null);
     } else {
       setEditingRowId(staff.id);
+      setIsEditing(true);
       setEditFormData({
         id: staff.id,
         firstName: staff.firstName,
@@ -145,6 +145,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const adminToken = localStorage.getItem('adminToken');
 
     const payload = {
       userID: editFormData.id,
@@ -153,51 +154,38 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
       phoneNumber: editFormData.phoneNumber,
       email: editFormData.email,
       roleID: editFormData.roleID,
-      passwordHash: editFormData.password
-        ? editFormData.password
-        : 'defaultPasswordHash',
-      passwordSalt: editFormData.password
-        ? editFormData.password
-        : 'defaultPasswordSalt',
+      passwordHash: editFormData.password || 'defaultPasswordHash',
+      passwordSalt: editFormData.password || 'defaultPasswordSalt',
     };
 
     axios
       .put(`https://localhost:7158/api/User/${payload.userID}`, payload, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       })
-      .then((response) => {
+      .then(() => {
         setStaffList((prev) =>
           prev.map((staff) =>
-            staff.id === payload.userID
-              ? { ...staff, ...response.data }
-              : staff,
+            staff.id === payload.userID ? { ...staff, ...payload } : staff,
           ),
         );
         setEditingRowId(null);
-      })
-      .catch((error) => {
-        console.error(
-          'There was an error updating the staff!',
-          error.response?.data || error.message,
-        );
+        setIsEditing(false);
       });
   };
 
   const handleDelete = (id: number) => {
-    if (!id) return;
+    const adminToken = localStorage.getItem('adminToken');
+
     axios
       .delete(`https://localhost:7158/api/User/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${adminToken}`,
         },
       })
       .then(() => {
         setStaffList((prev) => prev.filter((staff) => staff.id !== id));
-      })
-      .catch((error) => {
-        console.error('There was an error deleting the staff!', error);
       });
   };
 
@@ -314,9 +302,9 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4"
-            disabled={!isAuthorized} // Disable button if user is not authorized
+            disabled={!isAuthorized}
           >
-            {isEditing ? 'Update Staff' : 'Shto '}
+            {isEditing ? 'Update Staff' : 'Shto'}
           </button>
         </form>
       )}
@@ -340,145 +328,147 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredStaff.map((staff) => (
-              <React.Fragment key={staff.id}>
-                <tr>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {staff.firstName} {staff.lastName}
-                  </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {staff.phoneNumber}
-                  </td>
-                  <td className="py-4 px-4 dark:text-white text-black">
-                    {staff.email}
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex space-x-2 sm:justify-center">
-                      <button
-                        onClick={() => handleEdit(staff)}
-                        className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
-                        disabled={!isAuthorized}
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(staff.id)}
-                        className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
-                        disabled={!isAuthorized}
-                      >
-                        <MdOutlineDelete />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                {editingRowId === staff.id && (
+            {filteredStaff
+              .filter((staff) => staff.roleID !== 1)
+              .map((staff) => (
+                <React.Fragment key={staff.id}>
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                    >
-                      <form onSubmit={handleEditSubmit}>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Emri
-                            </label>
-                            <input
-                              type="text"
-                              name="emri"
-                              value={editFormData.firstName}
-                              onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Mbiemri
-                            </label>
-                            <input
-                              type="text"
-                              name="mbiemri"
-                              value={editFormData.lastName}
-                              onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full  text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Numri i telefonit
-                            </label>
-                            <input
-                              type="text"
-                              name="phoneNumber"
-                              value={editFormData.phoneNumber}
-                              onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              name="email"
-                              value={editFormData.email}
-                              onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Password
-                            </label>
-                            <input
-                              type="password"
-                              name="password"
-                              value={editFormData.password}
-                              onChange={handleEditInputChange}
-                              className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
-                              placeholder="Leave blank to keep unchanged"
-                            />
-                          </div>
-                          <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 text-black dark:text-white">
-                              Roli
-                            </label>
-                            <select
-                              name="roleID"
-                              value={editFormData.roleID}
-                              onChange={(e) =>
-                                setEditFormData({
-                                  ...editFormData,
-                                  roleID: parseInt(e.target.value, 10),
-                                })
-                              }
-                              required
-                              className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
-                            >
-                              <option value={1}>Admin</option>
-                              <option value={2}>Owner</option>
-                              <option value={3}>Staff</option>
-                            </select>
-                          </div>
-                        </div>
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {staff.firstName} {staff.lastName}
+                    </td>
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {staff.phoneNumber}
+                    </td>
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {staff.email}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex space-x-2 sm:justify-center">
                         <button
-                          type="submit"
-                          className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md"
+                          onClick={() => handleEdit(staff)}
+                          className="bg-blue-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
                           disabled={!isAuthorized}
                         >
-                          Ruaj
+                          <FaEdit />
                         </button>
-                      </form>
+                        <button
+                          onClick={() => handleDelete(staff.id)}
+                          className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                          disabled={!isAuthorized}
+                        >
+                          <MdOutlineDelete />
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
+                  {editingRowId === staff.id && (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="py-4 px-4 bg-gray-100 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                      >
+                        <form onSubmit={handleEditSubmit}>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                                Emri
+                              </label>
+                              <input
+                                type="text"
+                                name="emri"
+                                value={editFormData.firstName}
+                                onChange={handleEditInputChange}
+                                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                                Mbiemri
+                              </label>
+                              <input
+                                type="text"
+                                name="mbiemri"
+                                value={editFormData.lastName}
+                                onChange={handleEditInputChange}
+                                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                                Numri i telefonit
+                              </label>
+                              <input
+                                type="text"
+                                name="phoneNumber"
+                                value={editFormData.phoneNumber}
+                                onChange={handleEditInputChange}
+                                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                                Email
+                              </label>
+                              <input
+                                type="email"
+                                name="email"
+                                value={editFormData.email}
+                                onChange={handleEditInputChange}
+                                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                                Password
+                              </label>
+                              <input
+                                type="password"
+                                name="password"
+                                value={editFormData.password}
+                                onChange={handleEditInputChange}
+                                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                                placeholder="Leave blank to keep unchanged"
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 text-black dark:text-white">
+                                Roli
+                              </label>
+                              <select
+                                name="roleID"
+                                value={editFormData.roleID}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    roleID: parseInt(e.target.value, 10),
+                                  })
+                                }
+                                required
+                                className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
+                              >
+                                <option value={1}>Admin</option>
+                                <option value={2}>Owner</option>
+                                <option value={3}>Staff</option>
+                              </select>
+                            </div>
+                          </div>
+                          <button
+                            type="submit"
+                            className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-md"
+                            disabled={!isAuthorized}
+                          >
+                            Ruaj
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
           </tbody>
         </table>
       </div>
