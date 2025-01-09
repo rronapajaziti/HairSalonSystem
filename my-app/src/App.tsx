@@ -1,3 +1,4 @@
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
@@ -31,7 +32,7 @@ function App() {
 
     if (token && userId) {
       try {
-        const decodedToken = jwtDecode(token);
+        const decodedToken: any = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         if (decodedToken.exp < currentTime) {
           localStorage.removeItem('token');
@@ -53,7 +54,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Reset scroll position when path changes
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   const isLoginPage = pathname === '/signin';
@@ -66,64 +67,72 @@ function App() {
     return <Navigate to="/signin" />;
   }
 
-  return loading ? (
-    <Loader />
-  ) : isLoginPage ? (
-    <Routes>
-      <Route
-        path="/signin"
-        element={
-          <>
-            <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <SignIn onLogin={handleLogin} />
-          </>
-        }
-      />
-    </Routes>
-  ) : (
-    <DefaultLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery}>
-      <Routes>
-        <Route index element={<ECommerce />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route
-          path="/terminet-Ditore"
-          element={<DailyAppointments searchQuery={searchQuery} />}
-        />
-        <Route path="/profile" element={<Profile />} />
-        <Route
-          path="/clients"
-          element={<ClientTable searchQuery={searchQuery} />}
-        />
-        <Route
-          path="/dailyExpensess"
-          element={<DailyExpenses searchQuery={searchQuery} />}
-        />
-        <Route
-          path="/monthlyExpensess"
-          element={<MonthlyExpenses searchQuery={searchQuery} />}
-        />
-        <Route
-          path="/serviceDiscount"
-          element={
-            <ServiceDiscount
-              updateServiceList={function (): void {
-                throw new Error('Function not implemented.');
-              }}
-              searchQuery={''}
+  return (
+    <HelmetProvider>
+      <Helmet>
+        <title>InnovoCode | HairSalon</title>
+        <link rel="icon" type="image/svg+xml" href="/logo1.svg" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+      </Helmet>
+      {loading ? (
+        <Loader />
+      ) : isLoginPage ? (
+        <Routes>
+          <Route
+            path="/signin"
+            element={
+              <>
+                <PageTitle title="Signin | TailAdmin" />
+                <SignIn onLogin={handleLogin} />
+              </>
+            }
+          />
+        </Routes>
+      ) : (
+        <DefaultLayout
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        >
+          <Routes>
+            <Route index element={<ECommerce />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route
+              path="/terminet-Ditore"
+              element={<DailyAppointments searchQuery={searchQuery} />}
             />
-          }
-        />
-        <Route path="/appointments" element={<Appointments />} />
-        <Route path="/chat" element={<WhatsAppForm />} />
-        <Route path="/terminet" element={<Appointments />} />
-        <Route
-          path="/sherbimet"
-          element={<Services searchQuery={searchQuery} />}
-        />
-        <Route path="/serviceStaff" element={<ServiceStaff />} />
-        <Route path="/stafi" element={<Staff searchQuery={searchQuery} />} />
-      </Routes>
-    </DefaultLayout>
+            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/clients"
+              element={<ClientTable searchQuery={searchQuery} />}
+            />
+            <Route
+              path="/dailyExpensess"
+              element={<DailyExpenses searchQuery={searchQuery} />}
+            />
+            <Route
+              path="/monthlyExpensess"
+              element={<MonthlyExpenses searchQuery={searchQuery} />}
+            />
+            <Route
+              path="/serviceDiscount"
+              element={<ServiceDiscount searchQuery={searchQuery} />}
+            />
+            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/chat" element={<WhatsAppForm />} />
+            <Route path="/terminet" element={<Appointments />} />
+            <Route
+              path="/sherbimet"
+              element={<Services searchQuery={searchQuery} />}
+            />
+            <Route path="/serviceStaff" element={<ServiceStaff />} />
+            <Route
+              path="/stafi"
+              element={<Staff searchQuery={searchQuery} />}
+            />
+          </Routes>
+        </DefaultLayout>
+      )}
+    </HelmetProvider>
   );
 }
 

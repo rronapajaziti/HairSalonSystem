@@ -65,7 +65,6 @@ namespace HairSalon.Controllers
         }
 
 
-        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
@@ -83,6 +82,7 @@ namespace HairSalon.Controllers
             {
                 user.PasswordSalt = Convert.ToBase64String(hmac.Key);
                 user.PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(user.PasswordHash)));
+
                 user.RoleID = user.RoleID != 0 ? user.RoleID : 3;
             }
 
