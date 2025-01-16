@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
-
 using System.Text.Json;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 using HairSalon.Swagger;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ServiceHelper>();
-
 
 builder.Services.AddAuthorization(options =>
 {
@@ -67,6 +65,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Configure the backend to listen on HTTPS using the correct port (7158) and SSL
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Listen(IPAddress.Any, 7158, listenOptions =>
+    {
+        listenOptions.UseHttps("C:\\Certificates\\studio-linda.pfx", "Innovocode2024?"); // Update with your certificate path and password
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -79,10 +86,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAllOrigins");
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); // Ensures HTTPS redirection for all requests
 
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
 
 app.MapControllers();
 
