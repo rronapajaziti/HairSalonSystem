@@ -33,12 +33,14 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 // Configure CORS to allow all origins, methods, and headers
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    builder.Services.AddCors(options =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        options.AddPolicy("AllowFrontend",
+            builder => builder.WithOrigins("https://www.studio-linda.com")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader());
     });
+
 });
 
 // Configure the database connection
