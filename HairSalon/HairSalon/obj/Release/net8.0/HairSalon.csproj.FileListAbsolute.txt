@@ -175,3 +175,13 @@ C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\backend-publish\appsettings.json
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\backend-publish\HairSalon.deps.json
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\backend-publish\HairSalon.runtimeconfig.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\backend-publish\web.config
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\web.config
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\appsettings.Development.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\appsettings.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\backend-publish\appsettings.Development.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\backend-publish\appsettings.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\backend-publish\HairSalon.deps.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\backend-publish\HairSalon.runtimeconfig.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\HairSalon.deps.json
+C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\bin\Release\net8.0\publish\HairSalon.runtimeconfig.json
