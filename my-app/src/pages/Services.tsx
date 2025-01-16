@@ -33,9 +33,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get(
-        'https://studio-linda.com:7158/api/Service',
-      );
+      const response = await axios.get('https://studio-linda.com/api/Service');
       setServiceList(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -45,7 +43,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
   const fetchDiscounts = async () => {
     try {
       const response = await axios.get(
-        'https://studio-linda.com:7158/api/ServiceDiscount',
+        'https://studio-linda.com/api/ServiceDiscount',
       );
       setDiscounts(response.data);
     } catch (error) {
@@ -87,7 +85,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
 
     try {
       const response = await axios.post(
-        'https://studio-linda.com:7158/api/Service',
+        'https://studio-linda.com/api/Service',
         payload,
       );
       setServiceList([...serviceList, response.data]);
@@ -119,7 +117,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
 
     try {
       await axios.put(
-        `https://studio-linda.com:7158/api/Service/${payload.serviceID}`,
+        `https://studio-linda.com/api/Service/${payload.serviceID}`,
         payload,
       );
       setServiceList((prev) =>
@@ -137,7 +135,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`https://studio-linda.com:7158/api/Service/${id}`);
+      await axios.delete(`https://studio-linda.com/api/Service/${id}`);
       setServiceList((prev) =>
         prev.filter((service) => service.serviceID !== id),
       );

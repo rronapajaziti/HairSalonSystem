@@ -52,7 +52,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     }
 
     axios
-      .get('https://studio-linda.com:7158/api/User', {
+      .get('https://studio-linda.com/api/User', {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
@@ -105,7 +105,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     };
 
     axios
-      .post('https://studio-linda.com:7158/api/User/register', payload, {
+      .post('https://studio-linda.com/api/User/register', payload, {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
@@ -159,15 +159,11 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     };
 
     axios
-      .put(
-        `https://studio-linda.com:7158/api/User/${payload.userID}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
+      .put(`https://studio-linda.com/api/User/${payload.userID}`, payload, {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
         },
-      )
+      })
       .then(() => {
         setStaffList((prev) =>
           prev.map((staff) =>
@@ -183,7 +179,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
     const adminToken = localStorage.getItem('adminToken');
 
     axios
-      .delete(`https://studio-linda.com:7158/api/User/${id}`, {
+      .delete(`https://studio-linda.com/api/User/${id}`, {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },

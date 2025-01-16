@@ -23,16 +23,13 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
     setErrorMessage('');
 
     try {
-      const response = await fetch(
-        'https://studio-linda.com:7158/api/User/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
+      const response = await fetch('https://studio-linda.com/api/User/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ email, password }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();

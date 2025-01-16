@@ -68,9 +68,9 @@ builder.Services.AddAuthentication(options =>
 // Configure the backend to listen on HTTPS using the correct port (7158) and SSL
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Listen(IPAddress.Any, 7158, listenOptions =>
+    serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
     {
-        listenOptions.UseHttps("C:\\Certificates\\studio-linda.pfx", "Innovocode2024?"); // Update with your certificate path and password
+        listenOptions.UseHttps("C:\\Certificates\\studio-linda.pfx", "");
     });
 });
 
