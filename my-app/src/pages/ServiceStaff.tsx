@@ -31,7 +31,7 @@ const ServiceStaff = () => {
   const fetchServiceStaff = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/ServiceStaff',
+        'http://studio-linda.com:7158/api/ServiceStaff',
       );
       setServiceStaffList(response.data);
     } catch (error) {
@@ -42,7 +42,7 @@ const ServiceStaff = () => {
   const fetchDailyEarnings = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/ServiceStaff/daily-earnings',
+        'http://studio-linda.com:7158/api/ServiceStaff/daily-earnings',
       );
       setDailyEarnings(response.data);
     } catch (error) {
@@ -57,7 +57,7 @@ const ServiceStaff = () => {
   const fetchDiscounts = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/ServiceDiscount',
+        'http://studio-linda.com:7158/api/ServiceDiscount',
       );
       setDiscounts(response.data);
     } catch (error) {

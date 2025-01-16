@@ -30,7 +30,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7158/api/User/${userId}`,
+          `http://studio-linda.com:7158/api/User/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const Profile = () => {
 
     try {
       const response = await axios.get(
-        `https://localhost:7158/api/Appointment/user/${userId}`,
+        `http://studio-linda.com:7158/api/Appointment/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ const Profile = () => {
       };
 
       const response = await axios.put(
-        `https://localhost:7158/api/User/${userId}`,
+        `http://studio-linda.com:7158/api/User/${userId}`,
         payload,
         {
           headers: {

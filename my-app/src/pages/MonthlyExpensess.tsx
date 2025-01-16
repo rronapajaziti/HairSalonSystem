@@ -28,7 +28,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
     const [year, month] = selectedMonth.split('-');
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/monthlyexpenses',
+        'http://studio-linda.com:7158/api/monthlyexpenses',
         {
           params: { year, month },
         },
@@ -50,7 +50,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.post(
-        'https://localhost:7158/api/monthlyexpenses',
+        'http://studio-linda.com:7158/api/monthlyexpenses',
         payload,
       );
       setExpenses((prev) => [...prev, response.data]);
@@ -87,7 +87,7 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.put(
-        `https://localhost:7158/api/monthlyexpenses/${editFormData.id}`,
+        `http://studio-linda.com:7158/api/monthlyexpenses/${editFormData.id}`,
         payload,
       );
       setExpenses((prev) =>
@@ -104,7 +104,9 @@ const MonthlyExpenses = ({ searchQuery }: { searchQuery: string }) => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`https://localhost:7158/api/monthlyexpenses/${id}`);
+      await axios.delete(
+        `http://studio-linda.com:7158/api/monthlyexpenses/${id}`,
+      );
       setExpenses((prev) => prev.filter((expense) => expense.id !== id));
       fetchMonthlyExpenses();
     } catch (error) {

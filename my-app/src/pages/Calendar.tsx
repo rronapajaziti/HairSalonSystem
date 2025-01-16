@@ -23,7 +23,7 @@ const Calendar = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7158/api/Appointment'
+        'http://studio-linda.com:7158/api/Appointment',
       );
       const appointments = response.data;
 
