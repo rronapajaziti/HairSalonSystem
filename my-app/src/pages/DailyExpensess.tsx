@@ -27,7 +27,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const fetchExpenses = async () => {
     try {
       const response = await axios.get(
-        'http://studio-linda.com:7158/api/dailyexpenses',
+        'https://studio-linda.com:7158/api/dailyexpenses',
         {
           params: { date: selectedDate },
         },
@@ -50,7 +50,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.post(
-        'http://studio-linda.com:7158/api/dailyexpenses',
+        'https://studio-linda.com:7158/api/dailyexpenses',
         payload,
       );
       setExpenses([...expenses, response.data]);
@@ -88,7 +88,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
       };
 
       const response = await axios.put(
-        `http://studio-linda.com:7158/api/dailyexpenses/${editFormData.id}`,
+        `https://studio-linda.com:7158/api/dailyexpenses/${editFormData.id}`,
         payload,
       );
       setExpenses((prev) =>
@@ -106,7 +106,7 @@ const DailyExpenses = ({ searchQuery }: { searchQuery: string }) => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(
-        `http://studio-linda.com:7158/api/dailyexpenses/${id}`,
+        `https://studio-linda.com:7158/api/dailyexpenses/${id}`,
       );
       setExpenses((prev) => prev.filter((expense) => expense.id !== id));
       fetchExpenses();

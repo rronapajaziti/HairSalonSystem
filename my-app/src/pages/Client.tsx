@@ -11,7 +11,7 @@ const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
   const fetchClients = async () => {
     try {
       const response = await axios.get(
-        'http://studio-linda.com:7158/api/Client',
+        'https://studio-linda.com:7158/api/Client',
       );
       const filteredClients = response.data.map((client: any) => ({
         ...client,

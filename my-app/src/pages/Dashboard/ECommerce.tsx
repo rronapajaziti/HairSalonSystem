@@ -18,7 +18,7 @@ const ECommerce: React.FC = () => {
     const fetchTotalStaff = async () => {
       try {
         const response = await axios.get(
-          'http://studio-linda.com:7158/api/User/total-staff',
+          'https://studio-linda.com:7158/api/User/total-staff',
         );
         setTotalStaff(response.data.totalStaff);
       } catch (error) {
@@ -29,7 +29,7 @@ const ECommerce: React.FC = () => {
     const fetchTotalPrice = async () => {
       try {
         const response = await axios.get(
-          'http://studio-linda.com:7158/api/Appointment/total-price',
+          'https://studio-linda.com:7158/api/Appointment/total-price',
         );
         setTotalPrice(response.data);
       } catch (error) {
@@ -39,7 +39,7 @@ const ECommerce: React.FC = () => {
     const fetchTotalServices = async () => {
       try {
         const response = await axios.get(
-          'http://studio-linda.com:7158/api/Service/total-services',
+          'https://studio-linda.com:7158/api/Service/total-services',
         );
         setTotalServices(response.data.totalServices);
       } catch (error) {
@@ -49,7 +49,7 @@ const ECommerce: React.FC = () => {
     const fetchCompletedAppointments = async () => {
       try {
         const response = await axios.get(
-          'http://studio-linda.com:7158/api/Appointment/total-completed-appointments',
+          'https://studio-linda.com:7158/api/Appointment/total-completed-appointments',
         );
         setCompletedAppointments(response.data.completedAppointmentsCount);
       } catch (error) {

@@ -48,7 +48,7 @@ const Appointments = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        'http://studio-linda.com:7158/api/Appointment',
+        'https://studio-linda.com:7158/api/Appointment',
       );
       setAppointments(response.data);
     } catch (error) {
@@ -59,7 +59,7 @@ const Appointments = () => {
   const fetchServicesList = async () => {
     try {
       const response = await axios.get(
-        'http://studio-linda.com:7158/api/Service',
+        'https://studio-linda.com:7158/api/Service',
       );
       setServicesList(response.data);
     } catch (error) {
@@ -70,7 +70,7 @@ const Appointments = () => {
   const fetchStaffList = async () => {
     try {
       const response = await axios.get(
-        'http://studio-linda.com:7158/api/User/staff',
+        'https://studio-linda.com:7158/api/User/staff',
       );
       setStaffList(response.data);
     } catch (error) {
@@ -120,7 +120,7 @@ const Appointments = () => {
       };
 
       const response = await axios.post(
-        'http://studio-linda.com:7158/api/Appointment',
+        'https://studio-linda.com:7158/api/Appointment',
         payload,
       );
 
@@ -165,7 +165,7 @@ const Appointments = () => {
 
     try {
       const response = await axios.put(
-        `http://studio-linda.com:7158/api/Appointment/${editFormData.appointmentID}`,
+        `https://studio-linda.com:7158/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
 
@@ -217,7 +217,7 @@ const Appointments = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://studio-linda.com:7158/api/Appointment/${id}`);
+      await axios.delete(`https://studio-linda.com:7158/api/Appointment/${id}`);
       setAppointments((prev) =>
         prev.filter((appt) => appt.appointmentID !== id),
       );

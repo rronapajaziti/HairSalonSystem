@@ -24,7 +24,7 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
 
     try {
       const response = await fetch(
-        'http://studio-linda.com:7158/api/User/login',
+        'https://studio-linda.com:7158/api/User/login',
         {
           method: 'POST',
           headers: {
