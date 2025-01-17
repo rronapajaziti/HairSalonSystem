@@ -38,7 +38,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        `https://studio-linda.com/api/Appointment/schedule?date=${selectedDate}`,
+        `https://api.studio-linda.com/api/Appointment/schedule?date=${selectedDate}`,
       );
       const fetchedAppointments = response.data.appointments || [];
       setAppointments(fetchedAppointments);
@@ -67,7 +67,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
   const fetchServices = async () => {
     try {
       const response = await axios.get(
-        'https://studio-linda.com/api/Service',
+        'https://api.studio-linda.com/api/Service',
       );
       setServices(response.data || []);
     } catch (error) {

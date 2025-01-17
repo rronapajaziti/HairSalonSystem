@@ -14,7 +14,7 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
     const userId = localStorage.getItem('userId');
     if (token && userId) {
       // User is already logged in, redirect to home
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [navigate]);
 
@@ -23,13 +23,17 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('https://studio-linda.com/api/User/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://api.studio-linda.com/api/User/login',
+        {
+          // const response = await fetch('https://localhost:7158/api/User/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -49,7 +53,7 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
 
       onLogin();
 
-      navigate('/');
+      navigate('/dashboard');
     } catch (error: any) {
       setErrorMessage(error.message || 'An error occurred. Please try again.');
     }

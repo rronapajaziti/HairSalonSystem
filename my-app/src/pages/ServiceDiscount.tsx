@@ -38,7 +38,7 @@ const ServiceDiscount = ({
   const fetchDiscounts = async () => {
     try {
       const response = await axios.get(
-        'https://studio-linda.com/api/ServiceDiscount',
+        'https://api.studio-linda.com/api/ServiceDiscount',
       );
       setDiscounts(response.data);
     } catch (error) {
@@ -48,7 +48,9 @@ const ServiceDiscount = ({
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get('https://studio-linda.com/api/Service');
+      const response = await axios.get(
+        'https://api.studio-linda.com/api/Service',
+      );
       setServices(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -67,7 +69,7 @@ const ServiceDiscount = ({
 
     try {
       const response = await axios.post(
-        'https://studio-linda.com/api/ServiceDiscount',
+        'https://api.studio-linda.com/api/ServiceDiscount',
         newDiscountData,
       );
       setDiscounts([...discounts, response.data]);
@@ -130,7 +132,7 @@ const ServiceDiscount = ({
       };
 
       await axios.put(
-        `https://studio-linda.com/api/ServiceDiscount/${editingServiceDiscountID}`,
+        `https://api.studio-linda.com/api/ServiceDiscount/${editingServiceDiscountID}`,
         updatedDiscount,
       );
 
@@ -152,7 +154,9 @@ const ServiceDiscount = ({
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`https://studio-linda.com/api/ServiceDiscount/${id}`);
+      await axios.delete(
+        `https://api.studio-linda.com/api/ServiceDiscount/${id}`,
+      );
       setDiscounts((prev) =>
         prev.filter((discount) => discount.serviceDiscountID !== id),
       );

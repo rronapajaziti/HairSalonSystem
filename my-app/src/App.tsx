@@ -57,14 +57,14 @@ function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const isLoginPage = pathname === '/signin';
+  const isLoginPage = pathname === '/';
 
   const handleLogin = () => {
     setLoggedIn(true);
   };
 
   if (!loggedIn && !isLoginPage) {
-    return <Navigate to="/signin" />;
+    return <Navigate to="/" />;
   }
 
   return (
@@ -79,7 +79,7 @@ function App() {
       ) : isLoginPage ? (
         <Routes>
           <Route
-            path="/signin"
+            path="/"
             element={
               <>
                 <PageTitle title="Signin | TailAdmin" />
@@ -94,7 +94,7 @@ function App() {
           setSearchQuery={setSearchQuery}
         >
           <Routes>
-            <Route index element={<ECommerce />} />
+            <Route path="/dashboard" element={<ECommerce />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route
               path="/terminet-Ditore"

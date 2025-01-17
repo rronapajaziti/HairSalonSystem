@@ -30,18 +30,22 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
-// Configure CORS to allow all origins, methods, and headers
 builder.Services.AddCors(options =>
 {
-    builder.Services.AddCors(options =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        options.AddPolicy("AllowFrontend",
-            builder => builder.WithOrigins("https://www.studio-linda.com")
-                              .AllowAnyMethod()
-                              .AllowAnyHeader());
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "https://www.studio-linda.com",
+            "https://studio-linda.com"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
     });
-
 });
+
+
 
 // Configure the database connection
 builder.Services.AddDbContext<MyContext>(options =>
@@ -67,14 +71,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Configure the backend to listen on HTTPS using the correct port (7158) and SSL
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
-    {
-        listenOptions.UseHttps("C:\\Certificates\\studio-linda.pfx", "");
-    });
-});
 
 var app = builder.Build();
 
@@ -87,8 +83,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowAllOrigins");
-app.UseHttpsRedirection(); // Ensures HTTPS redirection for all requests
+
+app.UseCors("AllowFrontend");
+app.UseHttpsRedirection(); 
 
 app.UseAuthentication();
 app.UseAuthorization();
