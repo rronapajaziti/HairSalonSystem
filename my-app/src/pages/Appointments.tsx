@@ -120,7 +120,7 @@ const Appointments = () => {
           PhoneNumber: newAppointment.phoneNumber,
           Email: newAppointment.email,
         },
-        UserID: newAppointment.userID, // Correctly resolves from the dropdown
+        UserID: localStorage.getItem("userId"), // Correctly resolves from the dropdown
         ServiceID: newAppointment.serviceID,
         AppointmentDate: newAppointment.appointmentDate,
         Status: newAppointment.status,

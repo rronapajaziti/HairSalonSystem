@@ -68,7 +68,7 @@ public class ServiceStaffController : ControllerBase
 
                 if (existingServiceStaff == null)
                 {
-                    // Create a new ServiceStaff record
+                    // Create a new ServiceStaff recorda
                     var newServiceStaff = new ServiceStaff
                     {
                         ServiceID = appointment.ServiceID,

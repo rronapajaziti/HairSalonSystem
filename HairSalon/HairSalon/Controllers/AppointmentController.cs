@@ -174,61 +174,7 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while creating the appointment.");
             }
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
-        {
-            if (id != appointmentDto.AppointmentID)
-            {
-                return BadRequest("Appointment ID mismatch.");
-            }
 
-            var existingAppointment = await _context.Appointments
-                .Include(a => a.Service)
-                .FirstOrDefaultAsync(a => a.AppointmentID == id);
-
-            if (existingAppointment == null)
-            {
-                return NotFound("Appointment not found.");
-            }
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                bool isDateChanged = existingAppointment.AppointmentDate != appointmentDto.AppointmentDate;
-
-                existingAppointment.UserID = appointmentDto.UserID;
-                existingAppointment.ServiceID = appointmentDto.ServiceID;
-                existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
-                existingAppointment.Status = appointmentDto.Status;
-                existingAppointment.Notes = appointmentDto.Notes;
-
-                _context.Entry(existingAppointment).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-
-                // Update ServiceStaff date if appointment date changes
-                if (isDateChanged && appointmentDto.Status?.ToLower() == "përfunduar")
-                {
-                    var serviceStaff = await _context.ServiceStaff
-                        .FirstOrDefaultAsync(ss => ss.ServiceID == existingAppointment.ServiceID && ss.StaffID == appointmentDto.UserID);
-
-                    if (serviceStaff != null)
-                    {
-                        serviceStaff.DateCompleted = appointmentDto.AppointmentDate;
-                        _context.ServiceStaff.Update(serviceStaff);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-                await transaction.CommitAsync();
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                Console.WriteLine($"Error editing appointment: {ex.Message}");
-                return StatusCode(500, "An error occurred while editing the appointment.");
-            }
-        }
 
 
 
@@ -254,6 +200,84 @@ namespace HairSalon.Controllers
           
             }
         }
+
+
+
+
+        [HttpPut("{id}")]
+public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
+{
+    if (id != appointmentDto.AppointmentID)
+        return BadRequest("Appointment ID mismatch.");
+
+    var existingAppointment = await _context.Appointments
+        .FirstOrDefaultAsync(a => a.AppointmentID == id);
+
+    if (existingAppointment == null)
+        return NotFound("Appointment not found.");
+
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
+        // Remove ServiceStaff record if status changes to "pa përfunduar"
+        if (existingAppointment.Status.ToLower() == "përfunduar" &&
+            appointmentDto.Status.ToLower() != "përfunduar")
+        {
+            var serviceStaff = await _context.ServiceStaff
+                .FirstOrDefaultAsync(ss =>
+                    ss.ServiceID == existingAppointment.ServiceID &&
+                    ss.StaffID == existingAppointment.UserID &&
+                    ss.DateCompleted == existingAppointment.AppointmentDate);
+
+            if (serviceStaff != null)
+            {
+                _context.ServiceStaff.Remove(serviceStaff);
+            }
+        }
+        else if (existingAppointment.Status.ToLower() != "përfunduar" &&
+                 appointmentDto.Status.ToLower() == "përfunduar")
+        {
+            // Add ServiceStaff record if status changes to "përfunduar"
+            var service = await _context.Services.FindAsync(appointmentDto.ServiceID);
+            if (service != null)
+            {
+                var newServiceStaff = new ServiceStaff
+                {
+                    ServiceID = appointmentDto.ServiceID,
+                    StaffID = appointmentDto.UserID,
+                    DateCompleted = appointmentDto.AppointmentDate,
+                    Price = service.Price,
+                    StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
+                };
+
+                _context.ServiceStaff.Add(newServiceStaff);
+            }
+        }
+
+        // Update the appointment
+        existingAppointment.UserID = appointmentDto.UserID;
+        existingAppointment.ServiceID = appointmentDto.ServiceID;
+        existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
+        existingAppointment.Status = appointmentDto.Status;
+        existingAppointment.Notes = appointmentDto.Notes;
+
+        _context.Entry(existingAppointment).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+
+        return NoContent();
+    }
+    catch (Exception ex)
+    {
+        await transaction.RollbackAsync();
+        Console.WriteLine($"Error editing appointment: {ex.Message}");
+        return StatusCode(500, "An error occurred while editing the appointment.");
+    }
+}
+
+
+
         [HttpGet("total-price")]
         public async Task<IActionResult> GetTotalPriceForCompletedAppointments()
         {
