@@ -152,9 +152,55 @@ const Appointments = () => {
     }
   };
 
+  const handleEdit = (appt: any) => {
+    if (editingRowId === appt.appointmentID) {
+      // Cancel edit mode if clicking the same edit button again
+      setEditingRowId(null);
+      setEditFormData({
+        appointmentID: null,
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        email: '',
+        userID: '',
+        serviceID: '',
+        appointmentDate: '',
+        status: 'pa përfunduar',
+        notes: '',
+      });
+    } else {
+      // Find related service and staff data
+      const service = servicesList.find(
+        (service) => service.serviceID === appt.serviceID
+      );
+      const staff = staffList.find((staff) => staff.userID === appt.userID);
+  
+      const isValidDate =
+        appt.appointmentDate &&
+        !isNaN(new Date(appt.appointmentDate).getTime());
+  
+      // Set form data for editing
+      setEditingRowId(appt.appointmentID);
+      setEditFormData({
+        appointmentID: appt.appointmentID,
+        firstName: appt.client?.firstName || '',
+        lastName: appt.client?.lastName || '',
+        phoneNumber: appt.client?.phoneNumber || '',
+        email: appt.client?.email || '',
+        serviceID: service?.serviceID || '',
+        userID: staff?.userID || '',
+        appointmentDate: isValidDate
+          ? new Date(appt.appointmentDate).toISOString().slice(0, 16)
+          : '', // Format for `datetime-local`
+        status: appt.status || 'pa përfunduar',
+        notes: appt.notes || '',
+      });
+    }
+  };
+  
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const payload = {
       Client: {
         FirstName: editFormData.firstName,
@@ -169,61 +215,56 @@ const Appointments = () => {
       Status: editFormData.status,
       Notes: editFormData.notes,
     };
-
-    console.log('Payload being sent:', payload); // Debug payload
-
+  
     try {
       const response = await axios.put(
         `https://api.studio-linda.com/api/Appointment/${editFormData.appointmentID}`,
-        payload,
+        payload
       );
-
+  
+      // Update state with the response data
       setAppointments((prev) =>
         prev.map((appt) =>
           appt.appointmentID === editFormData.appointmentID
-            ? response.data
-            : appt,
-        ),
+            ? {
+                ...appt,
+                client: {
+                  firstName: payload.Client.FirstName,
+                  lastName: payload.Client.LastName,
+                  phoneNumber: payload.Client.PhoneNumber,
+                  email: payload.Client.Email,
+                },
+                userID: payload.UserID,
+                serviceID: payload.ServiceID,
+                appointmentDate: payload.AppointmentDate,
+                status: payload.Status,
+                notes: payload.Notes,
+              }
+            : appt
+        )
       );
+
+      
+  
+      // Exit edit mode
       setEditingRowId(null);
+      setEditFormData({
+        appointmentID: null,
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        email: '',
+        userID: '',
+        serviceID: '',
+        appointmentDate: '',
+        status: 'pa përfunduar',
+        notes: '',
+      });
     } catch (error) {
       console.error('Error editing appointment:', error);
     }
   };
-
-  const handleEdit = (appt: any) => {
-    if (editingRowId === appt.appointmentID) {
-      setEditingRowId(null);
-    } else {
-      const service = servicesList.find(
-        (service) => service.serviceName === appt.serviceName,
-      );
-      const staff = staffList.find(
-        (staff) => `${staff.firstName} ${staff.lastName}` === appt.staffName,
-      );
-
-      const isValidDate =
-        appt.appointmentDate &&
-        !isNaN(new Date(appt.appointmentDate).getTime());
-
-      setEditingRowId(appt.appointmentID);
-      setEditFormData({
-        appointmentID: appt.appointmentID,
-        firstName: appt.client?.firstName || '',
-        lastName: appt.client?.lastName || '',
-        phoneNumber: appt.client?.phoneNumber || '',
-        email: appt.client?.email || '',
-        serviceID: service?.serviceID || '',
-        userID: staff?.userID || '',
-        appointmentDate: isValidDate
-          ? new Date(appt.appointmentDate).toISOString().slice(0, 16) // ISO for `datetime-local`
-          : '', // Fallback if the date is invalid
-        status: appt.status || 'pa përfunduar',
-        notes: appt.notes || '',
-      });
-    }
-  };
-
+  
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://api.studio-linda.com/api/Appointment/${id}`);

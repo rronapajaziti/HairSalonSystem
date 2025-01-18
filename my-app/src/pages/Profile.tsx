@@ -16,7 +16,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [view, setView] = useState('profile');
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
+
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -58,31 +61,35 @@ const Profile = () => {
     fetchUserData();
   }, [navigate]);
 
-  const fetchAppointments = async () => {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
 
-    try {
-      const response = await axios.get(
-        `https://api.studio-linda.com/api/Appointment/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      try {
+        const response = await axios.get(
+          `https://api.studio-linda.com/api/Appointment/user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      setAppointments(response.data);
-    } catch (err) {
-      console.error('Error fetching appointments:', err);
-      setError('Failed to fetch appointments.');
-    }
-  };
+        setAppointments(response.data);
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        setError('Failed to fetch appointments.');
+      }
+    };
+
+    fetchAppointments();
+  }, [refreshKey]); // Refresh kur ndryshon refreshKey
 
   const handleViewSwitch = (newView: 'profile' | 'appointments') => {
     setView(newView);
     if (newView === 'appointments') {
-      fetchAppointments();
+      setRefreshKey((prev) => prev + 1); // Rifresko të dhënat kur kalon tek Terminet
     }
   };
 
@@ -141,6 +148,7 @@ const Profile = () => {
     }
   };
 
+  
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');

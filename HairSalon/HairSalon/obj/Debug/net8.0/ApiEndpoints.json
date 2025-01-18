@@ -43,6 +43,22 @@
   },
   {
     "ContainingType": "HairSalon.Controllers.AppointmentController",
+    "Method": "DeleteAppointment",
+    "RelativePath": "api/Appointment/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HairSalon.Controllers.AppointmentController",
     "Method": "EditAppointment",
     "RelativePath": "api/Appointment/{id}",
     "HttpMethod": "PUT",
