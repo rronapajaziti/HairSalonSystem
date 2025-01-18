@@ -61,9 +61,14 @@ const Appointments = () => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/Service',
       );
-      setServicesList(response.data);
+      const services = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      console.log('Fetched Services:', services);
+      setServicesList(services);
     } catch (error) {
       console.error('Error fetching services:', error);
+      setServicesList([]);
     }
   };
 
@@ -72,9 +77,11 @@ const Appointments = () => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/User/staff',
       );
+      console.log('Fetched Staff:', response.data); // Debug the structure
       setStaffList(response.data);
     } catch (error) {
       console.error('Error fetching staff:', error);
+      setStaffList([]); // Fallback to an empty list in case of an error
     }
   };
 
@@ -104,6 +111,7 @@ const Appointments = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const payload = {
         Client: {
@@ -112,13 +120,14 @@ const Appointments = () => {
           PhoneNumber: newAppointment.phoneNumber,
           Email: newAppointment.email,
         },
-        UserID: newAppointment.userID,
+        UserID: newAppointment.userID, // Correctly resolves from the dropdown
         ServiceID: newAppointment.serviceID,
         AppointmentDate: newAppointment.appointmentDate,
         Status: newAppointment.status,
         Notes: newAppointment.notes,
       };
 
+      console.log('Payload being sent:', payload); // Debugging payload
       const response = await axios.post(
         'https://api.studio-linda.com/api/Appointment',
         payload,

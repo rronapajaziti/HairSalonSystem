@@ -36,9 +36,14 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/Service',
       );
-      setServiceList(response.data);
+      const services = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      console.log('Fetched Services:', services); // Debugging
+      setServiceList(services);
     } catch (error) {
       console.error('Error fetching services:', error);
+      setServiceList([]); // Ensure serviceList is an empty array on error
     }
   };
 
