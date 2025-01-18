@@ -13,8 +13,7 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     if (token && userId) {
-      // User is already logged in, redirect to home
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [navigate]);
 

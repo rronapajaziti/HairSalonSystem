@@ -1,17 +1,12 @@
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { useEffect, useState, Suspense, lazy } from 'react';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  HashRouter,
-} from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/SignIn';
 import DefaultLayout from './layout/DefaultLayout';
 import { jwtDecode } from 'jwt-decode';
+
 const ECommerce = lazy(() => import('./pages/Dashboard/ECommerce'));
 const Profile = lazy(() => import('./pages/Profile'));
 const DailyAppointments = lazy(() => import('./pages/DailyAppointment'));
@@ -67,7 +62,14 @@ function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+
+    if (!loggedIn) {
+      window.history.pushState(null, '', window.location.href);
+      window.onpopstate = () => {
+        window.history.pushState(null, '', window.location.href);
+      };
+    }
+  }, [pathname, loggedIn]);
 
   const isLoginPage = pathname === '/';
 
@@ -75,8 +77,23 @@ function App() {
     setLoggedIn(true);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    setLoggedIn(false);
+    window.location.replace('/');
+  };
+
   const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    return loggedIn ? children : <Navigate to="/" />;
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (!token || !userId) {
+      window.location.replace('/');
+      return null;
+    }
+
+    return children;
   };
 
   if (loading) {
@@ -108,6 +125,7 @@ function App() {
                 <DefaultLayout
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
+                  onLogout={handleLogout}
                 >
                   <Routes>
                     <Route path="/dashboard" element={<ECommerce />} />

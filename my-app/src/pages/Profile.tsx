@@ -23,7 +23,7 @@ const Profile = () => {
     const userId = localStorage.getItem('userId');
 
     if (!token || !userId) {
-      navigate('/signin'); // Redirect to SignIn if no token or userId
+      navigate('/', { replace: true });
       return;
     }
 
@@ -144,7 +144,7 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   if (loading) return <p>Loading...</p>;
