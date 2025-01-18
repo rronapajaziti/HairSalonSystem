@@ -1,24 +1,30 @@
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { useEffect, useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState, Suspense, lazy } from 'react';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  HashRouter,
+} from 'react-router-dom';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/SignIn';
-import ECommerce from './pages/Dashboard/ECommerce';
 import DefaultLayout from './layout/DefaultLayout';
-import Profile from './pages/Profile';
-import DailyAppointments from './pages/DailyAppointment';
-import ClientTable from './pages/Client';
-import DailyExpenses from './pages/DailyExpensess';
-import MonthlyExpenses from './pages/MonthlyExpensess';
-import ServiceDiscount from './pages/ServiceDiscount';
-import Appointments from './pages/Appointments';
-import WhatsAppForm from './pages/WhatsAppForm';
-import Services from './pages/Services';
-import Staff from './pages/Staff';
 import { jwtDecode } from 'jwt-decode';
-import Calendar from './pages/Calendar';
-import ServiceStaff from './pages/ServiceStaff';
+const ECommerce = lazy(() => import('./pages/Dashboard/ECommerce'));
+const Profile = lazy(() => import('./pages/Profile'));
+const DailyAppointments = lazy(() => import('./pages/DailyAppointment'));
+const ClientTable = lazy(() => import('./pages/Client'));
+const DailyExpenses = lazy(() => import('./pages/DailyExpensess'));
+const MonthlyExpenses = lazy(() => import('./pages/MonthlyExpensess'));
+const ServiceDiscount = lazy(() => import('./pages/ServiceDiscount'));
+const Appointments = lazy(() => import('./pages/Appointments'));
+const WhatsAppForm = lazy(() => import('./pages/WhatsAppForm'));
+const Services = lazy(() => import('./pages/Services'));
+const Staff = lazy(() => import('./pages/Staff'));
+const Calendar = lazy(() => import('./pages/Calendar'));
+const ServiceStaff = lazy(() => import('./pages/ServiceStaff'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,6 +46,12 @@ function App() {
           setLoggedIn(false);
         } else {
           setLoggedIn(true);
+          const timeout = (decodedToken.exp - currentTime) * 1000;
+          setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            setLoggedIn(false);
+          }, timeout);
         }
       } catch (error) {
         console.error('Error decoding token', error);
@@ -63,8 +75,12 @@ function App() {
     setLoggedIn(true);
   };
 
-  if (!loggedIn && !isLoginPage) {
-    return <Navigate to="/" />;
+  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+    return loggedIn ? children : <Navigate to="/" />;
+  };
+
+  if (loading) {
+    return <Loader />;
   }
 
   return (
@@ -74,9 +90,7 @@ function App() {
         <link rel="icon" type="image/svg+xml" href="/logo1.svg" />
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Helmet>
-      {loading ? (
-        <Loader />
-      ) : isLoginPage ? (
+      <Suspense fallback={<Loader />}>
         <Routes>
           <Route
             path="/"
@@ -87,51 +101,57 @@ function App() {
               </>
             }
           />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <DefaultLayout
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                >
+                  <Routes>
+                    <Route path="/dashboard" element={<ECommerce />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route
+                      path="/terminet-Ditore"
+                      element={<DailyAppointments searchQuery={searchQuery} />}
+                    />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route
+                      path="/clients"
+                      element={<ClientTable searchQuery={searchQuery} />}
+                    />
+                    <Route
+                      path="/dailyExpensess"
+                      element={<DailyExpenses searchQuery={searchQuery} />}
+                    />
+                    <Route
+                      path="/monthlyExpensess"
+                      element={<MonthlyExpenses searchQuery={searchQuery} />}
+                    />
+                    <Route
+                      path="/serviceDiscount"
+                      element={<ServiceDiscount searchQuery={searchQuery} />}
+                    />
+                    <Route path="/appointments" element={<Appointments />} />
+                    <Route path="/chat" element={<WhatsAppForm />} />
+                    <Route path="/terminet" element={<Appointments />} />
+                    <Route
+                      path="/sherbimet"
+                      element={<Services searchQuery={searchQuery} />}
+                    />
+                    <Route path="/serviceStaff" element={<ServiceStaff />} />
+                    <Route
+                      path="/stafi"
+                      element={<Staff searchQuery={searchQuery} />}
+                    />
+                  </Routes>
+                </DefaultLayout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      ) : (
-        <DefaultLayout
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        >
-          <Routes>
-            <Route path="/dashboard" element={<ECommerce />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route
-              path="/terminet-Ditore"
-              element={<DailyAppointments searchQuery={searchQuery} />}
-            />
-            <Route path="/profile" element={<Profile />} />
-            <Route
-              path="/clients"
-              element={<ClientTable searchQuery={searchQuery} />}
-            />
-            <Route
-              path="/dailyExpensess"
-              element={<DailyExpenses searchQuery={searchQuery} />}
-            />
-            <Route
-              path="/monthlyExpensess"
-              element={<MonthlyExpenses searchQuery={searchQuery} />}
-            />
-            <Route
-              path="/serviceDiscount"
-              element={<ServiceDiscount searchQuery={searchQuery} />}
-            />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/chat" element={<WhatsAppForm />} />
-            <Route path="/terminet" element={<Appointments />} />
-            <Route
-              path="/sherbimet"
-              element={<Services searchQuery={searchQuery} />}
-            />
-            <Route path="/serviceStaff" element={<ServiceStaff />} />
-            <Route
-              path="/stafi"
-              element={<Staff searchQuery={searchQuery} />}
-            />
-          </Routes>
-        </DefaultLayout>
-      )}
+      </Suspense>
     </HelmetProvider>
   );
 }

@@ -61,7 +61,7 @@ const ChartThree: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `https://localhost:7158/api/Appointment/services-completed`,
+        `https://api.studio-linda.com/api/Appointment/services-completed`,
         { params: { startDate, endDate } },
       );
 

@@ -144,7 +144,7 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    navigate('/signin');
+    navigate('/');
   };
 
   if (loading) return <p>Loading...</p>;
