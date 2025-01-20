@@ -6,6 +6,7 @@ import { MdOutlineDelete } from 'react-icons/md';
 const Appointments = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [servicesList, setServicesList] = useState<any[]>([]);
+  const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0],
@@ -84,6 +85,17 @@ const Appointments = () => {
       setStaffList([]); // Fallback to an empty list in case of an error
     }
   };
+  const fetchServiceStaff = async () => {
+    try {
+      const response = await axios.get(
+        'https://api.studio-linda.com/api/ServiceStaff',
+      );
+      console.log('Fetched ServiceStaff:', response.data); // Debugging
+      setServiceStaffList(response.data);
+    } catch (error) {
+      console.error('Error fetching ServiceStaff data:', error);
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -108,6 +120,7 @@ const Appointments = () => {
       [name]: value,
     });
   };
+  //UserID: localStorage.getItem('userId'),
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +133,7 @@ const Appointments = () => {
           PhoneNumber: newAppointment.phoneNumber,
           Email: newAppointment.email,
         },
-        UserID: localStorage.getItem("userId"), // Correctly resolves from the dropdown
+        UserID: localStorage.getItem('userId'), // Correctly resolves from the dropdown
         ServiceID: newAppointment.serviceID,
         AppointmentDate: newAppointment.appointmentDate,
         Status: newAppointment.status,
@@ -151,7 +164,6 @@ const Appointments = () => {
       console.error('Error adding appointment:', error);
     }
   };
-
   const handleEdit = (appt: any) => {
     if (editingRowId === appt.appointmentID) {
       // Cancel edit mode if clicking the same edit button again
@@ -169,17 +181,18 @@ const Appointments = () => {
         notes: '',
       });
     } else {
-      // Find related service and staff data
       const service = servicesList.find(
-        (service) => service.serviceID === appt.serviceID
+        (service) => service.serviceName === appt.serviceName,
       );
-      const staff = staffList.find((staff) => staff.userID === appt.userID);
-  
+      const staff = staffList.find(
+        (staff) => `${staff.firstName} ${staff.lastName}` === appt.staffName,
+      );
+
       const isValidDate =
         appt.appointmentDate &&
         !isNaN(new Date(appt.appointmentDate).getTime());
-  
-      // Set form data for editing
+
+      // Set form data for editing, including picked service and staff
       setEditingRowId(appt.appointmentID);
       setEditFormData({
         appointmentID: appt.appointmentID,
@@ -191,16 +204,17 @@ const Appointments = () => {
         userID: staff?.userID || '',
         appointmentDate: isValidDate
           ? new Date(appt.appointmentDate).toISOString().slice(0, 16)
-          : '', // Format for `datetime-local`
+          : '',
         status: appt.status || 'pa përfunduar',
         notes: appt.notes || '',
       });
+      console.log('Submit appointment:', appt);
     }
   };
-  
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const payload = {
       Client: {
         FirstName: editFormData.firstName,
@@ -209,20 +223,19 @@ const Appointments = () => {
         Email: editFormData.email,
       },
       appointmentID: editFormData.appointmentID,
-      UserID: editFormData.userID,
+      UserID: localStorage.getItem('userId'), // Always fetch UserID from localStorage
       ServiceID: editFormData.serviceID,
       AppointmentDate: editFormData.appointmentDate,
       Status: editFormData.status,
       Notes: editFormData.notes,
     };
-  
+
     try {
       const response = await axios.put(
         `https://api.studio-linda.com/api/Appointment/${editFormData.appointmentID}`,
-        payload
+        payload,
       );
-  
-      // Update state with the response data
+
       setAppointments((prev) =>
         prev.map((appt) =>
           appt.appointmentID === editFormData.appointmentID
@@ -240,13 +253,13 @@ const Appointments = () => {
                 status: payload.Status,
                 notes: payload.Notes,
               }
-            : appt
-        )
+            : appt,
+        ),
       );
 
-      
-  
-      // Exit edit mode
+      await fetchAppointments();
+      window.dispatchEvent(new Event('dataUpdated'));
+
       setEditingRowId(null);
       setEditFormData({
         appointmentID: null,
@@ -264,13 +277,15 @@ const Appointments = () => {
       console.error('Error editing appointment:', error);
     }
   };
-  
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://api.studio-linda.com/api/Appointment/${id}`);
       setAppointments((prev) =>
         prev.filter((appt) => appt.appointmentID !== id),
       );
+
+      await fetchAppointments(); // Refresh appointments
+      window.dispatchEvent(new Event('dataUpdated'));
     } catch (error) {
       console.error('Error deleting appointment:', error);
     }
@@ -284,9 +299,12 @@ const Appointments = () => {
       console.warn(`Invalid appointment date for ID: ${appt.appointmentID}`);
       return false;
     }
-    return new Date(appt.appointmentDate)
-      .toISOString()
-      .startsWith(selectedDate);
+
+    // Ensure edited appointments are included based on their updated date
+    return (
+      new Date(appt.appointmentDate).toISOString().split('T')[0] ===
+      selectedDate
+    );
   });
 
   return (
@@ -373,7 +391,7 @@ const Appointments = () => {
                 name="serviceID"
                 value={newAppointment.serviceID}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
+                className="px-4 py-2 border rounded-md w-full"
                 required
               >
                 <option value="">Zgjedh Shërbimin</option>
@@ -593,7 +611,7 @@ const Appointments = () => {
                             </label>
                             <select
                               name="serviceID"
-                              value={editFormData.serviceID || ''}
+                              value={editFormData.serviceID || ''} // Ensure the correct value is set
                               onChange={handleEditInputChange}
                               className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
@@ -609,14 +627,13 @@ const Appointments = () => {
                               ))}
                             </select>
                           </div>
-
                           <div>
                             <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Stafi
                             </label>
                             <select
                               name="userID"
-                              value={editFormData.userID || ''}
+                              value={editFormData.userID || ''} // Ensure the correct value is set
                               onChange={handleEditInputChange}
                               className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
@@ -624,7 +641,7 @@ const Appointments = () => {
                               <option value="">Zgjedh Stafin</option>
                               {staffList.map((staff) => (
                                 <option key={staff.userID} value={staff.userID}>
-                                  {staff.firstName} {staff.lastName}{' '}
+                                  {staff.firstName} {staff.lastName}
                                 </option>
                               ))}
                             </select>

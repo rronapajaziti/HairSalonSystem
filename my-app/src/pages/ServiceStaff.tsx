@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { MdOutlineDelete } from 'react-icons/md';
 
 const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
@@ -93,6 +94,15 @@ const ServiceStaff = () => {
       .split('T')[0];
     return itemDate === filterDate;
   });
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`https://api.studio-linda.com/api/ServiceStaff/${id}`);
+      await fetchServiceStaff(); // Refresh the data
+      console.log('ServiceStaff record deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting ServiceStaff record:', error);
+    }
+  };
 
   return (
     <div className="rounded-sm border border-stroke text-black bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 dark:text-white dark:border-strokedark dark:bg-boxdark">
@@ -133,6 +143,9 @@ const ServiceStaff = () => {
               <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                 Data e përfundimit
               </th>
+              <th className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                Veprime
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -163,6 +176,14 @@ const ServiceStaff = () => {
                     {item.dateCompleted
                       ? new Date(item.dateCompleted).toLocaleString()
                       : 'N/A'}
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleDelete(item.serviceStaffID)}
+                      className="bg-red-500 text-white rounded-md px-4 py-2 text-base sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      <MdOutlineDelete />
+                    </button>
                   </td>
                 </tr>
               );
@@ -229,3 +250,6 @@ const ServiceStaff = () => {
 };
 
 export default ServiceStaff;
+function setIsLoading(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}

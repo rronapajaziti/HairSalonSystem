@@ -43,7 +43,7 @@ public class ServiceStaffController : ControllerBase
         }
     }
 
-    // Create or update ServiceStaff based on Appointment changes
+    // Sync ServiceStaff with Appointment
     [HttpPost("sync-from-appointment")]
     public async Task<IActionResult> SyncServiceStaffFromAppointment([FromBody] Appointment appointment)
     {
@@ -56,19 +56,16 @@ public class ServiceStaffController : ControllerBase
             if (service == null)
                 return BadRequest("Invalid Service ID.");
 
-            // Check if the appointment is completed
+            var existingServiceStaff = await _context.ServiceStaff
+                .FirstOrDefaultAsync(ss =>
+                    ss.ServiceID == appointment.ServiceID &&
+                    ss.StaffID == appointment.UserID &&
+                    ss.DateCompleted == appointment.AppointmentDate);
+
             if (appointment.Status?.ToLower() == "përfunduar")
             {
-                // Check if a ServiceStaff record already exists for this appointment
-                var existingServiceStaff = await _context.ServiceStaff
-                    .FirstOrDefaultAsync(ss =>
-                        ss.ServiceID == appointment.ServiceID &&
-                        ss.StaffID == appointment.UserID &&
-                        ss.DateCompleted == appointment.AppointmentDate);
-
                 if (existingServiceStaff == null)
                 {
-                    // Create a new ServiceStaff recorda
                     var newServiceStaff = new ServiceStaff
                     {
                         ServiceID = appointment.ServiceID,
@@ -77,21 +74,21 @@ public class ServiceStaffController : ControllerBase
                         Price = service.Price,
                         StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
                     };
-
                     _context.ServiceStaff.Add(newServiceStaff);
                 }
                 else
                 {
-                    // Update existing ServiceStaff record
-                    existingServiceStaff.DateCompleted = appointment.AppointmentDate;
                     existingServiceStaff.Price = service.Price;
                     existingServiceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
                     _context.ServiceStaff.Update(existingServiceStaff);
                 }
-
-                await _context.SaveChangesAsync();
+            }
+            else if (appointment.Status?.ToLower() == "pa përfunduar" && existingServiceStaff != null)
+            {
+                _context.ServiceStaff.Remove(existingServiceStaff);
             }
 
+            await _context.SaveChangesAsync();
             return Ok("ServiceStaff synced successfully.");
         }
         catch (Exception ex)
