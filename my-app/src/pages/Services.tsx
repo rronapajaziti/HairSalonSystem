@@ -135,6 +135,7 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
         ),
       );
       setEditingRowId(null);
+      window.dispatchEvent(new Event('dataUpdated'));
     } catch (error) {
       console.error('Error updating service:', error);
     }

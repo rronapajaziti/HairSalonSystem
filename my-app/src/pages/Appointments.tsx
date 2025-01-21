@@ -6,7 +6,6 @@ import { MdOutlineDelete } from 'react-icons/md';
 const Appointments = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [servicesList, setServicesList] = useState<any[]>([]);
-  const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0],
@@ -66,7 +65,12 @@ const Appointments = () => {
         ? response.data.data
         : [];
       console.log('Fetched Services:', services);
+
+      // Save to state
       setServicesList(services);
+
+      // Save to localStorage
+      localStorage.setItem('servicesList', JSON.stringify(services));
     } catch (error) {
       console.error('Error fetching services:', error);
       setServicesList([]);
@@ -83,17 +87,6 @@ const Appointments = () => {
     } catch (error) {
       console.error('Error fetching staff:', error);
       setStaffList([]); // Fallback to an empty list in case of an error
-    }
-  };
-  const fetchServiceStaff = async () => {
-    try {
-      const response = await axios.get(
-        'https://api.studio-linda.com/api/ServiceStaff',
-      );
-      console.log('Fetched ServiceStaff:', response.data); // Debugging
-      setServiceStaffList(response.data);
-    } catch (error) {
-      console.error('Error fetching ServiceStaff data:', error);
     }
   };
 
@@ -169,16 +162,16 @@ const Appointments = () => {
       // Cancel edit mode if clicking the same edit button again
       setEditingRowId(null);
       setEditFormData({
-        appointmentID: null,
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        email: '',
-        userID: '',
-        serviceID: '',
-        appointmentDate: '',
-        status: 'pa përfunduar',
-        notes: '',
+        appointmentID: appt.appointmentID,
+        firstName: appt.client?.firstName || '',
+        lastName: appt.client?.lastName || '',
+        phoneNumber: appt.client?.phoneNumber || '',
+        email: appt.client?.email || '',
+        userID: appt.userID || '',
+        serviceID: appt.serviceID || '',
+        appointmentDate: appt.appointmentDate || '',
+        status: appt.status || 'pa përfunduar',
+        notes: appt.notes || '',
       });
     } else {
       const service = servicesList.find(
@@ -214,52 +207,54 @@ const Appointments = () => {
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const storedServices = localStorage.getItem('servicesList');
+    const parsedServices = storedServices ? JSON.parse(storedServices) : [];
 
+    // Find the selected service details
+    const selectedService = parsedServices.find(
+      (service: any) => service.serviceID === Number(editFormData.serviceID),
+    );
+
+    if (!selectedService) {
+      console.error('Selected service not found in local storage.');
+      return;
+    }
     const payload = {
-      Client: {
-        FirstName: editFormData.firstName,
-        LastName: editFormData.lastName,
-        PhoneNumber: editFormData.phoneNumber,
-        Email: editFormData.email,
+      client: {
+        firstName: editFormData.firstName,
+        lastName: editFormData.lastName,
+        phoneNumber: editFormData.phoneNumber,
+        email: editFormData.email,
       },
       appointmentID: editFormData.appointmentID,
-      UserID: localStorage.getItem('userId'), // Always fetch UserID from localStorage
-      ServiceID: editFormData.serviceID,
-      AppointmentDate: editFormData.appointmentDate,
-      Status: editFormData.status,
-      Notes: editFormData.notes,
+      userID: localStorage.getItem('userId'),
+      serviceID: Number(editFormData.serviceID),
+      appointmentDate: editFormData.appointmentDate,
+      status: editFormData.status,
+      notes: editFormData.notes,
     };
 
+    console.log('Sending payload to backend:', payload);
+
     try {
+      // API call to update the appointment
       const response = await axios.put(
         `https://api.studio-linda.com/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
 
-      setAppointments((prev) =>
-        prev.map((appt) =>
-          appt.appointmentID === editFormData.appointmentID
-            ? {
-                ...appt,
-                client: {
-                  firstName: payload.Client.FirstName,
-                  lastName: payload.Client.LastName,
-                  phoneNumber: payload.Client.PhoneNumber,
-                  email: payload.Client.Email,
-                },
-                userID: payload.UserID,
-                serviceID: payload.ServiceID,
-                appointmentDate: payload.AppointmentDate,
-                status: payload.Status,
-                notes: payload.Notes,
-              }
+      console.log('Response from backend:', response.data);
+
+      // Update the appointments state
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appt) =>
+          appt.appointmentID === response.data.appointmentID
+            ? { ...appt, ...response.data }
             : appt,
         ),
       );
 
-      await fetchAppointments();
-      window.dispatchEvent(new Event('dataUpdated'));
-
+      // Reset edit form data and close edit mode
       setEditingRowId(null);
       setEditFormData({
         appointmentID: null,
@@ -273,8 +268,10 @@ const Appointments = () => {
         status: 'pa përfunduar',
         notes: '',
       });
+
+      console.log('Appointment updated successfully.');
     } catch (error) {
-      console.error('Error editing appointment:', error);
+      console.error('Error while editing appointment:', error);
     }
   };
   const handleDelete = async (id: number) => {
@@ -283,9 +280,6 @@ const Appointments = () => {
       setAppointments((prev) =>
         prev.filter((appt) => appt.appointmentID !== id),
       );
-
-      await fetchAppointments(); // Refresh appointments
-      window.dispatchEvent(new Event('dataUpdated'));
     } catch (error) {
       console.error('Error deleting appointment:', error);
     }

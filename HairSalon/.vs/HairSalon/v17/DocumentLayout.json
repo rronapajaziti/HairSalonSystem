@@ -116,7 +116,7 @@
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\ServiceStaffController.cs",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\ServiceStaffController.cs",
               "RelativeToolTip": "HairSalon\\Controllers\\ServiceStaffController.cs",
-              "ViewState": "AQIAAJMAAAAAAAAAAAAcwJ4AAABRAAAA",
+              "ViewState": "AQIAAIgAAAAAAAAAAADwv6MAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-18T01:49:02.062Z",
               "EditorCaption": ""
@@ -155,8 +155,7 @@
               "RelativeToolTip": "HairSalon\\Controllers\\ServiceDiscountController.cs",
               "ViewState": "AQIAAGsAAAAAAAAAAAAkwH0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T01:49:02.671Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-18T01:49:02.671Z"
             },
             {
               "$type": "Document",
@@ -168,8 +167,7 @@
               "RelativeToolTip": "HairSalon\\Controllers\\UserController.cs",
               "ViewState": "AQIAACMBAAAAAAAAAAAuwDEBAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T10:25:54.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-06T10:25:54.579Z"
             },
             {
               "$type": "Document",
@@ -181,8 +179,7 @@
               "RelativeToolTip": "HairSalon\\Program.cs",
               "ViewState": "AQIAAE4AAAAAAAAAAAAowF4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T08:55:04.851Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-06T08:55:04.851Z"
             },
             {
               "$type": "Document",
@@ -192,7 +189,7 @@
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\ServiceController.cs",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\ServiceController.cs",
               "RelativeToolTip": "HairSalon\\Controllers\\ServiceController.cs",
-              "ViewState": "AQIAAC4AAAAAAAAAAAAowEQAAAAbAAAA",
+              "ViewState": "AQIAAGoAAAAAAAAAAAAUwIYAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-04T19:02:32.236Z",
               "EditorCaption": ""
@@ -205,7 +202,7 @@
               "RelativeDocumentMoniker": "HairSalon\\Controllers\\AppointmentController.cs",
               "ToolTip": "C:\\Users\\hp\\OneDrive\\Desktop\\innovoCode\\HairSalonSystem\\HairSalon\\HairSalon\\Controllers\\AppointmentController.cs",
               "RelativeToolTip": "HairSalon\\Controllers\\AppointmentController.cs",
-              "ViewState": "AQIAAMcAAAAAAAAAAAAcwNcAAAAAAAAA",
+              "ViewState": "AQIAAMwAAAAAAAAAAAAAAOMAAAA6AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-18T09:32:34.751Z",
               "EditorCaption": ""
@@ -245,8 +242,7 @@
               "RelativeToolTip": "HairSalon\\Models\\Appointment.cs",
               "ViewState": "AQIAAAMAAAAAAAAAAAAAABQAAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T09:25:02.763Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-18T09:25:02.763Z"
             },
             {
               "$type": "Document",
@@ -270,8 +266,7 @@
               "RelativeToolTip": "HairSalon\\DTOs\\AppoinmentDto.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAqwAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T13:16:18.393Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-20T13:16:18.393Z"
             },
             {
               "$type": "Document",
@@ -283,8 +278,7 @@
               "RelativeToolTip": "HairSalon\\Controllers\\ClientController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T15:49:18.528Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-20T15:49:18.528Z"
             },
             {
               "$type": "Document",

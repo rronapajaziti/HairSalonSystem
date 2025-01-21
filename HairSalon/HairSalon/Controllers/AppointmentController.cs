@@ -213,8 +213,6 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while deleting the appointment.");
             }
         }
-
-
         [HttpPut("{id}")]
         public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
         {
@@ -232,7 +230,13 @@ namespace HairSalon.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Update Appointment details
+                // Find the old ServiceStaff record
+                var oldServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
+                    ss.ServiceID == existingAppointment.ServiceID &&
+                    ss.StaffID == existingAppointment.UserID &&
+                    ss.DateCompleted == existingAppointment.AppointmentDate);
+
+                // Update appointment details
                 existingAppointment.UserID = appointmentDto.UserID;
                 existingAppointment.ServiceID = appointmentDto.ServiceID;
                 existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
@@ -241,46 +245,59 @@ namespace HairSalon.Controllers
 
                 _context.Entry(existingAppointment).State = EntityState.Modified;
 
-                // Handle ServiceStaff synchronization
-                var serviceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
-                    ss.ServiceID == existingAppointment.ServiceID &&
-                    ss.StaffID == existingAppointment.UserID &&
-                    ss.DateCompleted == existingAppointment.AppointmentDate);
+                // Synchronize ServiceStaff record
+                var newService = await _context.Services.FindAsync(appointmentDto.ServiceID);
 
-                if (appointmentDto.Status?.ToLower() == "pa përfunduar" && serviceStaff != null)
+                if (appointmentDto.Status?.ToLower() == "përfunduar")
                 {
-                    // Remove ServiceStaff if status changes to "pa përfunduar"
-                    _context.ServiceStaff.Remove(serviceStaff);
-                }
-                else if (appointmentDto.Status?.ToLower() == "përfunduar")
-                {
-                    var service = await _context.Services.FindAsync(appointmentDto.ServiceID);
-                    if (service == null)
-                        return BadRequest("Invalid Service ID.");
-
-                    if (serviceStaff != null)
+                    // Update or create ServiceStaff record
+                    if (oldServiceStaff != null)
                     {
-                        // Update existing ServiceStaff record
-                        serviceStaff.ServiceID = appointmentDto.ServiceID;
-                        serviceStaff.StaffID = appointmentDto.UserID;
-                        serviceStaff.DateCompleted = appointmentDto.AppointmentDate;
-                        serviceStaff.Price = service.Price;
-                        serviceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
-                        _context.ServiceStaff.Update(serviceStaff);
+                        // Update the old ServiceStaff record if it exists
+                        oldServiceStaff.ServiceID = appointmentDto.ServiceID;
+                        oldServiceStaff.StaffID = appointmentDto.UserID;
+                        oldServiceStaff.DateCompleted = appointmentDto.AppointmentDate;
+                        oldServiceStaff.Price = newService.Price;
+                        oldServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
+
+                        _context.ServiceStaff.Update(oldServiceStaff);
                     }
                     else
                     {
-                        // Add new ServiceStaff record
-                        var newServiceStaff = new ServiceStaff
+                        // Check if a ServiceStaff record for the new details already exists
+                        var newServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
+                            ss.ServiceID == appointmentDto.ServiceID &&
+                            ss.StaffID == appointmentDto.UserID &&
+                            ss.DateCompleted == appointmentDto.AppointmentDate);
+
+                        if (newServiceStaff == null)
                         {
-                            ServiceID = appointmentDto.ServiceID,
-                            StaffID = appointmentDto.UserID,
-                            DateCompleted = appointmentDto.AppointmentDate,
-                            Price = service.Price,
-                            StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
-                        };
-                        _context.ServiceStaff.Add(newServiceStaff);
+                            // Create a new ServiceStaff entry if no matching record exists
+                            newServiceStaff = new ServiceStaff
+                            {
+                                ServiceID = appointmentDto.ServiceID,
+                                StaffID = appointmentDto.UserID,
+                                DateCompleted = appointmentDto.AppointmentDate,
+                                Price = newService.Price,
+                                StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100)
+                            };
+
+                            _context.ServiceStaff.Add(newServiceStaff);
+                        }
+                        else
+                        {
+                            // Update the existing record if found
+                            newServiceStaff.Price = newService.Price;
+                            newServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
+
+                            _context.ServiceStaff.Update(newServiceStaff);
+                        }
                     }
+                }
+                else if (appointmentDto.Status?.ToLower() == "pa përfunduar" && oldServiceStaff != null)
+                {
+                    // Remove the old ServiceStaff record if the appointment is marked incomplete
+                    _context.ServiceStaff.Remove(oldServiceStaff);
                 }
 
                 await _context.SaveChangesAsync();
