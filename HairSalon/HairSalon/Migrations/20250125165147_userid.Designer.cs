@@ -4,6 +4,7 @@ using HairSalon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairSalon.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20250125165147_userid")]
+    partial class userid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DailyExpenses", (string)null);
+                    b.ToTable("DailyExpenses");
                 });
 
             modelBuilder.Entity("HairSalon.Models.Appointment", b =>
@@ -80,7 +83,7 @@ namespace HairSalon.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("HairSalon.Models.Client", b =>
@@ -108,7 +111,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("ClientID");
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("HairSalon.Models.Role", b =>
@@ -125,7 +128,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("RoleID");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
@@ -174,7 +177,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("ServiceID");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("HairSalon.Models.ServiceDiscount", b =>
@@ -200,7 +203,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("ServiceDiscountID");
 
-                    b.ToTable("ServiceDiscounts", (string)null);
+                    b.ToTable("ServiceDiscounts");
                 });
 
             modelBuilder.Entity("HairSalon.Models.ServiceStaff", b =>
@@ -239,7 +242,7 @@ namespace HairSalon.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("ServiceStaff", (string)null);
+                    b.ToTable("ServiceStaff");
                 });
 
             modelBuilder.Entity("HairSalon.Models.User", b =>
@@ -287,7 +290,7 @@ namespace HairSalon.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MonthlyExpenses", b =>
@@ -310,7 +313,7 @@ namespace HairSalon.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MonthlyExpenses", (string)null);
+                    b.ToTable("MonthlyExpenses");
                 });
 
             modelBuilder.Entity("ServiceServiceDiscount", b =>
@@ -325,7 +328,7 @@ namespace HairSalon.Migrations
 
                     b.HasIndex("ServiceID");
 
-                    b.ToTable("ServiceServiceDiscount", (string)null);
+                    b.ToTable("ServiceServiceDiscount");
                 });
 
             modelBuilder.Entity("HairSalon.Models.Appointment", b =>

@@ -14,7 +14,7 @@ namespace HairSalon.Models
         public virtual Service Service { get; set; }
 
         [ForeignKey("User")]
-        public int StaffID { get; set; }
+        public int UserID { get; set; }
         public virtual User User { get; set; }
 
         [Required]

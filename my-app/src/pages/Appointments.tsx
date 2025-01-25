@@ -118,22 +118,23 @@ const Appointments = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const payload = {
-        Client: {
-          FirstName: newAppointment.firstName,
-          LastName: newAppointment.lastName,
-          PhoneNumber: newAppointment.phoneNumber,
-          Email: newAppointment.email,
-        },
-        UserID: localStorage.getItem('userId'), // Correctly resolves from the dropdown
-        ServiceID: newAppointment.serviceID,
-        AppointmentDate: newAppointment.appointmentDate,
-        Status: newAppointment.status,
-        Notes: newAppointment.notes,
-      };
+    const payload = {
+      Client: {
+        FirstName: newAppointment.firstName,
+        LastName: newAppointment.lastName,
+        PhoneNumber: newAppointment.phoneNumber,
+        Email: newAppointment.email,
+      },
+      UserID: newAppointment.userID,
+      ServiceID: newAppointment.serviceID,
+      AppointmentDate: newAppointment.appointmentDate,
+      Status: newAppointment.status,
+      Notes: newAppointment.notes,
+    };
 
-      console.log('Payload being sent:', payload); // Debugging payload
+    console.log('Payload being sent to the backend:', payload);
+
+    try {
       const response = await axios.post(
         'https://api.studio-linda.com/api/Appointment',
         payload,
@@ -154,9 +155,13 @@ const Appointments = () => {
         notes: '',
       });
     } catch (error) {
-      console.error('Error adding appointment:', error);
+      console.error(
+        'Error adding appointment:',
+        error.response?.data || error.message,
+      );
     }
   };
+
   const handleEdit = (appt: any) => {
     if (editingRowId === appt.appointmentID) {
       // Cancel edit mode if clicking the same edit button again

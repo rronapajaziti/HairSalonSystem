@@ -22,23 +22,25 @@ namespace HairSalon.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            // Seed roles
             modelBuilder.Entity<Role>().HasData(
                 new Role { RoleID = 1, RoleName = "Admin" },
                 new Role { RoleID = 2, RoleName = "Owner" },
                 new Role { RoleID = 3, RoleName = "Staff" }
             );
 
+            // Configure ServiceStaff relationships and properties
             modelBuilder.Entity<ServiceStaff>()
-         .HasOne(ss => ss.Service)
-         .WithMany(s => s.ServiceStaff)
-         .HasForeignKey(ss => ss.ServiceID)
-         .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(ss => ss.Service)
+                .WithMany(s => s.ServiceStaff)
+                .HasForeignKey(ss => ss.ServiceID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ServiceStaff>()
                 .HasOne(ss => ss.User)
                 .WithMany(u => u.ServiceStaff)
-                .HasForeignKey(ss => ss.StaffID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(ss => ss.UserID)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for User
 
             modelBuilder.Entity<ServiceStaff>()
                 .Property(ss => ss.Price)
@@ -47,20 +49,17 @@ namespace HairSalon.Models
             modelBuilder.Entity<ServiceStaff>()
                 .Property(ss => ss.StaffEarning)
                 .HasPrecision(18, 2);
-            modelBuilder.Entity<ServiceStaff>()
-            .HasOne(ss => ss.User)
-            .WithMany() 
-            .HasForeignKey(ss => ss.StaffID)
-            .OnDelete(DeleteBehavior.Cascade); 
 
+            // Configure ServiceDiscount relationships
             modelBuilder.Entity<ServiceDiscount>()
-       .HasMany(sd => sd.Services)
-       .WithMany(s => s.ServiceDiscounts)
-       .UsingEntity<Dictionary<string, object>>(
-           "ServiceServiceDiscount",
-           ss => ss.HasOne<Service>().WithMany().HasForeignKey("ServiceID"),
-           ss => ss.HasOne<ServiceDiscount>().WithMany().HasForeignKey("ServiceDiscountID")
-       );
+     .HasMany(sd => sd.Services)
+     .WithMany(s => s.ServiceDiscounts)
+     .UsingEntity<Dictionary<string, object>>(
+         "ServiceServiceDiscount",
+         ss => ss.HasOne<Service>().WithMany().HasForeignKey("ServiceID"),
+         ss => ss.HasOne<ServiceDiscount>().WithMany().HasForeignKey("ServiceDiscountID")
+     );
+
         }
     }
 }

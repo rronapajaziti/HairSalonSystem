@@ -66,7 +66,7 @@ public class ServiceController : ControllerBase
             // Find the old ServiceStaff record
             var oldServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
                 ss.ServiceID == existingAppointment.ServiceID &&
-                ss.StaffID == existingAppointment.UserID &&
+                ss.UserID == existingAppointment.UserID &&
                 ss.DateCompleted == existingAppointment.AppointmentDate);
 
             Console.WriteLine("Existing Appointment Details:");
@@ -90,7 +90,7 @@ public class ServiceController : ControllerBase
                 {
                     Console.WriteLine("Updating existing ServiceStaff record...");
                     oldServiceStaff.ServiceID = appointmentDto.ServiceID;
-                    oldServiceStaff.StaffID = appointmentDto.UserID;
+                    oldServiceStaff.UserID = appointmentDto.UserID;
                     oldServiceStaff.DateCompleted = appointmentDto.AppointmentDate;
                     oldServiceStaff.Price = newService.Price;
                     oldServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
@@ -103,7 +103,7 @@ public class ServiceController : ControllerBase
                     var newServiceStaff = new ServiceStaff
                     {
                         ServiceID = appointmentDto.ServiceID,
-                        StaffID = appointmentDto.UserID,
+                        UserID = appointmentDto.UserID,
                         DateCompleted = appointmentDto.AppointmentDate,
                         Price = newService.Price,
                         StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100)

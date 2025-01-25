@@ -89,45 +89,48 @@ namespace HairSalon.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentDto appointmentDto)
         {
-            if (!ModelState.IsValid)
-            {
+            if (appointmentDto == null)
                 return BadRequest("Invalid request payload.");
-            }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Extract client details
-                var clientDto = appointmentDto.Client;
+                // Validate and fetch client details
                 Client client = null;
-
-                if (clientDto != null)
+                if (appointmentDto.Client != null)
                 {
-                    var existingClient = await _context.Clients
-                        .FirstOrDefaultAsync(c => c.FirstName == clientDto.FirstName &&
-                                                  c.LastName == clientDto.LastName &&
-                                                  c.PhoneNumber == clientDto.PhoneNumber &&
-                                                  c.Email == clientDto.Email);
+                    client = await _context.Clients
+                        .FirstOrDefaultAsync(c =>
+                            c.FirstName == appointmentDto.Client.FirstName &&
+                            c.LastName == appointmentDto.Client.LastName &&
+                            c.PhoneNumber == appointmentDto.Client.PhoneNumber &&
+                            c.Email == appointmentDto.Client.Email);
 
-                    if (existingClient == null)
+                    if (client == null)
                     {
                         client = new Client
                         {
-                            FirstName = clientDto.FirstName,
-                            LastName = clientDto.LastName,
-                            PhoneNumber = clientDto.PhoneNumber,
-                            Email = clientDto.Email
+                            FirstName = appointmentDto.Client.FirstName,
+                            LastName = appointmentDto.Client.LastName,
+                            PhoneNumber = appointmentDto.Client.PhoneNumber,
+                            Email = appointmentDto.Client.Email
                         };
                         _context.Clients.Add(client);
                         await _context.SaveChangesAsync();
                     }
-                    else
-                    {
-                        client = existingClient;
-                    }
                 }
 
-                // Create new appointment
+                // Validate Service
+                var service = await _context.Services.FindAsync(appointmentDto.ServiceID);
+                if (service == null)
+                    return BadRequest("Invalid Service ID.");
+
+                // Validate User
+                var user = await _context.Users.FindAsync(appointmentDto.UserID);
+                if (user == null)
+                    return BadRequest("Invalid User ID.");
+
+                // Create the appointment
                 var appointment = new Appointment
                 {
                     ClientID = client?.ClientID,
@@ -137,35 +140,28 @@ namespace HairSalon.Controllers
                     Status = appointmentDto.Status,
                     Notes = appointmentDto.Notes
                 };
-
                 _context.Appointments.Add(appointment);
                 await _context.SaveChangesAsync();
 
-                // Only calculate and add ServiceStaff record if the appointment is marked as "përfunduar"
+                // Add ServiceStaff if status is "përfunduar"
                 if (appointmentDto.Status?.ToLower() == "përfunduar")
                 {
-                    var service = await _context.Services.FindAsync(appointmentDto.ServiceID);
-                    if (service == null)
-                    {
-                        return BadRequest("Invalid Service ID.");
-                    }
-
                     var serviceStaff = new ServiceStaff
                     {
-                        ServiceID = service.ServiceID,
-                        StaffID = appointmentDto.UserID, // Assuming UserID is the staff
+                        ServiceID = appointmentDto.ServiceID,
+                        UserID = appointmentDto.UserID,
                         DateCompleted = appointmentDto.AppointmentDate,
                         Price = service.Price,
                         StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
                     };
-
                     _context.ServiceStaff.Add(serviceStaff);
+
+                    // Save changes to ensure ServiceStaff is added
                     await _context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();
-
-                return CreatedAtAction(nameof(GetAppointment), new { id = appointment.AppointmentID }, appointment);
+                return CreatedAtAction(nameof(GetAppointments), new { id = appointment.AppointmentID }, appointment);
             }
             catch (Exception ex)
             {
@@ -174,6 +170,7 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while creating the appointment.");
             }
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
@@ -190,7 +187,7 @@ namespace HairSalon.Controllers
             {
                 // Remove associated ServiceStaff record(s)
                 var serviceStaff = await _context.ServiceStaff
-                    .Where(ss => ss.ServiceID == appointment.ServiceID && ss.StaffID == appointment.UserID)
+                    .Where(ss => ss.ServiceID == appointment.ServiceID && ss.UserID == appointment.UserID)
                     .ToListAsync();
 
                 if (serviceStaff.Any())
@@ -233,7 +230,7 @@ namespace HairSalon.Controllers
                 // Find the old ServiceStaff record
                 var oldServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
                     ss.ServiceID == existingAppointment.ServiceID &&
-                    ss.StaffID == existingAppointment.UserID &&
+                    ss.UserID == existingAppointment.UserID &&
                     ss.DateCompleted == existingAppointment.AppointmentDate);
 
                 // Update appointment details
@@ -255,7 +252,7 @@ namespace HairSalon.Controllers
                     {
                         // Update the old ServiceStaff record if it exists
                         oldServiceStaff.ServiceID = appointmentDto.ServiceID;
-                        oldServiceStaff.StaffID = appointmentDto.UserID;
+                        oldServiceStaff.UserID = appointmentDto.UserID;
                         oldServiceStaff.DateCompleted = appointmentDto.AppointmentDate;
                         oldServiceStaff.Price = newService.Price;
                         oldServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
@@ -267,7 +264,7 @@ namespace HairSalon.Controllers
                         // Check if a ServiceStaff record for the new details already exists
                         var newServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
                             ss.ServiceID == appointmentDto.ServiceID &&
-                            ss.StaffID == appointmentDto.UserID &&
+                            ss.UserID == appointmentDto.UserID &&
                             ss.DateCompleted == appointmentDto.AppointmentDate);
 
                         if (newServiceStaff == null)
@@ -276,7 +273,7 @@ namespace HairSalon.Controllers
                             newServiceStaff = new ServiceStaff
                             {
                                 ServiceID = appointmentDto.ServiceID,
-                                StaffID = appointmentDto.UserID,
+                                UserID = appointmentDto.UserID,
                                 DateCompleted = appointmentDto.AppointmentDate,
                                 Price = newService.Price,
                                 StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100)
@@ -512,32 +509,32 @@ namespace HairSalon.Controllers
 
 
 
-[HttpGet("revenue-monthly")]
-public async Task<IActionResult> GetRevenueMonthly()
-{
-    try
-    {
-        var monthlyRevenues = await _context.Appointments
-            .Where(a => a.Status.ToLower() == "përfunduar")
-            .GroupBy(a => new { a.AppointmentDate.Year, a.AppointmentDate.Month })
-            .Select(group => new
+        [HttpGet("revenue-monthly")]
+        public async Task<IActionResult> GetRevenueMonthly()
+        {
+            try
             {
-                Month = group.Key.Month,
-                Year = group.Key.Year,
-                TotalRevenue = group.Sum(a => a.Service.Price)
-            })
-            .OrderBy(x => x.Year)
-            .ThenBy(x => x.Month)
-            .ToListAsync();
+                var monthlyRevenues = await _context.Appointments
+                    .Where(a => a.Status.ToLower() == "përfunduar")
+                    .GroupBy(a => new { a.AppointmentDate.Year, a.AppointmentDate.Month })
+                    .Select(group => new
+                    {
+                        Month = group.Key.Month,
+                        Year = group.Key.Year,
+                        TotalRevenue = group.Sum(a => a.Service.Price)
+                    })
+                    .OrderBy(x => x.Year)
+                    .ThenBy(x => x.Month)
+                    .ToListAsync();
 
-        return Ok(monthlyRevenues);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error fetching monthly revenue: {ex.Message}");
-        return StatusCode(500, "An error occurred while fetching monthly revenue.");
-    }
-}
+                return Ok(monthlyRevenues);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching monthly revenue: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching monthly revenue.");
+            }
+        }
 
 
 
@@ -632,7 +629,7 @@ public async Task<IActionResult> GetRevenueMonthly()
                         CompletedAppointments = group.Count()
                     })
                     .OrderByDescending(x => x.CompletedAppointments)
-                    .Take(10) 
+                    .Take(10)
                     .ToList();
 
                 return Ok(topCustomers);
@@ -658,7 +655,7 @@ public async Task<IActionResult> GetRevenueMonthly()
             }
             return dateTime.AddDays(-diff).Date;
         }
-       
+
 
     }
 

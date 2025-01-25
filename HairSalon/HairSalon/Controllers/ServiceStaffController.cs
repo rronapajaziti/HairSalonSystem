@@ -59,7 +59,7 @@ public class ServiceStaffController : ControllerBase
             var existingServiceStaff = await _context.ServiceStaff
                 .FirstOrDefaultAsync(ss =>
                     ss.ServiceID == appointment.ServiceID &&
-                    ss.StaffID == appointment.UserID &&
+                    ss.UserID == appointment.UserID &&
                     ss.DateCompleted == appointment.AppointmentDate);
 
             if (appointment.Status?.ToLower() == "përfunduar")
@@ -69,7 +69,7 @@ public class ServiceStaffController : ControllerBase
                     var newServiceStaff = new ServiceStaff
                     {
                         ServiceID = appointment.ServiceID,
-                        StaffID = appointment.UserID,
+                        UserID = appointment.UserID,
                         DateCompleted = appointment.AppointmentDate,
                         Price = service.Price,
                         StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
@@ -108,7 +108,7 @@ public class ServiceStaffController : ControllerBase
                 .Include(ss => ss.User)
                 .GroupBy(ss => new
                 {
-                    ss.StaffID,
+                    ss.UserID,
                     ss.User.FirstName,
                     ss.User.LastName,
                     Day = ss.DateCompleted.Day,
@@ -117,14 +117,14 @@ public class ServiceStaffController : ControllerBase
                 })
                 .Select(group => new
                 {
-                    StaffID = group.Key.StaffID,
+                    UserID = group.Key.UserID,
                     StaffName = $"{group.Key.FirstName} {group.Key.LastName}",
                     Day = group.Key.Day,
                     Month = group.Key.Month,
                     Year = group.Key.Year,
                     TotalEarnings = group.Sum(ss => ss.StaffEarning)
                 })
-                .OrderBy(x => x.StaffID)
+                .OrderBy(x => x.UserID)
                 .ThenBy(x => x.Year)
                 .ThenBy(x => x.Month)
                 .ThenBy(x => x.Day)
