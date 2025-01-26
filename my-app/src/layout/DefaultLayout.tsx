@@ -8,20 +8,14 @@ interface DefaultLayoutProps {
   setSearchQuery: (query: string) => void;
 }
 
-const DefaultLayout = ({
-  children,
-  searchQuery,
-  setSearchQuery,
-}: DefaultLayoutProps) => {
+const DefaultLayout = ({ children, searchQuery, setSearchQuery }: DefaultLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
-      <div className="flex flex-col h-screen">
+      <div className="flex h-screen overflow-hidden">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div
-          className={`relative flex-1 flex-col overflow-y-auto dark:border-strokedark dark:bg-boxdark ${sidebarOpen ? 'lg:ml-72.5' : ''}`}
-        >
+        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden dark:border-strokedark dark:bg-boxdark">
           <Header
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}

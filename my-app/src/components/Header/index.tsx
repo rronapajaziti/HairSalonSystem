@@ -7,49 +7,67 @@ import LogoIcon from '../../images/logo/logo-icon.svg';
 import DarkModeSwitcher from './DarkModeSwitcher';
 
 const Header = (props: {
-  sidebarOpen: boolean; // `sidebarOpen` should be a boolean (not string) for the proper condition check
-  setSidebarOpen: (arg0: boolean) => void; // function to toggle sidebar state
+  sidebarOpen: string | boolean | undefined;
+  setSidebarOpen: (arg0: boolean) => void;
   setSearchQuery: (query: string) => void; // Add a prop for managing search query
 }) => {
-  const [searchQuery, setSearchQueryState] = useState('');
+  const [searchQuery, setSearchQueryState] = useState(''); // Local state for search query
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
-    setSearchQueryState(query);
-    props.setSearchQuery(query);
+    setSearchQueryState(query); // Update local search state
+    props.setSearchQuery(query); // Pass search query to parent component or global state
   };
 
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-        {/* Hamburger Button for mobile */}
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
+          {/* Hamburger Toggle Button */}
           <button
             aria-controls="sidebar"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent the click from propagating to the document
-              props.setSidebarOpen(!props.sidebarOpen); // Toggle sidebar open state
+              e.stopPropagation();
+              props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className="z-99999 block rounded-sm border border-stroke bg-blue-900 p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
           >
-            {/* Hamburger Icon (SVG) */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 256 256"
-              width="1.5em"
-              height="1.5em"
-              fill="none"
-            >
-              <path
-                fill="currentColor"
-                d="M232 212h-20V40a20 20 0 0 0-20-20H64a20 20 0 0 0-20 20v172H24a12 12 0 0 0 0 24h208a12 12 0 0 0 0-24m-44 0h-16V44h16ZM68 44h80v168H68Zm68 84a16 16 0 1 1-16-16a16 16 0 0 1 16 16"
-              ></path>
-            </svg>
+            <span className="relative block h-5.5 w-5.5 cursor-pointer">
+              <span className="du-block absolute right-0 h-full w-full">
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && '!w-full delay-300'
+                  }`}></span>
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && 'delay-400 !w-full'
+                  }`}></span>
+                <span
+                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && '!w-full delay-500'
+                  }`}></span>
+              </span>
+              <span className="absolute right-0 h-full w-full rotate-45">
+                <span
+                  className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && '!h-0 !delay-[0]'
+                  }`}></span>
+                <span
+                  className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
+                    !props.sidebarOpen && '!h-0 !delay-200'
+                  }`}></span>
+              </span>
+            </span>
           </button>
+
+          {/* Logo */}
+          <Link className="block flex-shrink-0 lg:hidden" to="/">
+            <img src={LogoIcon} alt="Logo" />
+          </Link>
         </div>
 
-        {/* Search Box */}
         <div className="hidden sm:block">
+          {/* Search Box */}
           <div className="relative">
             <input
               type="text"
@@ -61,14 +79,10 @@ const Header = (props: {
           </div>
         </div>
 
-        {/* User Profile & Dark Mode */}
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">
-            <li>
-              {/* Dark Mode Switcher */}
-              <DarkModeSwitcher />
-            </li>
-            {/* Add more dropdowns if necessary */}
+            {/* Dark Mode Toggler */}
+            <DarkModeSwitcher />
           </ul>
         </div>
       </div>
