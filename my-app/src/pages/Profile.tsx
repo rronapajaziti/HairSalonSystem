@@ -19,8 +19,6 @@ const Profile = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
-  
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
@@ -148,7 +146,6 @@ const Profile = () => {
     }
   };
 
-  
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
@@ -160,9 +157,9 @@ const Profile = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-1/4 bg-white shadow-lg">
+      <aside className="w-1/4 bg-white shadow-lg text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
         <div className="text-center py-8">
-          <h2 className="text-3xl text-left p-4 font-semibold text-gray-700">
+          <h2 className="text-3xl text-left p-4 font-semibold text-gray-700 dark:text-white">
             {userInfo.firstName} {userInfo.lastName}
           </h2>
         </div>
@@ -171,8 +168,8 @@ const Profile = () => {
             onClick={() => handleViewSwitch('profile')}
             className={`block w-full px-6 py-3 text-left font-medium transition-colors duration-300 rounded-md ${
               view === 'profile'
-                ? 'bg-blue text-white'
-                : 'text-gray hover:bg-white hover text-gray'
+                ? 'bg-blue text-white dark:bg-blue-900'
+                : 'text-gray hover:bg-white hover text-gray dark:bg-blue-900'
             }`}
           >
             Profili
@@ -181,15 +178,15 @@ const Profile = () => {
             onClick={() => handleViewSwitch('appointments')}
             className={`block w-full px-6 py-3 text-left font-medium transition-colors duration-300 rounded-md ${
               view === 'appointments'
-                ? 'bg-blue-600 text-white'
-                : 'text-white hover:bg-white-600 hover:text-white'
+                ? 'bg-blue-600 text-white dark:bg-blue-900'
+                : 'text-white hover:bg-white-600 hover:text-white dark:bg-blue-900'
             }`}
           >
             Terminet e Mia
           </button>
           <button
             onClick={handleLogout}
-            className="block w-full px-6 py-3 text-left font-medium text-white hover:bg-blue-600 hover:text-white transition-colors duration-300 rounded-md"
+            className="block w-full dark:bg-blue-900 px-6 py-3 text-left font-medium text-white hover:bg-blue-600 hover:text-white transition-colors duration-300 rounded-md"
           >
             Dil
           </button>
@@ -197,15 +194,17 @@ const Profile = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
         {view === 'profile' ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg h-1/2">
-            <h2 className="text-xl font-semibold mb-6">Profile</h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg h-1/2 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+            <h2 className="text-xl font-semibold mb-6 dark:text-white">
+              Profile
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600 dark:text-white"
                 >
                   Emri
                 </label>
@@ -216,13 +215,13 @@ const Profile = () => {
                   value={userInfo.firstName}
                   onChange={handleChange}
                   readOnly
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
               <div>
                 <label
                   htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600  dark:text-white dark:border-strokedark dark:bg-boxdark"
                 >
                   Mbiemri
                 </label>
@@ -233,13 +232,13 @@ const Profile = () => {
                   value={userInfo.lastName}
                   readOnly
                   onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600 dark:text-white"
                 >
                   Email
                 </label>
@@ -250,13 +249,13 @@ const Profile = () => {
                   value={userInfo.email}
                   readOnly
                   onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600 dark:text-white"
                 >
                   Numri i Telefonit
                 </label>
@@ -267,26 +266,38 @@ const Profile = () => {
                   value={userInfo.phone}
                   readOnly
                   onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
             </form>
           </div>
         ) : (
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-6">Terminet e Mija</h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+            <h2 className="text-xl font-semibold mb-6 dark:text-white text-blue-900">
+              Terminet e Mija
+            </h2>
             {appointments.length === 0 ? (
               <p className="text-gray-600">Nuk ka Termine.</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full border-collapse">
+                <table className="min-w-full border-collapse text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                   <thead className="bg-gray-200 text-gray-600">
                     <tr>
-                      <th className="py-2 px-4 text-left">Emri i Klientit</th>
-                      <th className="py-2 px-4 text-left">Shërbimi</th>
-                      <th className="py-2 px-4 text-left">Data</th>
-                      <th className="py-2 px-4 text-left">Statusi</th>
-                      <th className="py-2 px-4 text-left">Shënime</th>
+                      <th className="py-2 px-4 text-lefttext-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                        Emri i Klientit
+                      </th>
+                      <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                        Shërbimi
+                      </th>
+                      <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                        Data
+                      </th>
+                      <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                        Statusi
+                      </th>
+                      <th className="py-2 px-4 text-left text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                        Shënime
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -295,17 +306,19 @@ const Profile = () => {
                         key={appointment.appointmentID}
                         className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
                       >
-                        <td className="py-2 px-4">{`${appointment.client?.firstName} ${appointment.client?.lastName}`}</td>
-                        <td className="py-2 px-4">
+                        <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">{`${appointment.client?.firstName} ${appointment.client?.lastName}`}</td>
+                        <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                           {appointment.serviceName || 'No Service'}
                         </td>
-                        <td className="py-2 px-4">
+                        <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                           {new Date(
                             appointment.appointmentDate,
                           ).toLocaleString()}
                         </td>
-                        <td className="py-2 px-4">{appointment.status}</td>
-                        <td className="py-2 px-4">
+                        <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+                          {appointment.status}
+                        </td>
+                        <td className="py-2 px-4 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                           {appointment.notes || 'No Notes'}
                         </td>
                       </tr>

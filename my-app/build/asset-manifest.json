@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/static/css/main.5871cf70.css",
-    "main.js": "/static/js/main.385f02e0.js",
-    "static/js/481.1988b07f.chunk.js": "/static/js/481.1988b07f.chunk.js",
-    "static/js/535.fd23cf51.chunk.js": "/static/js/535.fd23cf51.chunk.js",
+    "main.css": "/static/css/main.cfa8a752.css",
+    "main.js": "/static/js/main.86faf177.js",
+    "static/js/481.e84621ac.chunk.js": "/static/js/481.e84621ac.chunk.js",
+    "static/js/535.39bb7388.chunk.js": "/static/js/535.39bb7388.chunk.js",
     "static/js/53.9c0c1079.chunk.js": "/static/js/53.9c0c1079.chunk.js",
     "static/js/514.2ac0fdfb.chunk.js": "/static/js/514.2ac0fdfb.chunk.js",
     "static/js/936.b079264e.chunk.js": "/static/js/936.b079264e.chunk.js",
@@ -19,12 +19,11 @@
     "static/js/149.7f1445ea.chunk.js": "/static/js/149.7f1445ea.chunk.js",
     "static/js/269.03502888.chunk.js": "/static/js/269.03502888.chunk.js",
     "static/media/makeup.jpg": "/static/media/makeup.8bb1308bdf57003cb553.jpg",
-    "static/media/logo-icon.svg": "/static/media/logo-icon.423e3e18da787aeeccce83fdaf4dace4.svg",
     "index.html": "/index.html",
-    "main.5871cf70.css.map": "/static/css/main.5871cf70.css.map",
-    "main.385f02e0.js.map": "/static/js/main.385f02e0.js.map",
-    "481.1988b07f.chunk.js.map": "/static/js/481.1988b07f.chunk.js.map",
-    "535.fd23cf51.chunk.js.map": "/static/js/535.fd23cf51.chunk.js.map",
+    "main.cfa8a752.css.map": "/static/css/main.cfa8a752.css.map",
+    "main.86faf177.js.map": "/static/js/main.86faf177.js.map",
+    "481.e84621ac.chunk.js.map": "/static/js/481.e84621ac.chunk.js.map",
+    "535.39bb7388.chunk.js.map": "/static/js/535.39bb7388.chunk.js.map",
     "53.9c0c1079.chunk.js.map": "/static/js/53.9c0c1079.chunk.js.map",
     "514.2ac0fdfb.chunk.js.map": "/static/js/514.2ac0fdfb.chunk.js.map",
     "936.b079264e.chunk.js.map": "/static/js/936.b079264e.chunk.js.map",
@@ -41,7 +40,7 @@
     "269.03502888.chunk.js.map": "/static/js/269.03502888.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5871cf70.css",
-    "static/js/main.385f02e0.js"
+    "static/css/main.cfa8a752.css",
+    "static/js/main.86faf177.js"
   ]
 }

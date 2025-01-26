@@ -4,12 +4,11 @@ import axios from 'axios';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 const ChartTwo: React.FC = () => {
-  const [appointmentsPerDay, setAppointmentsPerDay] = useState<number[]>([]); // Holds the number of appointments for each day
+  const [appointmentsPerDay, setAppointmentsPerDay] = useState<number[]>([]);
   const [colorMode, setColorMode] = useState<string>(
     localStorage.getItem('colorMode') || 'light',
   );
 
-  // Toggle between dark and light mode
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const isDark = document.body.classList.contains('dark');
@@ -22,19 +21,14 @@ const ChartTwo: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch weekly data
   const fetchWeeklyData = async () => {
     try {
       const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
       const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
-      console.log('Start of Current Week:', startOfCurrentWeek);
-      console.log('End of Current Week:', endOfCurrentWeek);
-
       const formattedStartDate = format(startOfCurrentWeek, 'yyyy-MM-dd');
       const formattedEndDate = format(endOfCurrentWeek, 'yyyy-MM-dd');
 
-      // Fetching the completed appointments data from the API
       const response = await axios.get(
         'https://api.studio-linda.com/api/Appointment/appointments-completed-by-day',
         {
@@ -45,25 +39,18 @@ const ChartTwo: React.FC = () => {
         },
       );
 
-      console.log('API Response:', response.data);
-
-      // Map the response data to appointments count for each day
       const dailyAppointments = response.data.map(
         (entry: { completedAppointments: number }) =>
           entry.completedAppointments,
       );
 
-      console.log('Mapped Appointments:', dailyAppointments); // Log the mapped data
-
-      // Update the state with the data
       setAppointmentsPerDay(dailyAppointments);
     } catch (error) {
       console.error('Error fetching weekly data:', error);
-      setAppointmentsPerDay([0, 0, 0, 0, 0, 0, 0]); // Default to 0 if error occurs
+      setAppointmentsPerDay([0, 0, 0, 0, 0, 0, 0]);
     }
   };
 
-  // Fetch data when component mounts
   useEffect(() => {
     fetchWeeklyData();
   }, []);
@@ -78,7 +65,6 @@ const ChartTwo: React.FC = () => {
     'E Diel',
   ];
 
-  // Chart options
   const options = {
     chart: {
       type: 'bar',
@@ -86,51 +72,92 @@ const ChartTwo: React.FC = () => {
       toolbar: { show: false },
       background: 'transparent',
     },
-    plotOptions: {
-      bar: { columnWidth: '50%', borderRadius: 4 },
-    },
     xaxis: {
       categories: daysOfWeek,
       labels: {
         style: {
           colors: colorMode === 'dark' ? '#FFFFFF' : '#374151',
         },
+        offsetX: 0, // Aligns the labels properly
       },
     },
+    plotOptions: {
+      bar: { columnWidth: '70%', borderRadius: 4 }, // Adjusted column width
+    },
+    grid: {
+      padding: {
+        left: 0,
+        right: 0,
+      },
+    },
+
     yaxis: {
       title: {
         text: 'Terminet',
         style: {
           color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+          fontSize: '12px',
+          fontWeight: 'bold',
         },
       },
       labels: {
         style: {
           colors: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+          fontSize: '12px',
+          fontWeight: 'bold',
         },
       },
     },
-    grid: {
-      borderColor: colorMode === 'dark' ? '#2D3748' : '#E5E7EB',
-    },
     dataLabels: { enabled: false },
     colors: ['#2563EB'],
+    tooltip: {
+      theme: colorMode, // Switch between 'light' and 'dark' automatically
+      style: {
+        fontSize: '13px',
+        fontFamily: 'Arial, sans-serif',
+      },
+      marker: {
+        show: true,
+      },
+      y: {
+        formatter: (value: number) => `${value} Terminet`, // Customize tooltip values
+      },
+      custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+        const value = series[seriesIndex][dataPointIndex];
+        const day = w.globals.labels[dataPointIndex];
+        return `
+          <div style="
+            background: ${colorMode === 'dark' ? '#1F2937' : '#FFFFFF'};
+            color: ${colorMode === 'dark' ? '#E5E7EB' : '#333333'};
+            border: 1px solid ${colorMode === 'dark' ? '#374151' : '#E5E7EB'};
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: ${
+              colorMode === 'dark'
+                ? '0 2px 4px rgba(0, 0, 0, 0.5)'
+                : '0 2px 4px rgba(0, 0, 0, 0.1)'
+            };
+          ">
+            <strong>${day}</strong>
+            <div>${value} Terminet</div>
+          </div>`;
+      },
+    },
   };
 
-  // Data for the chart
   const series = [{ name: 'Terminet', data: appointmentsPerDay }];
 
   return (
     <div
-      className="p-6 rounded-lg max-w-lg mx-auto border border-gray-300 dark:border-gray-700"
+      className="p-6 rounded-lg max-w-lg mx-auto border shadow-md dark:border-gray-700"
       style={{
-        backgroundColor: colorMode === 'dark' ? 'transparent' : '#FFFFFF',
+        backgroundColor: colorMode === 'dark' ? '#1F2937' : '#FFFFFF',
       }}
     >
       <h2
         className="text-xl font-semibold text-center mb-4"
         style={{
-          color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+          color: colorMode === 'dark' ? '#E5E7EB' : '#374151',
         }}
       >
         Terminet Javore

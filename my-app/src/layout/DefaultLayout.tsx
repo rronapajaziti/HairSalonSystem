@@ -8,26 +8,36 @@ interface DefaultLayoutProps {
   setSearchQuery: (query: string) => void;
 }
 
-const DefaultLayout = ({ children, searchQuery, setSearchQuery }: DefaultLayoutProps) => {
+const DefaultLayout = ({
+  children,
+  searchQuery,
+  setSearchQuery,
+}: DefaultLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="dark:bg-boxdark-2 dark:text-bodydark">
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden dark:border-strokedark dark:bg-boxdark">
-          <Header
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-          />
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 dark:border-strokedark dark:bg-boxdark">
-              {children}
-            </div>
-          </main>
-        </div>
+    <div className="dark:bg-boxdark-2 dark:text-bodydark relative flex h-screen overflow-hidden dark:text-white dark:border-strokedark dark:bg-boxdark">
+      {/* Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 relative overflow-hidden ${
+          sidebarOpen ? 'blur-sm lg:blur-none' : ''
+        }`}
+        onClick={() => sidebarOpen && setSidebarOpen(false)} // Close sidebar when clicking content on smaller screens
+      >
+        <Header
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <main className="h-full overflow-y-auto">
+          <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 dark:border-strokedark dark:bg-boxdark">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

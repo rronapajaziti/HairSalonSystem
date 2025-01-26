@@ -1,21 +1,13 @@
 import { useState, useEffect } from 'react';
-import { FaSun, FaMoon } from 'react-icons/fa'; // Import icons from react-icons
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 const DarkModeSwitcher = () => {
-  const [colorMode, setColorMode] = useState('light');
+  const [colorMode, setColorMode] = useState(() => {
+    // Load the initial mode from localStorage
+    return localStorage.getItem('colorMode') || 'light';
+  });
 
-  // On initial load, check localStorage for stored mode
-  useEffect(() => {
-    const storedMode = localStorage.getItem('colorMode');
-    if (storedMode) {
-      document.body.classList.add(storedMode);
-      setColorMode(storedMode);
-    } else {
-      setColorMode('light');
-    }
-  }, []);
-
-  // Handle mode change and save it to localStorage
+  // Apply dark mode on initial load and on mode change
   useEffect(() => {
     if (colorMode === 'dark') {
       document.body.classList.add('dark');
@@ -39,7 +31,7 @@ const DarkModeSwitcher = () => {
         }`}
       >
         <div
-          className={`w-6 h-6 flex items-center justify-center text-xl transition-all duration-300 ${
+          className={`w-6 h-6 flex items-center justify-center text-xl transition-all duration-300 transform ${
             colorMode === 'dark' ? 'translate-x-7' : ''
           }`}
         >
