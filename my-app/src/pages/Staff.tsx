@@ -375,7 +375,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                               </label>
                               <input
                                 type="text"
-                                name="emri"
+                                name="firstName"
                                 value={editFormData.firstName}
                                 onChange={handleEditInputChange}
                                 className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
@@ -388,7 +388,7 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
                               </label>
                               <input
                                 type="text"
-                                name="mbiemri"
+                                name="lastName"
                                 value={editFormData.lastName}
                                 onChange={handleEditInputChange}
                                 className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"

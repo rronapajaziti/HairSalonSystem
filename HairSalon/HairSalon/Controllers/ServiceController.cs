@@ -47,91 +47,49 @@ public class ServiceController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> EditAppointment(int id, [FromBody] AppointmentDto appointmentDto)
+    public async Task<IActionResult> EditService(int id, [FromBody] Service serviceDto)
     {
-        if (id != appointmentDto.AppointmentID)
-            return BadRequest("Appointment ID mismatch.");
+        if (id != serviceDto.ServiceID)
+            return BadRequest("Service ID mismatch.");
 
-        var existingAppointment = await _context.Appointments
-            .Include(a => a.Service)
-            .Include(a => a.User)
-            .FirstOrDefaultAsync(a => a.AppointmentID == id);
+        var existingService = await _context.Services
+            .Include(s => s.ServiceStaff) // Include ServiceStaff for updates
+            .FirstOrDefaultAsync(s => s.ServiceID == id);
 
-        if (existingAppointment == null)
-            return NotFound("Appointment not found.");
+        if (existingService == null)
+            return NotFound("Service not found.");
 
-        using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            // Find the old ServiceStaff record
-            var oldServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
-                ss.ServiceID == existingAppointment.ServiceID &&
-                ss.UserID == existingAppointment.UserID &&
-                ss.DateCompleted == existingAppointment.AppointmentDate);
+            // Update service details
+            existingService.ServiceName = serviceDto.ServiceName;
+            existingService.Description = serviceDto.Description;
+            existingService.Price = serviceDto.Price;
+            existingService.DiscountPrice = serviceDto.DiscountPrice;
+            existingService.Duration = serviceDto.Duration;
+            existingService.StaffEarningPercentage = serviceDto.StaffEarningPercentage;
 
-            Console.WriteLine("Existing Appointment Details:");
-            Console.WriteLine($"ServiceID: {existingAppointment.ServiceID}, UserID: {existingAppointment.UserID}, DateCompleted: {existingAppointment.AppointmentDate}");
-
-            // Update appointment details
-            existingAppointment.UserID = appointmentDto.UserID;
-            existingAppointment.ServiceID = appointmentDto.ServiceID;
-            existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
-            existingAppointment.Status = appointmentDto.Status;
-            existingAppointment.Notes = appointmentDto.Notes;
-
-            _context.Entry(existingAppointment).State = EntityState.Modified;
-
-            var newService = await _context.Services.FindAsync(appointmentDto.ServiceID);
-
-            if (appointmentDto.Status?.ToLower() == "përfunduar")
+            // Loop through each ServiceStaff associated with the service and update the StaffEarning
+            foreach (var serviceStaff in existingService.ServiceStaff)
             {
-                Console.WriteLine("Processing ServiceStaff update...");
-                if (oldServiceStaff != null)
-                {
-                    Console.WriteLine("Updating existing ServiceStaff record...");
-                    oldServiceStaff.ServiceID = appointmentDto.ServiceID;
-                    oldServiceStaff.UserID = appointmentDto.UserID;
-                    oldServiceStaff.DateCompleted = appointmentDto.AppointmentDate;
-                    oldServiceStaff.Price = newService.Price;
-                    oldServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
-
-                    _context.ServiceStaff.Update(oldServiceStaff);
-                }
-                else
-                {
-                    Console.WriteLine("Creating new ServiceStaff record...");
-                    var newServiceStaff = new ServiceStaff
-                    {
-                        ServiceID = appointmentDto.ServiceID,
-                        UserID = appointmentDto.UserID,
-                        DateCompleted = appointmentDto.AppointmentDate,
-                        Price = newService.Price,
-                        StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100)
-                    };
-
-                    _context.ServiceStaff.Add(newServiceStaff);
-                }
-            }
-            else if (appointmentDto.Status?.ToLower() == "pa përfunduar" && oldServiceStaff != null)
-            {
-                Console.WriteLine("Removing existing ServiceStaff record...");
-                _context.ServiceStaff.Remove(oldServiceStaff);
+                serviceStaff.Price = serviceDto.Price;
+                serviceStaff.StaffEarning = serviceDto.Price * (serviceDto.StaffEarningPercentage / 100);
             }
 
+            _context.Entry(existingService).State = EntityState.Modified;
+
+            // Save changes
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
 
-            Console.WriteLine("Transaction committed successfully.");
-
-            return Ok(existingAppointment);
+            return Ok(existingService); // Return the updated service along with updated ServiceStaff
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
-            Console.WriteLine($"Error editing appointment: {ex.Message}");
-            return StatusCode(500, "An error occurred while editing the appointment.");
+            Console.WriteLine($"Error editing service: {ex.Message}");
+            return StatusCode(500, "An error occurred while editing the service.");
         }
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteService(int id)

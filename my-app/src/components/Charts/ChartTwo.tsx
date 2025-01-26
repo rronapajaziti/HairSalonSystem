@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
-import { startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 const ChartTwo: React.FC = () => {
-  const [currentWeekProfit, setCurrentWeekProfit] = useState<number>(0);
+  const [appointmentsPerDay, setAppointmentsPerDay] = useState<number[]>([]); // Holds the number of appointments for each day
   const [colorMode, setColorMode] = useState<string>(
     localStorage.getItem('colorMode') || 'light',
   );
 
-  // Watch for changes in dark mode
+  // Toggle between dark and light mode
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const isDark = document.body.classList.contains('dark');
@@ -19,29 +19,66 @@ const ChartTwo: React.FC = () => {
       attributes: true,
       attributeFilter: ['class'],
     });
-
     return () => observer.disconnect();
   }, []);
 
+  // Fetch weekly data
   const fetchWeeklyData = async () => {
     try {
       const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
       const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
+      console.log('Start of Current Week:', startOfCurrentWeek);
+      console.log('End of Current Week:', endOfCurrentWeek);
+
+      const formattedStartDate = format(startOfCurrentWeek, 'yyyy-MM-dd');
+      const formattedEndDate = format(endOfCurrentWeek, 'yyyy-MM-dd');
+
+      // Fetching the completed appointments data from the API
       const response = await axios.get(
-        `https://api.studio-linda.com/api/Appointment/total-revenue?startDate=${startOfCurrentWeek.toISOString()}&endDate=${endOfCurrentWeek.toISOString()}`,
+        'https://api.studio-linda.com/api/Appointment/appointments-completed-by-day',
+        {
+          params: {
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+          },
+        },
       );
 
-      setCurrentWeekProfit(response.data.totalRevenue || 0);
+      console.log('API Response:', response.data);
+
+      // Map the response data to appointments count for each day
+      const dailyAppointments = response.data.map(
+        (entry: { completedAppointments: number }) =>
+          entry.completedAppointments,
+      );
+
+      console.log('Mapped Appointments:', dailyAppointments); // Log the mapped data
+
+      // Update the state with the data
+      setAppointmentsPerDay(dailyAppointments);
     } catch (error) {
-      console.error('Error fetching weekly profit data:', error);
+      console.error('Error fetching weekly data:', error);
+      setAppointmentsPerDay([0, 0, 0, 0, 0, 0, 0]); // Default to 0 if error occurs
     }
   };
 
+  // Fetch data when component mounts
   useEffect(() => {
     fetchWeeklyData();
   }, []);
 
+  const daysOfWeek = [
+    'E Hënë',
+    'E Martë',
+    'E Mërkurë',
+    'E Enjte',
+    'E Premte',
+    'E Shtunë',
+    'E Diel',
+  ];
+
+  // Chart options
   const options = {
     chart: {
       type: 'bar',
@@ -53,7 +90,7 @@ const ChartTwo: React.FC = () => {
       bar: { columnWidth: '50%', borderRadius: 4 },
     },
     xaxis: {
-      categories: ['Current Week'],
+      categories: daysOfWeek,
       labels: {
         style: {
           colors: colorMode === 'dark' ? '#FFFFFF' : '#374151',
@@ -62,7 +99,7 @@ const ChartTwo: React.FC = () => {
     },
     yaxis: {
       title: {
-        text: 'Profit (€)',
+        text: 'Terminet',
         style: {
           color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
         },
@@ -80,7 +117,8 @@ const ChartTwo: React.FC = () => {
     colors: ['#2563EB'],
   };
 
-  const series = [{ name: 'Profit', data: [currentWeekProfit] }];
+  // Data for the chart
+  const series = [{ name: 'Terminet', data: appointmentsPerDay }];
 
   return (
     <div
@@ -95,7 +133,7 @@ const ChartTwo: React.FC = () => {
           color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
         }}
       >
-        Weekly Profit
+        Terminet Javore
       </h2>
       <ReactApexChart
         options={options}

@@ -36,9 +36,10 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/Service',
       );
-      const services = Array.isArray(response.data?.data)
-        ? response.data.data
-        : [];
+
+      // Directly use response.data since it already contains the array
+      const services = Array.isArray(response.data) ? response.data : [];
+
       console.log('Fetched Services:', services); // Debugging
       setServiceList(services);
     } catch (error) {
@@ -391,6 +392,23 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
                               onChange={handleEditInputChange}
                               className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          {' '}
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                              Paga e Stafit (%)
+                            </label>
+                            <input
+                              type="number"
+                              name="staffEarningPercentage"
+                              placeholder="Paga e Stafit"
+                              value={editFormData.staffEarningPercentage}
+                              onChange={handleInputChange}
+                              required
+                              className="px-4 py-2 border text-black border-gray-300 dark:text-white rounded-md w-full dark:border-strokedark dark:bg-boxdark"
                             />
                           </div>
                         </div>

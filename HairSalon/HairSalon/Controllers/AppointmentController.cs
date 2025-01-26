@@ -346,43 +346,46 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching completed appointments.");
             }
         }
-        [HttpGet("total-revenue")]
-        public async Task<IActionResult> GetTotalRevenueForCompletedAppointments([FromQuery] string period = "month")
+        [HttpGet("appointments-completed-by-day")]
+        public async Task<IActionResult> GetCompletedAppointmentsByDayForCurrentWeek()
         {
             try
             {
-                DateTime startDate;
-                DateTime endDate;
+                // Merrni fillimin dhe fundin e javës aktuale (duke filluar nga e Hëna)
+                var startOfCurrentWeek = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
+                var endOfCurrentWeek = startOfCurrentWeek.AddDays(6);
 
-                if (period.ToLower() == "day")
+                // Lista për të mbajtur numrin e terminet e kryera çdo ditë
+                var completedAppointmentsData = new List<object>();
+
+                // Kaloni për çdo ditë të javës
+                for (int i = 0; i < 7; i++)
                 {
-                    startDate = DateTime.Today;
-                    endDate = DateTime.Today.AddDays(1);
-                }
-                else if (period.ToLower() == "week")
-                {
-                    startDate = DateTime.Now.StartOfWeek(DayOfWeek.Monday); // Using the StartOfWeek extension method
-                    endDate = startDate.AddDays(7); // End of the week
-                }
-                else
-                {
-                    // Default is month
-                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                    endDate = startDate.AddMonths(1).AddDays(-1);
+                    var currentDate = startOfCurrentWeek.AddDays(i);
+
+                    // Numëroni terminet e përfunduar për këtë ditë
+                    var completedAppointmentsCount = await _context.Appointments
+                        .Where(a => a.Status.ToLower() == "përfunduar" && a.AppointmentDate.Date == currentDate.Date)
+                        .CountAsync();
+
+                    // Shto të dhënat për këtë ditë në listën e përfunduar
+                    completedAppointmentsData.Add(new
+                    {
+                        day = currentDate.ToString("yyyy-MM-dd"),
+                        completedAppointments = completedAppointmentsCount
+                    });
                 }
 
-                var totalRevenue = await _context.Appointments
-                    .Where(a => a.Status.ToLower() == "përfunduar" && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
-                    .SumAsync(a => a.Service.Price);
-
-                return Ok(new { totalRevenue });
+                // Kthej të dhënat për javën aktuale
+                return Ok(completedAppointmentsData);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error calculating total revenue: {ex.Message}");
-                return StatusCode(500, "An error occurred while calculating the total revenue.");
+                Console.WriteLine($"Error calculating completed appointments by day: {ex.Message}");
+                return StatusCode(500, "An error occurred while calculating the completed appointments.");
             }
         }
+
 
         [HttpGet("total-sales")]
         public async Task<IActionResult> GetTotalSalesForCompletedAppointments([FromQuery] string period = "month")
@@ -506,37 +509,47 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching daily summary.");
             }
         }
-
-
-
-        [HttpGet("revenue-monthly")]
-        public async Task<IActionResult> GetRevenueMonthly()
+        [HttpGet("appointment-count-weekly")]
+        public async Task<IActionResult> GetAppointmentCountWeekly([FromQuery] string period = "month")
         {
             try
             {
-                var monthlyRevenues = await _context.Appointments
-                    .Where(a => a.Status.ToLower() == "përfunduar")
-                    .GroupBy(a => new { a.AppointmentDate.Year, a.AppointmentDate.Month })
+                DateTime startDate;
+                DateTime endDate;
+
+                // Determine the start and end dates for the period
+                if (period.ToLower() == "week")
+                {
+                    startDate = DateTime.Now.StartOfWeek(DayOfWeek.Monday); // Start of current week
+                    endDate = startDate.AddDays(7); // End of current week
+                }
+                else
+                {
+                    // Default is month
+                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1); // First day of current month
+                    endDate = startDate.AddMonths(1).AddDays(-1); // Last day of current month
+                }
+
+                // Get the appointment counts for the current week
+                var weeklyAppointments = await _context.Appointments
+                    .Where(a => a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                    .GroupBy(a => new { Week = (int)((a.AppointmentDate.Day - 1) / 7) + 1 }) // Group by week
                     .Select(group => new
                     {
-                        Month = group.Key.Month,
-                        Year = group.Key.Year,
-                        TotalRevenue = group.Sum(a => a.Service.Price)
+                        Week = group.Key.Week,
+                        AppointmentCount = group.Count() // Count appointments per week
                     })
-                    .OrderBy(x => x.Year)
-                    .ThenBy(x => x.Month)
+                    .OrderBy(x => x.Week)
                     .ToListAsync();
 
-                return Ok(monthlyRevenues);
+                return Ok(weeklyAppointments);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching monthly revenue: {ex.Message}");
-                return StatusCode(500, "An error occurred while fetching monthly revenue.");
+                Console.WriteLine($"Error fetching weekly appointment count: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching weekly appointment count.");
             }
         }
-
-
 
         [HttpGet("schedule")]
         public async Task<IActionResult> GetDailySchedule([FromQuery] DateTime date)

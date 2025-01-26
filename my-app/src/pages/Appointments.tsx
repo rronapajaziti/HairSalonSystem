@@ -61,19 +61,16 @@ const Appointments = () => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/Service',
       );
-      const services = Array.isArray(response.data?.data)
-        ? response.data.data
-        : [];
+
+      // Directly use response.data since it's already an array
+      const services = Array.isArray(response.data) ? response.data : [];
       console.log('Fetched Services:', services);
 
       // Save to state
       setServicesList(services);
-
-      // Save to localStorage
-      localStorage.setItem('servicesList', JSON.stringify(services));
     } catch (error) {
       console.error('Error fetching services:', error);
-      setServicesList([]);
+      setServicesList([]); // Ensure services list is an empty array on error
     }
   };
 
@@ -117,19 +114,19 @@ const Appointments = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const payload = {
-      Client: {
-        FirstName: newAppointment.firstName,
-        LastName: newAppointment.lastName,
-        PhoneNumber: newAppointment.phoneNumber,
-        Email: newAppointment.email,
+      client: {
+        firstName: newAppointment.firstName,
+        lastName: newAppointment.lastName,
+        phoneNumber: newAppointment.phoneNumber,
+        email: newAppointment.email,
       },
-      UserID: newAppointment.userID,
-      ServiceID: newAppointment.serviceID,
-      AppointmentDate: newAppointment.appointmentDate,
-      Status: newAppointment.status,
-      Notes: newAppointment.notes,
+      appointmentID: newAppointment.appointmentID || 0, // Include this if required
+      userID: newAppointment.userID,
+      serviceID: newAppointment.serviceID,
+      appointmentDate: newAppointment.appointmentDate,
+      status: newAppointment.status,
+      notes: newAppointment.notes,
     };
 
     console.log('Payload being sent to the backend:', payload);
@@ -212,18 +209,7 @@ const Appointments = () => {
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const storedServices = localStorage.getItem('servicesList');
-    const parsedServices = storedServices ? JSON.parse(storedServices) : [];
 
-    // Find the selected service details
-    const selectedService = parsedServices.find(
-      (service: any) => service.serviceID === Number(editFormData.serviceID),
-    );
-
-    if (!selectedService) {
-      console.error('Selected service not found in local storage.');
-      return;
-    }
     const payload = {
       client: {
         firstName: editFormData.firstName,
@@ -232,7 +218,7 @@ const Appointments = () => {
         email: editFormData.email,
       },
       appointmentID: editFormData.appointmentID,
-      userID: localStorage.getItem('userId'),
+      userID: editFormData.userID,
       serviceID: Number(editFormData.serviceID),
       appointmentDate: editFormData.appointmentDate,
       status: editFormData.status,
