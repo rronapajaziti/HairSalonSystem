@@ -1,13 +1,28 @@
-import { ApexOptions } from 'apexcharts';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
+import { ApexOptions } from 'apexcharts';
 
 const ChartThree: React.FC = () => {
   const [timeRange, setTimeRange] = useState('monthly');
   const [chartData, setChartData] = useState({ labels: [], series: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [colorMode, setColorMode] = useState<string>(
+    localStorage.getItem('colorMode') || 'light',
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.body.classList.contains('dark');
+      setColorMode(isDark ? 'dark' : 'light');
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const colors = [
     '#3C50E0',
@@ -20,16 +35,6 @@ const ChartThree: React.FC = () => {
     '#4A90E2',
     '#002366',
     '#6A5ACD',
-    '#9370DB',
-    '#8A2BE2',
-    '#9400D3',
-    '#7B68EE',
-    '#6A5ACD',
-    '#483D8B',
-    '#4169E1',
-    '#7C83FD',
-    '#6B8E23',
-    '#5F9EA0',
   ];
 
   const calculateDateRange = () => {
@@ -65,19 +70,14 @@ const ChartThree: React.FC = () => {
         { params: { startDate, endDate } },
       );
 
-      console.log('Response Data:', response.data);
-
       if (response?.data && Array.isArray(response.data)) {
         const labels = response.data.map((item: any) => item.serviceName);
         const series = response.data.map((item: any) => item.count);
         setChartData({ labels, series });
       } else {
-        console.error('Unexpected API response format:', response);
         setError('Unexpected API response format.');
       }
     } catch (err) {
-      console.error('Error fetching data:', err);
-
       if (axios.isAxiosError(err)) {
         setError(`Failed to fetch data: ${err.response?.data || err.message}`);
       } else {
@@ -92,21 +92,29 @@ const ChartThree: React.FC = () => {
     fetchChartData();
   }, [timeRange]);
 
-  useEffect(() => {
-    console.log('Chart Data:', chartData);
-  }, [chartData]);
-
   const options: ApexOptions = {
     chart: {
       type: 'donut',
+      background: 'transparent',
     },
     colors: colors.slice(0, chartData.labels.length),
     labels: chartData.labels,
-    legend: { show: true },
-    plotOptions: {
-      pie: { donut: { size: '65%' } },
+    legend: {
+      position: 'bottom',
+      labels: {
+        colors: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+      },
     },
-    dataLabels: { enabled: false },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '75%', // Increased donut size for better visuals
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
   };
 
   const isChartDataValid =
@@ -116,14 +124,30 @@ const ChartThree: React.FC = () => {
     chartData.labels.length > 0;
 
   return (
-    <div>
-      <div>
-        <h5 className="text-blue-900 dark:text-white">
+    <div
+      className="p-6 rounded-lg max-w-2xl mx-auto border border-gray-300 dark:border-gray-700"
+      style={{
+        backgroundColor: colorMode === 'dark' ? '#1A202C' : '#FFFFFF',
+      }}
+    >
+      <div className="flex justify-between items-center mb-4">
+        <h5
+          className="text-lg font-semibold"
+          style={{
+            color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+          }}
+        >
           Shërbimet më të Shpesha
         </h5>
         <select
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
+          className="px-3 py-1.5 border rounded-md text-sm"
+          style={{
+            backgroundColor: colorMode === 'dark' ? '#2D3748' : '#FFFFFF',
+            color: colorMode === 'dark' ? '#FFFFFF' : '#374151',
+            borderColor: colorMode === 'dark' ? '#4A5568' : '#D1D5DB',
+          }}
         >
           <option value="daily">Ditore</option>
           <option value="monthly">Mujore</option>
@@ -137,6 +161,7 @@ const ChartThree: React.FC = () => {
           options={options}
           series={chartData.series}
           type="donut"
+          height={400} // Increased chart height for better visibility
         />
       ) : (
         <p>No valid data available to display.</p>

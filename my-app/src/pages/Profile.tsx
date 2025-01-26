@@ -215,7 +215,7 @@ const Profile = () => {
                   value={userInfo.firstName}
                   onChange={handleChange}
                   readOnly
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
+                  className="w-full mt-1 px-3 py-2 border rounded-md  text-black  shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
               <div>
@@ -249,7 +249,7 @@ const Profile = () => {
                   value={userInfo.email}
                   readOnly
                   onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
+                  className="w-full mt-1 px-3 py-2 border rounded-md  text-black shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
               <div>
@@ -266,7 +266,7 @@ const Profile = () => {
                   value={userInfo.phone}
                   readOnly
                   onChange={handleChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
+                  className="w-full mt-1 px-3 py-2 border rounded-md  text-black shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:border-strokedark dark:bg-boxdark"
                 />
               </div>
             </form>
