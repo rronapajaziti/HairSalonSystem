@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Logo from '../../images/logo/logo-no-background.png';
+import { jwtDecode } from 'jwt-decode';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -18,6 +19,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
   );
+
+  const [userRole, setUserRole] = useState<number | null>(null);
 
   // close on click outside
   useEffect(() => {
@@ -53,6 +56,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       document.querySelector('body')?.classList.remove('sidebar-expanded');
     }
   }, [sidebarExpanded]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        setUserRole(Number(decodedToken.RolesID)); // Ensure conversion to number
+      } catch (error) {
+        console.error('Error decoding token', error);
+        setUserRole(null);
+      }
+    }
+  }, []);
 
   return (
     <aside
@@ -282,35 +297,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Stafi
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  to="/serviceStaff"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('/stafi')
-                      ? 'bg-graydark dark:bg-meta-4'
-                      : ''
-                  }`}
-                >
-                  <svg
-                    className="w-6 h-6 text-white dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="1.5em"
-                    width="1.5em"
-                    fill="none"
-                    viewBox="0 0 24 24"
+              {(userRole === 1 || userRole === 2) && (
+                <li>
+                  <NavLink
+                    to="/serviceStaff"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('/serviceStaff')
+                        ? 'bg-graydark dark:bg-meta-4'
+                        : ''
+                    }`}
                   >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
-                    />
-                  </svg>
-                  Pagesa
-                </NavLink>
-              </li>
+                    <svg
+                      className="w-6 h-6 text-white dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="1.5em"
+                      width="1.5em"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
+                      />
+                    </svg>
+                    Pagesa
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <NavLink
                   to="/dailyExpensess"

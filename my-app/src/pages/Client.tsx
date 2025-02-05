@@ -3,23 +3,59 @@ import axios from 'axios';
 
 const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
   const [clientList, setClientList] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
     fetchClients();
   }, []);
 
   const fetchClients = async () => {
+    setLoading(true); // Start loading when fetching data
+
     try {
+      // Step 1: Fetch all appointments to get client data
       const response = await axios.get(
-        'https://api.studio-linda.com/api/Client',
+        'https://api.studio-linda.com/api/Appointment',
       );
-      const filteredClients = response.data.map((client: any) => ({
-        ...client,
-        id: client.clientID,
-      }));
-      setClientList(filteredClients);
+
+      const appointments = response.data;
+
+      // Step 2: Fetch completed appointments for each client and merge with client data
+      const updatedClients = await Promise.all(
+        appointments.map(async (appointment: any) => {
+          const { firstName, lastName, phoneNumber, email } =
+            appointment.client;
+
+          try {
+            // Step 3: Fetch completed appointments for each client
+            const countResponse = await axios.get(
+              `https://api.studio-linda.com/api/appointment/completed-appointments-client?firstName=${firstName}&lastName=${lastName}&phoneNumber=${phoneNumber}&email=${email}`,
+            );
+
+            const completedAppointments =
+              countResponse.data?.completedAppointments || 0;
+            return {
+              ...appointment.client,
+              completedAppointments,
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching completed appointments for ${firstName} ${lastName}:`,
+              error,
+            );
+            return {
+              ...appointment.client,
+              completedAppointments: 0, // Default to 0 if error occurs
+            };
+          }
+        }),
+      );
+
+      setClientList(updatedClients); // Update state with the merged client data
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      console.error('Error fetching appointments:', error);
+    } finally {
+      setLoading(false); // Stop loading after the request is complete
     }
   };
 
@@ -37,36 +73,56 @@ const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
       </h1>
 
       <div className="max-w-full overflow-x-auto">
-        <table className="w-full table-auto dark:border-strokedark dark:bg-boxdark">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Emri dhe Mbiemri
-              </th>
-              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Numri i Telefonit
-              </th>
-              <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
-                Email
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredClients.map((client) => (
-              <tr key={client.id}>
-                <td className="py-4 px-4 dark:text-white text-black">
-                  {client.firstName} {client.lastName}
-                </td>
-                <td className="py-4 px-4 dark:text-white text-black">
-                  {client.phoneNumber}
-                </td>
-                <td className="py-4 px-4 dark:text-white text-black">
-                  {client.email}
-                </td>
+        {loading ? (
+          <div>Loading...</div> // Show loading text while data is being fetched
+        ) : (
+          <table className="w-full table-auto dark:border-strokedark dark:bg-boxdark">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Emri dhe Mbiemri
+                </th>
+                <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Numri i Telefonit
+                </th>
+                <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Email
+                </th>
+                <th className="py-4 px-4 text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
+                  Terminet e Kryera
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredClients.length > 0 ? (
+                filteredClients.map((client) => (
+                  <tr key={client.email}>
+                    {' '}
+                    {/* Use email or another unique identifier */}
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {client.firstName} {client.lastName}
+                    </td>
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {client.phoneNumber}
+                    </td>
+                    <td className="py-4 px-4 dark:text-white text-black">
+                      {client.email}
+                    </td>
+                    <td className="py-4 px-4 dark:text-white text-black text-center">
+                      {client.completedAppointments}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="py-4 px-4 text-center">
+                    No clients found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

@@ -509,6 +509,56 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching daily summary.");
             }
         }
+        [HttpGet("completed-appointments-client")]
+        public async Task<IActionResult> GetCompletedAppointmentsByClient(
+       [FromQuery] string firstName,
+       [FromQuery] string lastName,
+       [FromQuery] string phoneNumber,
+       [FromQuery] string email)
+        {
+            try
+            {
+                // Validate input
+                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
+                    string.IsNullOrEmpty(phoneNumber) || string.IsNullOrEmpty(email))
+                {
+                    return BadRequest("Client details must be provided.");
+                }
+
+                // Log the input parameters
+                Console.WriteLine($"Input Parameters - FirstName: {firstName}, LastName: {lastName}, PhoneNumber: {phoneNumber}, Email: {email}");
+
+                // Fetch completed appointments count
+                var completedAppointmentsCount = await _context.Appointments
+                    .Include(a => a.Client) // Ensure Client navigation property is loaded
+                    .Where(a => a.Status.ToLower() == "përfunduar" &&
+                                a.Client != null &&
+                                a.Client.FirstName.Trim().ToLower() == firstName.Trim().ToLower() &&
+                                a.Client.LastName.Trim().ToLower() == lastName.Trim().ToLower() &&
+                                a.Client.PhoneNumber.Trim() == phoneNumber.Trim() &&
+                                a.Client.Email.Trim().ToLower() == email.Trim().ToLower())
+                    .CountAsync();
+
+                // Log for debugging
+                Console.WriteLine($"Completed Appointments Count: {completedAppointmentsCount}");
+
+                return Ok(new
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    PhoneNumber = phoneNumber,
+                    Email = email,
+                    CompletedAppointments = completedAppointmentsCount
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log detailed error
+                Console.WriteLine($"Error fetching completed appointments for client: {ex}");
+                return StatusCode(500, "An error occurred while fetching the completed appointments.");
+            }
+        }
+
         [HttpGet("appointment-count-weekly")]
         public async Task<IActionResult> GetAppointmentCountWeekly([FromQuery] string period = "month")
         {
@@ -657,6 +707,7 @@ namespace HairSalon.Controllers
 
     }
 
+
     public static class DateTimeExtensions
     {
         public static DateTime StartOfWeek(this DateTime dateTime, DayOfWeek firstDayOfWeek)
@@ -671,7 +722,4 @@ namespace HairSalon.Controllers
 
 
     }
-
-
-
 }

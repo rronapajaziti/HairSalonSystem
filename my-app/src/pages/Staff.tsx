@@ -32,17 +32,14 @@ const Staff = ({ searchQuery }: { searchQuery: string }) => {
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
-    console.log('Admin Token:', adminToken);
 
     if (adminToken) {
       try {
         const decodedToken: any = jwtDecode(adminToken);
-        console.log('Decoded Token:', decodedToken);
 
         const authorized =
           decodedToken.RolesID === '1' || decodedToken.RolesID === '2';
         setIsAuthorized(authorized);
-        console.log('Is Authorized:', authorized);
       } catch (error) {
         console.error('Error decoding token:', error);
         setIsAuthorized(false);

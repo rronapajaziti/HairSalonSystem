@@ -70,6 +70,17 @@ function App() {
       };
     }
   }, [pathname, loggedIn]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        console.log('Decoded Token:', decodedToken); // Debugging
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
+  }, []);
 
   const isLoginPage = pathname === '/';
 
@@ -84,7 +95,13 @@ function App() {
     window.location.replace('/');
   };
 
-  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const ProtectedRoute = ({
+    children,
+    allowedRoles,
+  }: {
+    children: JSX.Element;
+    allowedRoles?: number[];
+  }) => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
 
@@ -93,12 +110,28 @@ function App() {
       return null;
     }
 
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const userRole = Number(decodedToken.RolesID); // Convert RolesID to number
+
+      // Check if userRole is in allowedRoles
+      if (allowedRoles && !allowedRoles.includes(userRole)) {
+        console.warn(
+          `Access denied. User role: ${userRole}, Allowed roles: ${allowedRoles}`,
+        );
+        window.location.replace('/dashboard'); // Redirect unauthorized users
+        return null;
+      }
+    } catch (error) {
+      console.error('Error decoding token', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      window.location.replace('/');
+      return null;
+    }
+
     return children;
   };
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <HelmetProvider>
@@ -149,7 +182,16 @@ function App() {
                     />
                     <Route
                       path="/serviceDiscount"
-                      element={<ServiceDiscount searchQuery={searchQuery} />}
+                      element={
+                        <ProtectedRoute allowedRoles={[1, 2]}>
+                          <ServiceDiscount
+                            searchQuery={searchQuery}
+                            updateServiceList={function (): void {
+                              throw new Error('Function not implemented.');
+                            }}
+                          />
+                        </ProtectedRoute>
+                      }
                     />
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/chat" element={<WhatsAppForm />} />
@@ -158,7 +200,15 @@ function App() {
                       path="/sherbimet"
                       element={<Services searchQuery={searchQuery} />}
                     />
-                    <Route path="/serviceStaff" element={<ServiceStaff />} />
+                    <Route
+                      path="/serviceStaff"
+                      element={
+                        <ProtectedRoute allowedRoles={[1, 2]}>
+                          <ServiceStaff />
+                        </ProtectedRoute>
+                      }
+                    />
+
                     <Route
                       path="/stafi"
                       element={<Staff searchQuery={searchQuery} />}

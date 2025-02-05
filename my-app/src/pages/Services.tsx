@@ -39,8 +39,6 @@ const Service = ({ searchQuery }: { searchQuery: string }) => {
 
       // Directly use response.data since it already contains the array
       const services = Array.isArray(response.data) ? response.data : [];
-
-      console.log('Fetched Services:', services); // Debugging
       setServiceList(services);
     } catch (error) {
       console.error('Error fetching services:', error);

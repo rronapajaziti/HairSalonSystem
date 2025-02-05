@@ -3,26 +3,27 @@ import { FaSun, FaMoon } from 'react-icons/fa';
 
 const DarkModeSwitcher = () => {
   const [colorMode, setColorMode] = useState(() => {
-    // Load the initial mode from localStorage
+    // Load from localStorage or default to 'light'
     return localStorage.getItem('colorMode') || 'light';
   });
 
-  // Apply dark mode on initial load and on mode change
   useEffect(() => {
     if (colorMode === 'dark') {
       document.body.classList.add('dark');
-      localStorage.setItem('colorMode', 'dark');
     } else {
       document.body.classList.remove('dark');
-      localStorage.setItem('colorMode', 'light');
     }
+    // Save preference in localStorage
+    localStorage.setItem('colorMode', colorMode);
   }, [colorMode]);
 
+  // Toggle between light and dark mode
+  const toggleColorMode = () => {
+    setColorMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
+
   return (
-    <div
-      onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}
-      className="flex items-center cursor-pointer"
-    >
+    <div onClick={toggleColorMode} className="flex items-center cursor-pointer">
       <div
         className={`w-16 h-8 flex items-center rounded-full p-1 transition-all duration-300 ${
           colorMode === 'light'

@@ -64,7 +64,6 @@ const Appointments = () => {
 
       // Directly use response.data since it's already an array
       const services = Array.isArray(response.data) ? response.data : [];
-      console.log('Fetched Services:', services);
 
       // Save to state
       setServicesList(services);
@@ -76,11 +75,14 @@ const Appointments = () => {
 
   const fetchStaffList = async () => {
     try {
-      const response = await axios.get(
-        'https://api.studio-linda.com/api/User/staff',
+      const response = await axios.get('https://api.studio-linda.com/api/User');
+
+      // Filter only staff with roleID 2 or 3
+      const filteredStaff = response.data.filter(
+        (staff: any) => staff.roleID === 2 || staff.roleID === 3,
       );
-      console.log('Fetched Staff:', response.data); // Debug the structure
-      setStaffList(response.data);
+
+      setStaffList(filteredStaff);
     } catch (error) {
       console.error('Error fetching staff:', error);
       setStaffList([]); // Fallback to an empty list in case of an error
@@ -128,8 +130,6 @@ const Appointments = () => {
       status: newAppointment.status,
       notes: newAppointment.notes,
     };
-
-    console.log('Payload being sent to the backend:', payload);
 
     try {
       const response = await axios.post(
@@ -203,7 +203,6 @@ const Appointments = () => {
         status: appt.status || 'pa përfunduar',
         notes: appt.notes || '',
       });
-      console.log('Submit appointment:', appt);
     }
   };
 
@@ -225,16 +224,12 @@ const Appointments = () => {
       notes: editFormData.notes,
     };
 
-    console.log('Sending payload to backend:', payload);
-
     try {
       // API call to update the appointment
       const response = await axios.put(
         `https://api.studio-linda.com/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
-
-      console.log('Response from backend:', response.data);
 
       // Update the appointments state
       setAppointments((prevAppointments) =>
@@ -259,8 +254,6 @@ const Appointments = () => {
         status: 'pa përfunduar',
         notes: '',
       });
-
-      console.log('Appointment updated successfully.');
     } catch (error) {
       console.error('Error while editing appointment:', error);
     }
@@ -376,7 +369,7 @@ const Appointments = () => {
                 name="serviceID"
                 value={newAppointment.serviceID}
                 onChange={handleInputChange}
-                className="px-4 py-2 border rounded-md w-full"
+                className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               >
                 <option value="">Zgjedh Shërbimin</option>

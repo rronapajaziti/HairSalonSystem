@@ -16,7 +16,6 @@ const ServiceStaff = () => {
     fetchDiscounts();
 
     const handleDataUpdate = () => {
-      console.log('Data update detected, refreshing ServiceStaff data...');
       fetchServiceStaff();
       fetchDailyEarnings();
       fetchDiscounts();
@@ -98,7 +97,6 @@ const ServiceStaff = () => {
     try {
       await axios.delete(`https://api.studio-linda.com/api/ServiceStaff/${id}`);
       await fetchServiceStaff(); // Refresh the data
-      console.log('ServiceStaff record deleted successfully.');
     } catch (error) {
       console.error('Error deleting ServiceStaff record:', error);
     }

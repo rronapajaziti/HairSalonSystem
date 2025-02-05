@@ -69,11 +69,9 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
       const response = await axios.get(
         'https://api.studio-linda.com/api/Service',
       );
-      console.log('Full API Response:', response.data); // Log the full response to inspect its structure
 
       // Correctly extract services from response.data
       const fetchedServices = Array.isArray(response.data) ? response.data : [];
-      console.log('Fetched Services:', fetchedServices); // Debugging the API response
       setServices(fetchedServices);
     } catch (error) {
       console.error('Error fetching services:', error);
