@@ -62,9 +62,6 @@ namespace HairSalon.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -76,11 +73,32 @@ namespace HairSalon.Migrations
 
                     b.HasIndex("ClientID");
 
-                    b.HasIndex("ServiceID");
-
                     b.HasIndex("UserID");
 
                     b.ToTable("Appointments", (string)null);
+                });
+
+            modelBuilder.Entity("HairSalon.Models.AppointmentService", b =>
+                {
+                    b.Property<int>("AppointmentServiceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentServiceID"));
+
+                    b.Property<int>("AppointmentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppointmentServiceID");
+
+                    b.HasIndex("AppointmentID");
+
+                    b.HasIndex("ServiceID");
+
+                    b.ToTable("AppointmentServices", (string)null);
                 });
 
             modelBuilder.Entity("HairSalon.Models.Client", b =>
@@ -334,12 +352,6 @@ namespace HairSalon.Migrations
                         .WithMany("Appointments")
                         .HasForeignKey("ClientID");
 
-                    b.HasOne("HairSalon.Models.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HairSalon.Models.User", "User")
                         .WithMany("Appointments")
                         .HasForeignKey("UserID")
@@ -348,9 +360,26 @@ namespace HairSalon.Migrations
 
                     b.Navigation("Client");
 
-                    b.Navigation("Service");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HairSalon.Models.AppointmentService", b =>
+                {
+                    b.HasOne("HairSalon.Models.Appointment", "Appointment")
+                        .WithMany("AppointmentServices")
+                        .HasForeignKey("AppointmentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HairSalon.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("HairSalon.Models.ServiceStaff", b =>
@@ -402,6 +431,8 @@ namespace HairSalon.Migrations
 
             modelBuilder.Entity("HairSalon.Models.Appointment", b =>
                 {
+                    b.Navigation("AppointmentServices");
+
                     b.Navigation("ServiceStaff");
                 });
 

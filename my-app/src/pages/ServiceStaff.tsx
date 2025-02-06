@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MdOutlineDelete } from 'react-icons/md';
+import { jwtDecode } from 'jwt-decode';
 
 const ServiceStaff = () => {
   const [serviceStaffList, setServiceStaffList] = useState<any[]>([]);
@@ -26,13 +27,32 @@ const ServiceStaff = () => {
     return () => {
       window.removeEventListener('dataUpdated', handleDataUpdate);
     };
-  }, []);
+  }, [filterDate]);
 
   const fetchServiceStaff = async () => {
     try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) throw new Error('No token found');
+
+      const decodedToken: any = jwtDecode(token);
+
+      const roleID = decodedToken.RolesID || decodedToken.roleID; // Adjust claim name as needed
+      const userID = localStorage.getItem('userId'); // Ensure consistency
+
+      if (!userID) {
+        console.error('UserID not found in localStorage!');
+        return;
+      }
+
       const response = await axios.get(
         'https://api.studio-linda.com/api/ServiceStaff',
+        {
+          params: { roleID, userID }, // Pass roleID and userID to the backend
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
+
+      // Update the state with all data
       setServiceStaffList(response.data);
     } catch (error) {
       console.error('Error fetching service staff data:', error);
@@ -41,18 +61,33 @@ const ServiceStaff = () => {
 
   const fetchDailyEarnings = async () => {
     try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) throw new Error('No token found');
+
+      const decodedToken: any = jwtDecode(token);
+
+      const roleID = decodedToken.RolesID || decodedToken.roleID; // Adjust claim name as needed
+      const userID = localStorage.getItem('userId'); // Ensure consistency
+
       const response = await axios.get(
         'https://api.studio-linda.com/api/ServiceStaff/daily-earnings',
+        {
+          params: { roleID, userID }, // Pass roleID and userID to the backend
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
-      setDailyEarnings(response.data);
+
+      if (roleID == 3 || roleID == '3') {
+        setDailyEarnings(
+          response.data.filter((item: any) => String(item.userID) === userID),
+        );
+      } else {
+        setDailyEarnings(response.data);
+      }
     } catch (error) {
       console.error('Error fetching daily earnings:', error);
     }
   };
-  const filteredServiceStaff = serviceStaffList.filter((item) => {
-    const itemDate = new Date(item.dateCompleted).toISOString().split('T')[0];
-    return itemDate === filterDate;
-  });
 
   const fetchDiscounts = async () => {
     try {
@@ -87,12 +122,19 @@ const ServiceStaff = () => {
     return servicePrice.toFixed(2);
   };
 
+  const filteredServiceStaff = serviceStaffList.filter((item) => {
+    if (!item.dateCompleted) return false; // Skip invalid dates
+    const itemDate = new Date(item.dateCompleted).toISOString().split('T')[0];
+    return itemDate === filterDate;
+  });
+
   const filteredDailyEarnings = dailyEarnings.filter((item) => {
     const itemDate = new Date(Date.UTC(item.year, item.month - 1, item.day))
       .toISOString()
       .split('T')[0];
     return itemDate === filterDate;
   });
+
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://api.studio-linda.com/api/ServiceStaff/${id}`);
@@ -156,16 +198,16 @@ const ServiceStaff = () => {
               return (
                 <tr key={item.serviceStaffID}>
                   <td className="py-2 px-4 text-black dark:text-white">
-                    {item.staffName}
+                    {item.staffName || 'N/A'}
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white">
-                    {item.serviceName}
+                    {item.serviceName || 'N/A'}
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white">
                     {discountedPrice.toFixed(2)}€
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white">
-                    {item.percentage.toFixed(2)}%
+                    {item.percentage?.toFixed(2) || '0.00'}%
                   </td>
                   <td className="py-2 px-4 text-black dark:text-white">
                     {staffEarning.toFixed(2)}€
@@ -248,6 +290,3 @@ const ServiceStaff = () => {
 };
 
 export default ServiceStaff;
-function setIsLoading(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}

@@ -297,37 +297,36 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Stafi
                 </NavLink>
               </li>
-              {(userRole === 1 || userRole === 2) && (
-                <li>
-                  <NavLink
-                    to="/serviceStaff"
-                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                      pathname.includes('/serviceStaff')
-                        ? 'bg-graydark dark:bg-meta-4'
-                        : ''
-                    }`}
+              <li>
+                <NavLink
+                  to="/serviceStaff"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('/serviceStaff')
+                      ? 'bg-graydark dark:bg-meta-4'
+                      : ''
+                  }`}
+                >
+                  <svg
+                    className="w-6 h-6 text-white dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="1.5em"
+                    width="1.5em"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="w-6 h-6 text-white dark:text-white"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="1.5em"
-                      width="1.5em"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
-                      />
-                    </svg>
-                    Pagesa
-                  </NavLink>
-                </li>
-              )}
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
+                    />
+                  </svg>
+                  Pagesa
+                </NavLink>
+              </li>
+
               <li>
                 <NavLink
                   to="/dailyExpensess"

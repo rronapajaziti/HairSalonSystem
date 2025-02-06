@@ -7,6 +7,7 @@ const Appointments = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0],
   );
@@ -20,7 +21,7 @@ const Appointments = () => {
     phoneNumber: '',
     email: '',
     userID: '',
-    serviceID: '',
+    serviceIDs: [],
     appointmentDate: '',
     status: 'pa përfunduar',
     notes: '',
@@ -33,7 +34,7 @@ const Appointments = () => {
     phoneNumber: '',
     email: '',
     userID: '',
-    serviceID: '',
+    serviceIDs: [],
     appointmentDate: '',
     status: 'pa përfunduar',
     notes: '',
@@ -44,17 +45,6 @@ const Appointments = () => {
     fetchServicesList();
     fetchStaffList();
   }, []);
-
-  const fetchAppointments = async () => {
-    try {
-      const response = await axios.get(
-        'https://api.studio-linda.com/api/Appointment',
-      );
-      setAppointments(response.data);
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    }
-  };
 
   const fetchServicesList = async () => {
     try {
@@ -89,33 +79,62 @@ const Appointments = () => {
     }
   };
 
+  // Handle multiple service selection for new appointment
   const handleInputChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
     >,
   ) => {
     const { name, value } = e.target;
-    setNewAppointment({
-      ...newAppointment,
-      [name]: value,
-    });
+
+    if (name === 'serviceIDs') {
+      // Narrow the type to HTMLSelectElement
+      const options = (e.target as HTMLSelectElement).selectedOptions;
+      const values = Array.from(options).map(
+        (option: HTMLOptionElement) => option.value,
+      );
+      setNewAppointment({
+        ...newAppointment,
+        [name]: values, // Set serviceIDs as an array of selected values
+      });
+    } else {
+      setNewAppointment({ ...newAppointment, [name]: value });
+    }
   };
 
+  // For editing appointment
   const handleEditInputChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
     >,
   ) => {
     const { name, value } = e.target;
-    setEditFormData({
-      ...editFormData,
-      [name]: value,
-    });
+
+    if (name === 'serviceIDs') {
+      // Narrow the type to HTMLSelectElement
+      const options = (e.target as HTMLSelectElement).selectedOptions;
+      const values = Array.from(options).map(
+        (option: HTMLOptionElement) => option.value,
+      );
+      setEditFormData({
+        ...editFormData,
+        [name]: values, // Set serviceIDs as an array of selected values
+      });
+    } else {
+      setEditFormData({ ...editFormData, [name]: value });
+    }
   };
+
   //UserID: localStorage.getItem('userId'),
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Convert serviceIDs to numbers
+    const serviceIDsAsNumbers = newAppointment.serviceIDs.map((id) =>
+      Number(id),
+    );
+
     const payload = {
       client: {
         firstName: newAppointment.firstName,
@@ -123,9 +142,9 @@ const Appointments = () => {
         phoneNumber: newAppointment.phoneNumber,
         email: newAppointment.email,
       },
-      appointmentID: newAppointment.appointmentID || 0, // Include this if required
-      userID: newAppointment.userID,
-      serviceID: newAppointment.serviceID,
+      appointmentID: newAppointment.appointmentID || 0, // Ensure a valid ID
+      userID: Number(newAppointment.userID), // Convert userID to number
+      serviceIDs: serviceIDsAsNumbers, // Ensure serviceIDs is an array of numbers
       appointmentDate: newAppointment.appointmentDate,
       status: newAppointment.status,
       notes: newAppointment.notes,
@@ -136,8 +155,11 @@ const Appointments = () => {
         'https://api.studio-linda.com/api/Appointment',
         payload,
       );
-
+      fetchAppointments();
+      // Update state with the new appointment
       setAppointments([...appointments, response.data]);
+
+      // Reset form and close it
       setShowForm(false);
       setNewAppointment({
         appointmentID: null,
@@ -146,7 +168,7 @@ const Appointments = () => {
         phoneNumber: '',
         email: '',
         userID: '',
-        serviceID: '',
+        serviceIDs: [],
         appointmentDate: '',
         status: 'pa përfunduar',
         notes: '',
@@ -170,24 +192,25 @@ const Appointments = () => {
         phoneNumber: appt.client?.phoneNumber || '',
         email: appt.client?.email || '',
         userID: appt.userID || '',
-        serviceID: appt.serviceID || '',
-        appointmentDate: appt.appointmentDate || '',
+        serviceIDs:
+          appt.services?.map((service: { serviceName: string }) => {
+            const matchedService = servicesList.find(
+              (s) => s.serviceName === service.serviceName,
+            );
+            return matchedService?.serviceID?.toString() || '';
+          }) || [],
+        appointmentDate: appt.appointmentDate
+          ? new Date(appt.appointmentDate).toISOString().slice(0, 16)
+          : '',
         status: appt.status || 'pa përfunduar',
         notes: appt.notes || '',
       });
     } else {
-      const service = servicesList.find(
-        (service) => service.serviceName === appt.serviceName,
-      );
       const staff = staffList.find(
         (staff) => `${staff.firstName} ${staff.lastName}` === appt.staffName,
       );
 
-      const isValidDate =
-        appt.appointmentDate &&
-        !isNaN(new Date(appt.appointmentDate).getTime());
-
-      // Set form data for editing, including picked service and staff
+      // Set form data for editing, including mapped services and staff
       setEditingRowId(appt.appointmentID);
       setEditFormData({
         appointmentID: appt.appointmentID,
@@ -195,9 +218,15 @@ const Appointments = () => {
         lastName: appt.client?.lastName || '',
         phoneNumber: appt.client?.phoneNumber || '',
         email: appt.client?.email || '',
-        serviceID: service?.serviceID || '',
+        serviceIDs:
+          appt.services?.map((service: { serviceName: string }) => {
+            const matchedService = servicesList.find(
+              (s) => s.serviceName === service.serviceName,
+            );
+            return matchedService?.serviceID?.toString() || '';
+          }) || [],
         userID: staff?.userID || '',
-        appointmentDate: isValidDate
+        appointmentDate: appt.appointmentDate
           ? new Date(appt.appointmentDate).toISOString().slice(0, 16)
           : '',
         status: appt.status || 'pa përfunduar',
@@ -206,9 +235,24 @@ const Appointments = () => {
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        'https://api.studio-linda.com/api/Appointment',
+      );
+      setAppointments(response.data);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
 
+    // Prepare payload
+    const serviceIDsAsNumbers = editFormData.serviceIDs.map((id) =>
+      parseInt(id, 10),
+    );
     const payload = {
       client: {
         firstName: editFormData.firstName,
@@ -217,30 +261,25 @@ const Appointments = () => {
         email: editFormData.email,
       },
       appointmentID: editFormData.appointmentID,
-      userID: editFormData.userID,
-      serviceID: Number(editFormData.serviceID),
+      userID: Number(editFormData.userID),
+      serviceIDs: serviceIDsAsNumbers,
       appointmentDate: editFormData.appointmentDate,
       status: editFormData.status,
       notes: editFormData.notes,
     };
 
     try {
-      // API call to update the appointment
       const response = await axios.put(
         `https://api.studio-linda.com/api/Appointment/${editFormData.appointmentID}`,
         payload,
       );
 
-      // Update the appointments state
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
-          appt.appointmentID === response.data.appointmentID
-            ? { ...appt, ...response.data }
-            : appt,
-        ),
-      );
+      console.log('Response:', response.data);
 
-      // Reset edit form data and close edit mode
+      // Re-fetch appointments to ensure everything is synced
+      await fetchAppointments();
+
+      // Reset the edit form
       setEditingRowId(null);
       setEditFormData({
         appointmentID: null,
@@ -249,15 +288,19 @@ const Appointments = () => {
         phoneNumber: '',
         email: '',
         userID: '',
-        serviceID: '',
+        serviceIDs: [],
         appointmentDate: '',
         status: 'pa përfunduar',
         notes: '',
       });
     } catch (error) {
-      console.error('Error while editing appointment:', error);
+      console.error(
+        'Error updating appointment:',
+        error.response?.data || error.message,
+      );
     }
   };
+
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`https://api.studio-linda.com/api/Appointment/${id}`);
@@ -286,7 +329,7 @@ const Appointments = () => {
   });
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1 text-black dark:text-white dark:border-strokedark dark:bg-boxdark mb-20">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-semibold text-blue-900 dark:text-white dark:border-strokedark dark:bg-boxdark">
           Terminet
@@ -366,13 +409,14 @@ const Appointments = () => {
                 Shërbimi
               </label>
               <select
-                name="serviceID"
-                value={newAppointment.serviceID}
+                name="serviceIDs"
+                multiple
+                value={newAppointment.serviceIDs}
                 onChange={handleInputChange}
                 className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                 required
               >
-                <option value="">Zgjedh Shërbimin</option>
+                <option value="">Zgjedh Shërbimet</option>
                 {servicesList.map((service) => (
                   <option key={service.serviceID} value={service.serviceID}>
                     {service.serviceName}
@@ -490,7 +534,17 @@ const Appointments = () => {
                   </td>
                   <td className="py-3 px-4">{appt.client?.phoneNumber}</td>
                   <td className="py-3 px-4">{appt.client?.email}</td>
-                  <td className="py-3 px-4">{appt.serviceName}</td>
+                  <td className="py-3 px-4">
+                    {appt.services && appt.services.length > 0
+                      ? appt.services
+                          .map(
+                            (service: { serviceName: string }) =>
+                              service.serviceName,
+                          )
+                          .join(', ')
+                      : 'No services'}{' '}
+                  </td>
+
                   <td className="py-3 px-4">{appt.staffName || 'No Staff'}</td>
 
                   <td className="py-3 px-4">
@@ -582,29 +636,40 @@ const Appointments = () => {
                             />
                           </div>
 
-                          {/* Service */}
+                          {/* Services (Appointment Services) */}
                           <div>
                             <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
-                              Shërbimi
+                              Shërbimet
                             </label>
                             <select
-                              name="serviceID"
-                              value={editFormData.serviceID || ''} // Ensure the correct value is set
-                              onChange={handleEditInputChange}
+                              name="serviceIDs"
+                              multiple
+                              value={editFormData.serviceIDs} // Bind directly to array of IDs
+                              onChange={(e) => {
+                                const selectedServices = Array.from(
+                                  e.target.selectedOptions,
+                                  (option) => option.value,
+                                );
+                                setEditFormData({
+                                  ...editFormData,
+                                  serviceIDs: selectedServices,
+                                });
+                              }}
                               className="px-4 py-2 border rounded-md w-full text-black dark:text-white dark:border-strokedark dark:bg-boxdark"
                               required
                             >
-                              <option value="">Zhgjedh Shërbimin</option>
                               {servicesList.map((service) => (
                                 <option
                                   key={service.serviceID}
-                                  value={service.serviceID}
+                                  value={service.serviceID.toString()}
                                 >
                                   {service.serviceName}
                                 </option>
                               ))}
                             </select>
                           </div>
+
+                          {/* Staff */}
                           <div>
                             <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Stafi
@@ -624,6 +689,8 @@ const Appointments = () => {
                               ))}
                             </select>
                           </div>
+
+                          {/* Appointment Date */}
                           <div>
                             <label className="block font-medium text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
                               Data e Terminit

@@ -75,7 +75,6 @@ function App() {
     if (token) {
       try {
         const decodedToken: any = jwtDecode(token);
-        console.log('Decoded Token:', decodedToken); // Debugging
       } catch (error) {
         console.error('Error decoding token:', error);
       }
@@ -200,14 +199,7 @@ function App() {
                       path="/sherbimet"
                       element={<Services searchQuery={searchQuery} />}
                     />
-                    <Route
-                      path="/serviceStaff"
-                      element={
-                        <ProtectedRoute allowedRoles={[1, 2]}>
-                          <ServiceStaff />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/serviceStaff" element={<ServiceStaff />} />
 
                     <Route
                       path="/stafi"
