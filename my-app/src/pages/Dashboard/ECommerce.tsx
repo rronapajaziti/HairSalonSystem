@@ -33,16 +33,11 @@ const ECommerce: React.FC = () => {
           'https://api.studio-linda.com/api/Appointment/total-price',
           // 'https://localhost:7158/api/Appointment/total-price',
         );
-
-        // Ensure totalPrice is a valid number
-        const price = parseFloat(response.data) || 0;
-        setTotalPrice(price);
+        setTotalPrice(response.data);
       } catch (error) {
         console.error('Error fetching total price:', error);
-        setTotalPrice(0); // Default to 0 in case of error
       }
     };
-
     const fetchTotalServices = async () => {
       try {
         const response = await axios.get(

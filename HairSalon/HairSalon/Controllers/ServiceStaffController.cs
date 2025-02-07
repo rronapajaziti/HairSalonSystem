@@ -15,22 +15,13 @@ public class ServiceStaffController : ControllerBase
 
     // Fetch all service staff
     [HttpGet]
-    public async Task<IActionResult> GetAllServiceStaff(int? roleID, int? userID)
+    public async Task<IActionResult> GetAllServiceStaff()
     {
         try
         {
-            IQueryable<ServiceStaff> query = _context.ServiceStaff
+            var staff = await _context.ServiceStaff
                 .Include(ss => ss.User)
-                .Include(ss => ss.Service);
-
-            // Filter data based on role
-            if (roleID == 3) // Staff
-            {
-                query = query.Where(ss => ss.UserID == userID);
-            }
-            // For Admins and Owners, no additional filtering is needed (they see all data)
-
-            var staff = await query
+                .Include(ss => ss.Service)
                 .Select(ss => new
                 {
                     ss.ServiceStaffID,
@@ -52,7 +43,6 @@ public class ServiceStaffController : ControllerBase
         }
     }
 
-
     // Sync ServiceStaff with Appointment
     [HttpPost("sync-from-appointment")]
     public async Task<IActionResult> SyncServiceStaffFromAppointment([FromBody] Appointment appointment)
@@ -62,43 +52,40 @@ public class ServiceStaffController : ControllerBase
 
         try
         {
-            foreach (var appointmentService in appointment.AppointmentServices)
+            var service = await _context.Services.FindAsync(appointment.ServiceID);
+            if (service == null)
+                return BadRequest("Invalid Service ID.");
+
+            var existingServiceStaff = await _context.ServiceStaff
+                .FirstOrDefaultAsync(ss =>
+                    ss.ServiceID == appointment.ServiceID &&
+                    ss.UserID == appointment.UserID &&
+                    ss.DateCompleted == appointment.AppointmentDate);
+
+            if (appointment.Status?.ToLower() == "përfunduar")
             {
-                var service = await _context.Services.FindAsync(appointmentService.ServiceID);
-                if (service == null)
-                    return BadRequest("Invalid Service ID.");
-
-                var existingServiceStaff = await _context.ServiceStaff
-                    .FirstOrDefaultAsync(ss =>
-                        ss.ServiceID == appointmentService.ServiceID &&
-                        ss.UserID == appointment.UserID &&
-                        ss.DateCompleted == appointment.AppointmentDate);
-
-                if (appointment.Status?.ToLower() == "përfunduar")
+                if (existingServiceStaff == null)
                 {
-                    if (existingServiceStaff == null)
+                    var newServiceStaff = new ServiceStaff
                     {
-                        var newServiceStaff = new ServiceStaff
-                        {
-                            ServiceID = appointmentService.ServiceID,
-                            UserID = appointment.UserID,
-                            DateCompleted = appointment.AppointmentDate,
-                            Price = service.Price,
-                            StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
-                        };
-                        _context.ServiceStaff.Add(newServiceStaff);
-                    }
-                    else
-                    {
-                        existingServiceStaff.Price = service.Price;
-                        existingServiceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
-                        _context.ServiceStaff.Update(existingServiceStaff);
-                    }
+                        ServiceID = appointment.ServiceID,
+                        UserID = appointment.UserID,
+                        DateCompleted = appointment.AppointmentDate,
+                        Price = service.Price,
+                        StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
+                    };
+                    _context.ServiceStaff.Add(newServiceStaff);
                 }
-                else if (appointment.Status?.ToLower() == "pa përfunduar" && existingServiceStaff != null)
+                else
                 {
-                    _context.ServiceStaff.Remove(existingServiceStaff);
+                    existingServiceStaff.Price = service.Price;
+                    existingServiceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
+                    _context.ServiceStaff.Update(existingServiceStaff);
                 }
+            }
+            else if (appointment.Status?.ToLower() == "pa përfunduar" && existingServiceStaff != null)
+            {
+                _context.ServiceStaff.Remove(existingServiceStaff);
             }
 
             await _context.SaveChangesAsync();
@@ -111,23 +98,14 @@ public class ServiceStaffController : ControllerBase
         }
     }
 
-
     // Get daily earnings
     [HttpGet("daily-earnings")]
-    public async Task<IActionResult> GetDailyEarnings(int? roleID, int? userID)
+    public async Task<IActionResult> GetDailyEarnings()
     {
         try
         {
-            IQueryable<ServiceStaff> query = _context.ServiceStaff
-                .Include(ss => ss.User);
-
-            // Filter data based on role
-            if (roleID == 3) // Staff
-            {
-                query = query.Where(ss => ss.UserID == userID);
-            }
-
-            var dailyEarnings = await query
+            var dailyEarnings = await _context.ServiceStaff
+                .Include(ss => ss.User)
                 .GroupBy(ss => new
                 {
                     ss.UserID,

@@ -53,29 +53,18 @@ const ChartOne: React.FC = () => {
 
       const data = response.data;
 
+      // Prepare data for the chart
       const weeks = data.map((entry: { week: number }) => `Java ${entry.week}`);
       const appointmentCounts = data.map(
-        (entry: { appointmentCount: number }) => {
-          if (
-            isNaN(entry.appointmentCount) ||
-            !isFinite(entry.appointmentCount)
-          ) {
-            console.warn('Invalid appointment count:', entry.appointmentCount);
-            return 0;
-          }
-          return entry.appointmentCount;
-        },
+        (entry: { appointmentCount: number }) => entry.appointmentCount,
       );
 
       setCategories(weeks);
       setSeries([{ name: 'Numri i Takimeve', data: appointmentCounts }]);
     } catch (error) {
       console.error('Error fetching weekly appointment data:', error);
-      setCategories([]); // Fallback to empty categories
-      setSeries([{ name: 'Numri i Takimeve', data: [] }]); // Fallback to empty series
     }
   };
-
   const options: ApexOptions = {
     chart: {
       type: 'area',

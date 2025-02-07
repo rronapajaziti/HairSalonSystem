@@ -129,7 +129,7 @@ const DailyAppointments = ({ searchQuery }: { searchQuery: string }) => {
   });
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-white shadow-lg rounded-lg text-black dark:text-white dark:border-strokedark dark:bg-boxdark mb-20">
+    <div className="max-w-6xl mx-auto p-4 bg-white shadow-lg rounded-lg text-black dark:text-white dark:border-strokedark dark:bg-boxdark">
       <h2 className="text-2xl font-semibold mb-4 text-blue-700 dark:text-white dark:border-strokedark dark:bg-boxdark">
         Orari Ditor për {new Date(selectedDate).toLocaleDateString('sq-AL')}
       </h2>

@@ -6,8 +6,6 @@ C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\HairSalon.pdb
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Azure.Core.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Azure.Identity.dll
-C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\BouncyCastle.Cryptography.dll
-C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\MailKit.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.Data.SqlClient.dll
@@ -36,7 +34,6 @@ C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.OpenApi.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.SqlServer.Server.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Microsoft.Win32.SystemEvents.dll
-C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\MimeKit.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Newtonsoft.Json.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
@@ -50,7 +47,6 @@ C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.IO.Pipelines.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Memory.Data.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Runtime.Caching.dll
-C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Security.Cryptography.Pkcs.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Security.Cryptography.ProtectedData.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Security.Permissions.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\System.Text.Encodings.Web.dll
@@ -67,7 +63,6 @@ C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
-C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\hp\OneDrive\Desktop\innovoCode\HairSalonSystem\HairSalon\HairSalon\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net6.0\System.Windows.Extensions.dll

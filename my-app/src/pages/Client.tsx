@@ -19,45 +19,39 @@ const ClientTable = ({ searchQuery }: { searchQuery: string }) => {
       );
 
       const appointments = response.data;
-      const clientMap = new Map<string, any>(); // Map to store unique clients
 
-      // Step 2: Fetch completed appointments for each unique client
-      await Promise.all(
+      // Step 2: Fetch completed appointments for each client and merge with client data
+      const updatedClients = await Promise.all(
         appointments.map(async (appointment: any) => {
           const { firstName, lastName, phoneNumber, email } =
             appointment.client;
-          const clientKey = email; // Use email as a unique key
 
-          if (!clientMap.has(clientKey)) {
-            try {
-              // Fetch completed appointments for the client
-              const countResponse = await axios.get(
-                `https://api.studio-linda.com/api/appointment/completed-appointments-client?firstName=${firstName}&lastName=${lastName}&phoneNumber=${phoneNumber}&email=${email}`,
-              );
+          try {
+            // Step 3: Fetch completed appointments for each client
+            const countResponse = await axios.get(
+              `https://api.studio-linda.com/api/appointment/completed-appointments-client?firstName=${firstName}&lastName=${lastName}&phoneNumber=${phoneNumber}&email=${email}`,
+            );
 
-              const completedAppointments =
-                countResponse.data?.completedAppointments || 0;
-
-              clientMap.set(clientKey, {
-                ...appointment.client,
-                completedAppointments,
-              });
-            } catch (error) {
-              console.error(
-                `Error fetching completed appointments for ${firstName} ${lastName}:`,
-                error,
-              );
-              clientMap.set(clientKey, {
-                ...appointment.client,
-                completedAppointments: 0, // Default to 0 if error occurs
-              });
-            }
+            const completedAppointments =
+              countResponse.data?.completedAppointments || 0;
+            return {
+              ...appointment.client,
+              completedAppointments,
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching completed appointments for ${firstName} ${lastName}:`,
+              error,
+            );
+            return {
+              ...appointment.client,
+              completedAppointments: 0, // Default to 0 if error occurs
+            };
           }
         }),
       );
 
-      // Convert Map values to array and set state
-      setClientList(Array.from(clientMap.values()));
+      setClientList(updatedClients); // Update state with the merged client data
     } catch (error) {
       console.error('Error fetching appointments:', error);
     } finally {

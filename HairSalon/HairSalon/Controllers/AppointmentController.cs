@@ -23,8 +23,7 @@ namespace HairSalon.Controllers
             {
                 var appointments = await _context.Appointments
                     .Include(a => a.User) // Include Staff
-                    .Include(a => a.AppointmentServices) // Include related services
-                    .ThenInclude(asv => asv.Service) // Include Service details for each appointment service
+                    .Include(a => a.Service) // Include Service
                     .Select(a => new
                     {
                         a.AppointmentID,
@@ -32,11 +31,7 @@ namespace HairSalon.Controllers
                         a.Status,
                         a.Notes,
                         StaffName = a.User != null ? $"{a.User.FirstName} {a.User.LastName}" : "No Staff",
-                        Services = a.AppointmentServices.Select(asv => new
-                        {
-                            asv.Service.ServiceName,
-                            asv.Service.Price
-                        }).ToList(),
+                        ServiceName = a.Service != null ? a.Service.ServiceName : "No Service",
                         a.ClientID,
                         Client = a.Client != null ? new
                         {
@@ -57,7 +52,6 @@ namespace HairSalon.Controllers
             }
         }
 
-
         // Get the clients data by id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAppointment(int id)
@@ -65,9 +59,7 @@ namespace HairSalon.Controllers
             var appointment = await _context.Appointments
                 .Include(a => a.Client)
                 .Include(a => a.User)
-                .Include(a => a.AppointmentServices) // Include related services
-                .ThenInclude(asv => asv.Service) // Include the Service details for each appointment service
-                .Where(a => a.AppointmentID == id)
+                .Include(a => a.Service)
                 .Select(a => new
                 {
                     a.AppointmentID,
@@ -79,16 +71,12 @@ namespace HairSalon.Controllers
                         a.Client.Email
                     } : null,
                     a.UserID,
+                    a.ServiceID,
                     a.AppointmentDate,
                     a.Status,
-                    a.Notes,
-                    Services = a.AppointmentServices.Select(asv => new
-                    {
-                        asv.Service.ServiceName,
-                        asv.Service.Price
-                    }).ToList()
+                    a.Notes
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(m => m.AppointmentID == id);
 
             if (appointment == null)
             {
@@ -133,9 +121,9 @@ namespace HairSalon.Controllers
                 }
 
                 // Validate Service
-                var services = await _context.Services.Where(s => appointmentDto.ServiceIDs.Contains(s.ServiceID)).ToListAsync();
-                if (!services.Any())
-                    return BadRequest("Invalid Service IDs.");
+                var service = await _context.Services.FindAsync(appointmentDto.ServiceID);
+                if (service == null)
+                    return BadRequest("Invalid Service ID.");
 
                 // Validate User
                 var user = await _context.Users.FindAsync(appointmentDto.UserID);
@@ -147,6 +135,7 @@ namespace HairSalon.Controllers
                 {
                     ClientID = client?.ClientID,
                     UserID = appointmentDto.UserID,
+                    ServiceID = appointmentDto.ServiceID,
                     AppointmentDate = appointmentDto.AppointmentDate,
                     Status = appointmentDto.Status,
                     Notes = appointmentDto.Notes
@@ -154,32 +143,18 @@ namespace HairSalon.Controllers
                 _context.Appointments.Add(appointment);
                 await _context.SaveChangesAsync();
 
-                // Add AppointmentService for each selected service
-                foreach (var service in services)
-                {
-                    var appointmentService = new AppointmentService
-                    {
-                        AppointmentID = appointment.AppointmentID,
-                        ServiceID = service.ServiceID
-                    };
-                    _context.AppointmentServices.Add(appointmentService);
-                }
-
                 // Add ServiceStaff if status is "përfunduar"
                 if (appointmentDto.Status?.ToLower() == "përfunduar")
                 {
-                    foreach (var service in services)
+                    var serviceStaff = new ServiceStaff
                     {
-                        var serviceStaff = new ServiceStaff
-                        {
-                            ServiceID = service.ServiceID,
-                            UserID = appointmentDto.UserID,
-                            DateCompleted = appointmentDto.AppointmentDate,
-                            Price = service.Price,
-                            StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
-                        };
-                        _context.ServiceStaff.Add(serviceStaff);
-                    }
+                        ServiceID = appointmentDto.ServiceID,
+                        UserID = appointmentDto.UserID,
+                        DateCompleted = appointmentDto.AppointmentDate,
+                        Price = service.Price,
+                        StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
+                    };
+                    _context.ServiceStaff.Add(serviceStaff);
 
                     // Save changes to ensure ServiceStaff is added
                     await _context.SaveChangesAsync();
@@ -196,12 +171,11 @@ namespace HairSalon.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var appointment = await _context.Appointments
-                .Include(a => a.AppointmentServices)
+                .Include(a => a.Service)
                 .Include(a => a.User)
                 .FirstOrDefaultAsync(a => a.AppointmentID == id);
 
@@ -211,24 +185,14 @@ namespace HairSalon.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Remove associated ServiceStaff records
+                // Remove associated ServiceStaff record(s)
                 var serviceStaff = await _context.ServiceStaff
-                    .Where(ss => ss.UserID == appointment.UserID && ss.DateCompleted == appointment.AppointmentDate)
+                    .Where(ss => ss.ServiceID == appointment.ServiceID && ss.UserID == appointment.UserID)
                     .ToListAsync();
 
                 if (serviceStaff.Any())
                 {
                     _context.ServiceStaff.RemoveRange(serviceStaff);
-                }
-
-                // Remove associated AppointmentServices records
-                var appointmentServices = await _context.AppointmentServices
-                    .Where(asv => asv.AppointmentID == id)
-                    .ToListAsync();
-
-                if (appointmentServices.Any())
-                {
-                    _context.AppointmentServices.RemoveRange(appointmentServices);
                 }
 
                 // Remove the appointment
@@ -252,112 +216,99 @@ namespace HairSalon.Controllers
             if (id != appointmentDto.AppointmentID)
                 return BadRequest("Appointment ID mismatch.");
 
+            var existingAppointment = await _context.Appointments
+                .Include(a => a.Service)
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.AppointmentID == id);
+
+            if (existingAppointment == null)
+                return NotFound("Appointment not found.");
+
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Fetch the existing appointment
-                var existingAppointment = await _context.Appointments
-                    .Include(a => a.AppointmentServices)
-                    .Include(a => a.User)
-                    .FirstOrDefaultAsync(a => a.AppointmentID == id);
+                // Find the old ServiceStaff record
+                var oldServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
+                    ss.ServiceID == existingAppointment.ServiceID &&
+                    ss.UserID == existingAppointment.UserID &&
+                    ss.DateCompleted == existingAppointment.AppointmentDate);
 
-                if (existingAppointment == null)
-                    return NotFound("Appointment not found.");
-
-                // Validate User
-                var user = await _context.Users.FindAsync(appointmentDto.UserID);
-                if (user == null)
-                    return BadRequest("Invalid User ID.");
-
-                // Validate Services
-                var services = await _context.Services
-                    .Where(s => appointmentDto.ServiceIDs.Contains(s.ServiceID))
-                    .ToListAsync();
-
-                if (!services.Any())
-                    return BadRequest("Invalid Service IDs.");
-
-                // ✅ Update Appointment Details
+                // Update appointment details
                 existingAppointment.UserID = appointmentDto.UserID;
+                existingAppointment.ServiceID = appointmentDto.ServiceID;
                 existingAppointment.AppointmentDate = appointmentDto.AppointmentDate;
                 existingAppointment.Status = appointmentDto.Status;
                 existingAppointment.Notes = appointmentDto.Notes;
 
                 _context.Entry(existingAppointment).State = EntityState.Modified;
 
-                // ✅ Remove old AppointmentServices (To fully sync the services)
-                var oldServices = await _context.AppointmentServices
-                    .Where(asv => asv.AppointmentID == id)
-                    .ToListAsync();
-                _context.AppointmentServices.RemoveRange(oldServices);
+                // Synchronize ServiceStaff record
+                var newService = await _context.Services.FindAsync(appointmentDto.ServiceID);
 
-                // ✅ Add new AppointmentServices
-                foreach (var serviceId in appointmentDto.ServiceIDs)
-                {
-                    _context.AppointmentServices.Add(new AppointmentService
-                    {
-                        AppointmentID = existingAppointment.AppointmentID,
-                        ServiceID = serviceId
-                    });
-                }
-
-                // ✅ **Ensure `ServiceStaff` Entries are Updated Correctly**
                 if (appointmentDto.Status?.ToLower() == "përfunduar")
                 {
-                    // Fetch all ServiceStaff entries for this user and appointment date
-                    var existingServiceStaff = await _context.ServiceStaff
-                        .Where(ss => ss.UserID == existingAppointment.UserID && ss.DateCompleted == existingAppointment.AppointmentDate)
-                        .ToListAsync();
-
-                    // Remove ServiceStaff entries that are not in the updated ServiceIDs
-                    var serviceStaffToRemove = existingServiceStaff
-                        .Where(ss => !appointmentDto.ServiceIDs.Contains(ss.ServiceID))
-                        .ToList();
-
-                    _context.ServiceStaff.RemoveRange(serviceStaffToRemove);
-
-                    // Add or update ServiceStaff entries for the updated services
-                    foreach (var service in services)
+                    // Update or create ServiceStaff record
+                    if (oldServiceStaff != null)
                     {
-                        var serviceStaff = existingServiceStaff.FirstOrDefault(ss => ss.ServiceID == service.ServiceID);
+                        // Update the old ServiceStaff record if it exists
+                        oldServiceStaff.ServiceID = appointmentDto.ServiceID;
+                        oldServiceStaff.UserID = appointmentDto.UserID;
+                        oldServiceStaff.DateCompleted = appointmentDto.AppointmentDate;
+                        oldServiceStaff.Price = newService.Price;
+                        oldServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
 
-                        if (serviceStaff != null)
+                        _context.ServiceStaff.Update(oldServiceStaff);
+                    }
+                    else
+                    {
+                        // Check if a ServiceStaff record for the new details already exists
+                        var newServiceStaff = await _context.ServiceStaff.FirstOrDefaultAsync(ss =>
+                            ss.ServiceID == appointmentDto.ServiceID &&
+                            ss.UserID == appointmentDto.UserID &&
+                            ss.DateCompleted == appointmentDto.AppointmentDate);
+
+                        if (newServiceStaff == null)
                         {
-                            // Update existing ServiceStaff
-                            serviceStaff.DateCompleted = appointmentDto.AppointmentDate;
-                            serviceStaff.Price = service.Price;
-                            serviceStaff.StaffEarning = service.Price * (service.StaffEarningPercentage / 100);
-                            _context.ServiceStaff.Update(serviceStaff);
+                            // Create a new ServiceStaff entry if no matching record exists
+                            newServiceStaff = new ServiceStaff
+                            {
+                                ServiceID = appointmentDto.ServiceID,
+                                UserID = appointmentDto.UserID,
+                                DateCompleted = appointmentDto.AppointmentDate,
+                                Price = newService.Price,
+                                StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100)
+                            };
+
+                            _context.ServiceStaff.Add(newServiceStaff);
                         }
                         else
                         {
-                            // Add new ServiceStaff if it doesn't exist
-                            _context.ServiceStaff.Add(new ServiceStaff
-                            {
-                                ServiceID = service.ServiceID,
-                                UserID = appointmentDto.UserID,
-                                DateCompleted = appointmentDto.AppointmentDate,
-                                Price = service.Price,
-                                StaffEarning = service.Price * (service.StaffEarningPercentage / 100)
-                            });
+                            // Update the existing record if found
+                            newServiceStaff.Price = newService.Price;
+                            newServiceStaff.StaffEarning = newService.Price * (newService.StaffEarningPercentage / 100);
+
+                            _context.ServiceStaff.Update(newServiceStaff);
                         }
                     }
+                }
+                else if (appointmentDto.Status?.ToLower() == "pa përfunduar" && oldServiceStaff != null)
+                {
+                    // Remove the old ServiceStaff record if the appointment is marked incomplete
+                    _context.ServiceStaff.Remove(oldServiceStaff);
                 }
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Ok(new { message = "Appointment updated successfully", appointment = existingAppointment });
+                return Ok(existingAppointment);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Error editing appointment: {ex}");
-                return StatusCode(500, $"An error occurred while editing the appointment. Details: {ex.Message}");
+                Console.WriteLine($"Error editing appointment: {ex.Message}");
+                return StatusCode(500, "An error occurred while editing the appointment.");
             }
         }
-
-
 
         [HttpGet("total-price")]
         public async Task<IActionResult> GetTotalPriceForCompletedAppointments()
@@ -366,10 +317,9 @@ namespace HairSalon.Controllers
             {
                 var totalPrice = await _context.Appointments
                     .Where(a => a.Status.ToLower() == "përfunduar")
-                    .SelectMany(a => a.AppointmentServices)
-                    .SumAsync(asv => asv.Service.Price);
+                    .SumAsync(a => a.Service.Price);
 
-                return Ok(new { TotalPrice = totalPrice });
+                return Ok(totalPrice);
             }
             catch (Exception ex)
             {
@@ -377,7 +327,6 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while calculating the total price.");
             }
         }
-
         [HttpGet("total-completed-appointments")]
         public async Task<IActionResult> GetTotalCompletedAppointments()
         {
@@ -487,8 +436,7 @@ namespace HairSalon.Controllers
             var appointments = await _context.Appointments
                 .Include(a => a.Client)
                 .Include(a => a.User)
-                .Include(a => a.AppointmentServices)
-                    .ThenInclude(asv => asv.Service)
+                .Include(a => a.Service)
                 .Where(a => a.UserID == userId)
                 .Select(a => new
                 {
@@ -501,20 +449,15 @@ namespace HairSalon.Controllers
                         a.Client.Email
                     } : null,
                     a.UserID,
+                    a.ServiceID,
                     a.AppointmentDate,
                     a.Status,
                     a.Notes,
-                    Services = a.AppointmentServices.Select(asv => new
-                    {
-                        asv.Service.ServiceID,
-                        asv.Service.ServiceName,
-                        asv.Service.Price
-                    }).ToList(),
-                    TotalServicePrice = a.AppointmentServices.Sum(asv => asv.Service.Price)
+                    ServiceName = a.Service != null ? a.Service.ServiceName : "No Service"
                 })
                 .ToListAsync();
 
-            if (!appointments.Any())
+            if (appointments == null || !appointments.Any())
             {
                 return NotFound("No appointments found for the user.");
             }
@@ -531,10 +474,8 @@ namespace HairSalon.Controllers
             try
             {
                 var dailySummary = await _context.Appointments
-                    .Include(a => a.User)
-                    .Include(a => a.Client)
-                    .Include(a => a.AppointmentServices)
-                        .ThenInclude(asv => asv.Service)
+                    .Include(a => a.User) // Include staff
+                    .Include(a => a.Service) // Include service
                     .GroupBy(a => a.AppointmentDate.Date)
                     .Select(group => new
                     {
@@ -546,8 +487,8 @@ namespace HairSalon.Controllers
                             a.Status,
                             a.Notes,
                             StaffName = a.User != null ? $"{a.User.FirstName} {a.User.LastName}" : "No Staff",
-                            Services = a.AppointmentServices.Select(asv => asv.Service.ServiceName).ToList(),
-                            TotalServicePrice = a.AppointmentServices.Sum(asv => asv.Service.Price),
+                            ServiceName = a.Service != null ? a.Service.ServiceName : "No Service",
+                            ServicePrice = a.Service != null ? a.Service.Price : 0,
                             Client = a.Client != null ? new
                             {
                                 a.Client.FirstName,
@@ -555,7 +496,7 @@ namespace HairSalon.Controllers
                             } : null
                         }).ToList(),
                         TotalPrice = group.Where(a => a.Status.ToLower() == "përfunduar")
-                                          .Sum(a => a.AppointmentServices.Sum(asv => asv.Service.Price))
+                                          .Sum(a => a.Service.Price)
                     })
                     .OrderBy(x => x.Date)
                     .ToListAsync();
@@ -568,7 +509,6 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching daily summary.");
             }
         }
-
         [HttpGet("completed-appointments-client")]
         public async Task<IActionResult> GetCompletedAppointmentsByClient(
        [FromQuery] string firstName,
@@ -667,20 +607,19 @@ namespace HairSalon.Controllers
             try
             {
                 var appointments = await _context.Appointments
-                    .Include(a => a.User)
-                    .Include(a => a.Client)
-                    .Include(a => a.AppointmentServices)
-                        .ThenInclude(asv => asv.Service)
-                    .Where(a => a.AppointmentDate.Date == date.Date)
+                    .Include(a => a.User) // Include Staff
+                    .Include(a => a.Service) // Include Service
+                    .Include(a => a.Client) // Include Client
+                    .Where(a => a.AppointmentDate.Date == date.Date) // Compare date part only
                     .Select(a => new
                     {
                         a.AppointmentID,
                         AppointmentDate = a.AppointmentDate,
                         a.Status,
-                        Services = a.AppointmentServices.Select(asv => asv.Service.ServiceName).ToList(),
+                        ServiceName = a.Service != null ? a.Service.ServiceName : "No Service",
                         ClientName = a.Client != null ? $"{a.Client.FirstName} {a.Client.LastName}" : "No Client",
                         StaffName = a.User != null ? $"{a.User.FirstName} {a.User.LastName}" : "No Staff",
-                        TotalPrice = a.AppointmentServices.Sum(asv => asv.Service.Price)
+                        Price = a.Service != null ? a.Service.Price : 0
                     })
                     .OrderBy(a => a.AppointmentDate)
                     .ToListAsync();
@@ -688,7 +627,7 @@ namespace HairSalon.Controllers
                 return Ok(new
                 {
                     Appointments = appointments,
-                    TimeSlots = GenerateTimeSlots()
+                    TimeSlots = GenerateTimeSlots() // Send time slots from the backend
                 });
             }
             catch (Exception ex)
@@ -697,7 +636,6 @@ namespace HairSalon.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-
 
         private List<string> GenerateTimeSlots()
         {
@@ -723,13 +661,9 @@ namespace HairSalon.Controllers
                     return BadRequest("Invalid date range provided.");
                 }
 
-                var completedServices = _context.AppointmentServices
-                    .Include(asv => asv.Service)
-                    .Include(asv => asv.Appointment)
-                    .Where(asv => asv.Appointment.Status == "përfunduar"
-                                && asv.Appointment.AppointmentDate >= startDate
-                                && asv.Appointment.AppointmentDate <= endDate)
-                    .GroupBy(asv => asv.Service.ServiceName)
+                var completedServices = _context.Appointments
+                    .Where(a => a.Status == "përfunduar" && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                    .GroupBy(a => a.Service.ServiceName)
                     .Select(g => new { ServiceName = g.Key, Count = g.Count() })
                     .OrderByDescending(g => g.Count)
                     .ToList();
@@ -742,7 +676,6 @@ namespace HairSalon.Controllers
                 return StatusCode(500, "An error occurred while fetching completed services.");
             }
         }
-
 
         [HttpGet("top-customers")]
         public IActionResult GetTopCustomers()
